@@ -9,11 +9,24 @@
  */
 public class SchedulerSubsystem implements Runnable{
 
+	SharedData controller;
+	
+	public ShcedulerSubsytem(SharedData controller) {
+		this.controller = controller;
+		
+	}
+	
+	
 	@Override
 	public void run() {
-		//testing 
-		// TODO Auto-generated method stub
-		
+		while(true) {
+			// controller invokes a method from the SharedData that calls to schedule the elevator
+			try {
+				Thread.sleep(1000);
+			}
+			catch(InterruptedException e);
+			
+		}
 	}
 
 }
