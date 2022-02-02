@@ -11,7 +11,7 @@ public class SchedulerSubsystem implements Runnable{
 
 	SharedData controller;
 	
-	public ShcedulerSubsytem(SharedData controller) {
+	public SchedulerSubsystem(SharedData controller) {
 		this.controller = controller;
 		
 	}
@@ -21,10 +21,13 @@ public class SchedulerSubsystem implements Runnable{
 	public void run() {
 		while(true) {
 			// controller invokes a method from the SharedData that calls to schedule the elevator
+			
 			try {
 				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			catch(InterruptedException e);
 			
 		}
 	}
