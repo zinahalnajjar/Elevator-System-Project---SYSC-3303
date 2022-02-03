@@ -16,7 +16,6 @@ public class SchedulerSubsystem implements Runnable{
 		
 	}
 	
-	
 	@Override
 	public void run() {
 		while(true) {
