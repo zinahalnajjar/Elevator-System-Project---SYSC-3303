@@ -1,60 +1,46 @@
-/*
- *  This class contains the data associated with the floor system 
- *  this data will be shared between the floor and the scheduler
- */
 
 import java.time.LocalTime;
 
-public class FloorData {
+public class FloorData implements InformationHandler {
 	private LocalTime time;
 	private int currentFloor;
 	private int destinationFloor; 
 	private boolean goingUp;
-	
-	
+	private boolean lampOn; // this turns on when the floor button is pressed 
 	/*
 	 * constructor 
 	 *
 	 */
 	
-	public FloorData(LocalTime time, int currentfloor, int destinationFloor, boolean goingUp) {
-		this.currentFloor = currentFloor; 
-		this.time = time;
-		this.destinationFloor = destinationFloor;
-		this.goingUp = goingUp;
+	public FloorData(String[] strings) {
+		String[] inputinfo = strings;
+		this.currentFloor = Integer.valueOf(inputinfo[1]); 
+		this.time = LocalTime.parse(inputinfo[0]);
+		this.destinationFloor =Integer.valueOf(inputinfo[3]);
+		this.goingUp = Boolean.valueOf(inputinfo[2]);
+		this.lampOn = false;
 	}
 
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
 	
-	public void setCurrentFloor(int currentFloor ) {
-		 this.currentFloor = currentFloor;
-	}
 	
 	public int getDestinationFloor() {
 		return destinationFloor;
 	}
 	
-	public void setDestinationFloor(int destinationFloor) {
-		 this.destinationFloor = destinationFloor;
-	}
 	
 	public LocalTime getLocalTime() {
 		return time;
 	}
 	
-	public void setLocalTime(LocalTime time) {
-		this.time = time;
-		
-	}
-	public boolean getGoingUp() {
+	
+	public boolean isGoingUp() {
 		return goingUp;
 	}
 	
-	public void setGoingUp(boolean goingUp) {
-		this.goingUp = goingUp;
-	}
 	
 	
 }
+
