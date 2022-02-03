@@ -3,16 +3,25 @@
  */
 public class SchedulerData {
 	
-	private boolean indication = false; // this is for the lamp in elevator initially ti is off but then the elevator will set it on them it can be turn off again by the scheduler
+	private boolean elevatorIndication = false; // this is for the lamp in elevator initially ti is off but then the elevator will set it on them it can be turn off again by the scheduler
+	private boolean floorIndication = false;
 	public enum motorDirection{UP, DOWN}
 	public enum doorState{OPEN, CLOSE}
 	
-	public boolean isIndicated() {
-		return indication;
+	public boolean isElevatorIndicated() {
+		return elevatorIndication;
 	}
 	
-	public void setIndication (boolean indication) {
-		this.indication = indication;
+	public void setElevatorIndication (boolean elevatorIndication) {
+		this.elevatorIndication = elevatorIndication;
+	}
+	
+	public boolean isFloorIndicated() {
+		return floorIndication;
+	}
+	
+	public void setIndication (boolean floorIndication) {
+		this.floorIndication = floorIndication;
 	}
 
 	

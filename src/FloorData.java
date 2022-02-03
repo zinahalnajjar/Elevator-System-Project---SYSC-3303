@@ -7,9 +7,10 @@ import java.time.LocalTime;
 
 public class FloorData {
 	private LocalTime time;
-	private int currentFloor;
+	private int currentFloor; //  this is also floor button
 	private int destinationFloor; 
 	private boolean goingUp;
+	private boolean lampOn = false; // this turns on when the floor button is pressed 
 	
 	
 	/*
@@ -54,6 +55,14 @@ public class FloorData {
 	
 	public void setGoingUp(boolean goingUp) {
 		this.goingUp = goingUp;
+	}
+	
+	public void setLampOn(boolean lampOn) {
+		this.lampOn = lampOn;
+	}
+	
+	public boolean getLampOn() {
+		return lampOn;
 	}
 	
 	
