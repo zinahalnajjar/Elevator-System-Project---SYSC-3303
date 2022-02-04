@@ -11,24 +11,20 @@ import java.util.ArrayList;
  */
 public class SchedulerSubsystem implements Runnable{
 
-    private boolean hasInfo;
+    private boolean floorRequestFlag; //true if floor has a data to give to scheduler, false otherwise
+    private boolean floorReceiveFlag; //true if floor is receiving data from scheduler, false if floor is waiting
+    private boolean elevatorRequestFlag; //true if elevator has a request to give to scheduler, false otherwise
+    private boolean elevatorReceiveFlag; //true if elevator is receiving data from scheduler, false if elevator is waiting
     private ArrayList<FloorData> floorRequest; // variable for floor going to scheduler
     private ArrayList<FloorData> elevatorInstructions; // variable for scheduler going to elevator
     private ArrayList<FloorData> elevatorDecision; // variable for Elevator going into floor
     private ArrayList<FloorData> elevatorToFloor; // variable for the floor receiving elevator's decision
 
     public SchedulerSubsystem() {
-        hasInfo = false;
-
-    }
-
-
-    public void setGotInfo(boolean hasInfo) {
-        this.hasInfo = hasInfo;
-    }
-
-    public boolean hasReceived() {
-        return hasInfo;
+        floorRequestFlag = false;
+        floorReceiveFlag = false;
+        elevatorRequestFlag = false;
+        elevatorReceiveFlag = false;
     }
 
     /**
@@ -36,7 +32,7 @@ public class SchedulerSubsystem implements Runnable{
      * @param floorDatas
      */
     public synchronized void putRequestFromFloor(ArrayList<FloorData> floorDatas){
-        while(hasReceived()){ // while there has been a request received (true), wait
+        while(!floorRequestFlag){ // while there has been a request received (true), wait
             try {
                 wait();
             }catch(InterruptedException e) {
@@ -45,16 +41,16 @@ public class SchedulerSubsystem implements Runnable{
         }
         if(!floorDatas.isEmpty()){
             floorRequest = floorDatas;
-            setGotInfo(true);
+            floorRequestFlag = false;
             notifyAll();
         }
     }
 
     /**
-     * this method gets the request from the floor. This will be called in Scheduler
+     * this method gets the request from the floor. This will be called in Scheduler ?? called inside elevator instead?
      */
     public synchronized ArrayList<FloorData> getFloorRequest() {
-        while (!hasReceived()) { // while there are no requests received (false), wait
+        while (!floorRequestFlag) { // while there are no requests received (false), wait
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -63,7 +59,7 @@ public class SchedulerSubsystem implements Runnable{
         }
         ArrayList<FloorData> newFloorRequests = floorRequest; // follows example from the Box class
         floorRequest = null;
-        setGotInfo(false);
+        floorRequestFlag = false;
         notifyAll();
         return newFloorRequests;
     }
@@ -72,8 +68,8 @@ public class SchedulerSubsystem implements Runnable{
      * this method puts information into the elevator. This will be called in Scheduler
      * @param info
      */
-    public synchronized void putInformation(ArrayList<FloorData> info){
-        while () { // a way of determining a variable is false or not
+    public synchronized void putInfoToElevator(ArrayList<FloorData> info){
+        while (!elevatorReceiveFlag) { // a way of determining a variable is false or not
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -83,7 +79,8 @@ public class SchedulerSubsystem implements Runnable{
 
         if(!info.isEmpty()){
             elevatorInstructions = info;
-            // change something (x) to true. x will then be called in the while loop
+            // change something elevatorReceiveFlag to true. it will then be called in the while loop
+            elevatorReceiveFlag = false;
             notifyAll();
         }
     }
@@ -93,7 +90,7 @@ public class SchedulerSubsystem implements Runnable{
      * @return
      */
     public synchronized ArrayList<FloorData> getInfoForElevator() {
-        while () { // a way of determining a variable is false or not, must start with ! before
+        while (!elevatorReceiveFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -102,7 +99,8 @@ public class SchedulerSubsystem implements Runnable{
         }
         ArrayList<FloorData> newElevatorInfo = elevatorInstructions; // follows example from the Box class
         elevatorInstructions = null;
-        // change something (x) to false. x will then be called in the while loop
+        // change something  elevatorReceiveFlag to false. x will then be called in the while loop
+        elevatorReceiveFlag = false;
         notifyAll();
         return newElevatorInfo;
     }
@@ -112,7 +110,7 @@ public class SchedulerSubsystem implements Runnable{
      * @param decision
      */
     public synchronized void putElevatorDecision(ArrayList<FloorData> decision){
-        while () { // a way of determining a variable is false or not
+        while (!elevatorRequestFlag) { // a way of determining a variable is false or not
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -122,6 +120,7 @@ public class SchedulerSubsystem implements Runnable{
         if(!decision.isEmpty()){
             elevatorDecision = decision;
             // change something (x) to true. x will then be called in the while loop
+            elevatorRequestFlag = false;
             notifyAll();
         }
     }
@@ -131,7 +130,7 @@ public class SchedulerSubsystem implements Runnable{
      * @return
      */
     public synchronized ArrayList<FloorData> getElevatorDecision() {
-        while () { // a way of determining a variable is false or not, must start with ! before
+        while (!elevatorRequestFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -141,6 +140,7 @@ public class SchedulerSubsystem implements Runnable{
         ArrayList<FloorData> newElevatorDecision = elevatorDecision; // follows example from the Box class
         elevatorDecision = null;
         // change something (x) to false. x will then be called in the while loop
+        elevatorRequestFlag = false;
         notifyAll();
         return newElevatorDecision;
     }
@@ -150,7 +150,7 @@ public class SchedulerSubsystem implements Runnable{
      * @param floor
      */
     public synchronized void putElevatorIntoFloor(ArrayList<FloorData> floor){
-        while () { // a way of determining a variable is false or not
+        while (!floorReceiveFlag) { // a way of determining a variable is false or not
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -161,16 +161,17 @@ public class SchedulerSubsystem implements Runnable{
         if(!floor.isEmpty()){
             elevatorDecision = elevatorToFloor;
             // change something (x) to true. x will then be called in the while loop
+            floorReceiveFlag = false;
             notifyAll();
         }
     }
 
     /**
-     * This method geets the Elevator's decision. This will be called in floor
+     * This method gets the Elevator's decision. This will be called in floor
      * @return
      */
     public synchronized ArrayList<FloorData> getElevatorIntoFloor() {
-        while () { // a way of determining a variable is false or not, must start with ! before
+        while (!floorReceiveFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -180,6 +181,7 @@ public class SchedulerSubsystem implements Runnable{
         ArrayList<FloorData> newElevatorToFloor = elevatorToFloor; // follows example from the Box class
         elevatorToFloor = null;
         // change something (x) to false. x will then be called in the while loop
+        floorReceiveFlag = false;
         notifyAll();
         return newElevatorToFloor;
     }
@@ -187,9 +189,6 @@ public class SchedulerSubsystem implements Runnable{
     @Override
     public void run() {
         while(true) {
-            //getRequest();
-            System.out.println("Request received!");
-
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

@@ -1,14 +1,19 @@
+import java.util.ArrayList;
 
+/**
+ * elevator subsystem receives data from the scheduler 
+ * performs instructions from data
+ * @author vilmos
+ *
+ */
 public class ElevatorSubsystem implements Runnable {
 	
-	private int elevatorID;
-	private int currentFloor;
-	private int destinationFloor;
-	private boolean lampOn;
 	private SchedulerSubsystem scheduler;
+
+	private int elevatorID;
 	private boolean motorOperating;
 	private boolean doorsOpen;
-	
+	private ArrayList<FloorData> elevatorData;
 	
 	/**
 	 * Constructor
@@ -16,27 +21,9 @@ public class ElevatorSubsystem implements Runnable {
 	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId) {
 		this.scheduler = scheduler;
 		this.elevatorID = elevatorId;
-		this.currentFloor = 0;
-		this.destinationFloor = 0;
-		this.lampOn = false;
 		this.motorOperating = false;
 		this.doorsOpen = false;
 	}
-	
-	/**
-	 * method for receiving data and 
-	 */
-	public void handleRequest() {
-	//for iteration 1 system will read input from floor and output it 
-		System.out.println("data received");
-		//receive info
-	}
-	
-	//for iteration 1 this will do nothing
-	public void sendData() {
-		
-	}
-	
 
 	/**
 	 * Opens the doors
@@ -51,24 +38,30 @@ public class ElevatorSubsystem implements Runnable {
 	/**
 	 * Turns on the motor
 	 */
-	public void motorsOn() { motorOperating = true; lampOn = true;}
+	public void motorsOn() { motorOperating = true;}
 	
-	public void motorOff() { motorOperating = false; lampOn = false;}
+	public void motorOff() { motorOperating = false;}
 	
 	@Override
 	public void run() {
 		// check for requests from scheduler, then handle requests
 		while(true) {
+			
+			if(motorOperating == false) {
+				System.out.println("Data available");
+				System.out.println("----------------"); 
+				elevatorData = scheduler.getInfoForElevator();
+				System.out.println("Current Floor: " + elevatorData.get(0).getCurrentFloor() + "/n");
+				System.out.println("Destination Floor: " + elevatorData.get(0).getDestinationFloor() + "/n");
+				System.out.println("Current time: " + elevatorData.get(0).getLocalTime() + "/n");
+			}
+			
 			try {
-				Thread.sleep(0);
+				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			if(scheduler.hasReceived() && motorOperating == false) {
-				handleRequest();
-				
-			}
 		}
 		
 	}
