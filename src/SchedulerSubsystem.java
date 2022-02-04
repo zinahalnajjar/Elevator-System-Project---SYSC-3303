@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * works as a channel to communicate data between the floors and the elevator
  * receives an input data from the floor subsystem
@@ -11,6 +13,8 @@ public class SchedulerSubsystem implements Runnable{
 
 	private boolean hasInfo;
 	
+	private ArrayList<InformationHandler> requests;
+	
 	public SchedulerSubsystem() {
 		
 	}
@@ -23,10 +27,30 @@ public class SchedulerSubsystem implements Runnable{
 		return hasInfo;
 	}
 	
+	
+	public synchronized ArrayList<InformationHandler> getRequest(){
+		while(!hasReceived()) {
+			 try {
+	                wait();
+	            } catch (InterruptedException e) {
+	                return null;
+	            }
+			
+		}
+		
+		ArrayList<InformationHandler> newRequests = requests;
+		requests = null;
+		notifyAll();
+		return newRequests;
+	
+	}
+	
+	
 	@Override
 	public void run() {
 		while(true) {
-			// controller invokes a method from the SharedData that calls to schedule the elevator
+			getRequest();
+			System.out.println("Request received!");
 			
 			try {
 				Thread.sleep(1000);
