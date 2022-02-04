@@ -11,45 +11,90 @@ import java.util.ArrayList;
  */
 public class SchedulerSubsystem implements Runnable{
 
-	private boolean hasInfo;
-	
-	private ArrayList<InformationHandler> requests;
-	
-	public SchedulerSubsystem() {
-		
-	}
-	
-	public void setGotInfo(boolean hasInfo) {
-		this.hasInfo = hasInfo;
-	}
-	
-	public boolean hasReceived() {
-		return hasInfo;
-	}
-	
-	
-	public synchronized ArrayList<InformationHandler> getRequest(){
-		while(!hasReceived()) {
-			 try {
-	                wait();
-	            } catch (InterruptedException e) {
-	                return null;
-	            }
-			
-		}
-		
-		ArrayList<InformationHandler> newRequests = requests;
-		requests = null;
-		notifyAll();
-		return newRequests;
-	
-	}
-	
-	
+    private boolean hasInfo;
+    private InformationHandler floorInfo;
+    private InformationHandler elevatorInfo;
+
+
+    public SchedulerSubsystem() {
+        this.floorInfo = null;
+        this.elevatorInfo = null;
+        hasInfo = false;
+
+    }
+
+    public InformationHandler getElevatorinfo(){
+        return elevatorInfo;
+
+    }
+
+    public InformationHandler getFloorinfo(){
+        return floorInfo;
+
+    }
+
+
+    public void setGotInfo(boolean hasInfo) {
+        this.hasInfo = hasInfo;
+    }
+
+    public boolean hasReceived() {
+        return hasInfo;
+    }
+    
+    
+    /**
+     * This method sends instructions to the floor
+     * @param floorRequests
+     */
+    public synchronized void sendFloorInstructions(InformationHandler floorRequests){
+        while(!hasReceived()) {
+             try {
+                    wait();
+                } catch (InterruptedException e) {
+                    return;
+                }
+
+        }
+
+        //update the data
+        floorInfo = floorRequests;
+
+    }
+
+    /**
+     * This method sends instructions to the elevator
+     * @param ElevatorRequests
+     */
+    public synchronized void sendElevatorInstructions(InformationHandler ElevatorRequests){
+        while(!hasReceived()) {
+             try {
+                    wait();
+                } catch (InterruptedException e) {
+                    return;
+                }
+
+        }
+
+        //update the data
+        elevatorInfo = ElevatorRequests;
+
+    }
+    
+    /**
+     * get requests made by the elevator
+     * @return
+     */
+    public synchronized InformationHandler getElevatorResponse() {
+    	
+    }
+    
+    
+    
 	@Override
 	public void run() {
 		while(true) {
-			getRequest();
+			//getRequest();
 			System.out.println("Request received!");
 			
 			try {
