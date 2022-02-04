@@ -20,6 +20,7 @@ public class ElevatorSubsystem implements Runnable {
 		this.destinationFloor = 0;
 		this.lampOn = false;
 		this.motorOperating = false;
+		this.doorsOpen = false;
 	}
 	
 	/**
@@ -28,7 +29,7 @@ public class ElevatorSubsystem implements Runnable {
 	public void handleRequest() {
 	//for iteration 1 system will read input from floor and output it 
 		System.out.println("data received");
-		
+		//receive info
 	}
 	
 	//for iteration 1 this will do nothing
@@ -36,8 +37,23 @@ public class ElevatorSubsystem implements Runnable {
 		
 	}
 	
-	public void
-
+	/**
+	 * Opens the doors
+	 */
+	public void openDoors() {doorsOpen = true;}
+	
+	/**
+	 * Closes the doors
+	 */
+	public void closeDoors() {doorsOpen = false;}
+	
+	/**
+	 * Turns on the motor
+	 */
+	public void motorsOn() { motorOperating = true; lampOn = true;}
+	
+	public void motorOff() { motorOperating = false; lampOn = false;}
+	
 	@Override
 	public void run() {
 		// check for requests from scheduler, then handle requests
