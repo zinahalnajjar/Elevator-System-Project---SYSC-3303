@@ -10,15 +10,14 @@ import java.util.ArrayList;
 public class FloorSubsystem implements Runnable  {
 	
 	private SchedulerSubsystem sc; 
-	private ArrayList<InformationHandler> sentInfo;
-	
-	
+	private ArrayList<FloorData> sentInfo;
+
 	/*
 	 * constructor 
 	 */
 	public FloorSubsystem(SchedulerSubsystem sc) {
 		this.sc = sc;
-		this.sentInfo = new ArrayList<InformationHandler>();
+		this.sentInfo = new ArrayList<FloorData>();
 		
 	}
 	
@@ -27,14 +26,14 @@ public class FloorSubsystem implements Runnable  {
 	 */
 	public void addInfo() throws IOException {
 		sentInfo.addAll(InputReader.getInfo("src/InputInformation.txt"));
-		sc.setGotInfo(true); // lets scheduler know that it got info
+		//sc.toggleFloorRequestFlag(true);
 	}
 	
 	/*
 	 * returns the info that were read by the floor system 
 	 */
 	
-	public ArrayList<InformationHandler> getInfo(){
+	public ArrayList<FloorData> getInfo(){
 		return sentInfo;
 	}
 
@@ -42,15 +41,7 @@ public class FloorSubsystem implements Runnable  {
 	
 	@Override
 	public void run() {
-		while(true) {
-			try {
-				addInfo();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
+		sc.putRequestFromFloor(sentInfo);
 		
 	}
 

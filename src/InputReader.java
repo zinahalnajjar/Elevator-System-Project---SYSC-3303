@@ -8,16 +8,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InputReader {
-	
-	
-	 
-	
 	/*
 	 * this method reads the input file and slpit it into parts
 	 * sets the floor data  
 	 */
-	public static ArrayList<InformationHandler> getInfo (String filePath)throws IOException{
-		ArrayList<InformationHandler> floorInfo = new ArrayList<>();
+	public static ArrayList<FloorData> getInfo (String filePath)throws IOException{ //changed from InformationHandler to FloorData
+		ArrayList<FloorData> floorInfo = new ArrayList<>();	//changed from InformationHandler to FloorData
 		BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
 		
 		String lineReader;
