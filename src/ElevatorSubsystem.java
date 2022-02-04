@@ -5,28 +5,53 @@ public class ElevatorSubsystem implements Runnable {
 	private int currentFloor;
 	private int destinationFloor;
 	private boolean lampOn;
+	private SchedulerSubsystem scheduler;
+	private boolean motorOperating;
+	private boolean doorsOpen;
 	
 	
 	/**
 	 * Constructor
 	 */
-	public ElevatorSubsystem() {
-		
+	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId) {
+		this.scheduler = scheduler;
+		this.elevatorID = elevatorId;
+		this.currentFloor = 0;
+		this.destinationFloor = 0;
+		this.lampOn = false;
+		this.motorOperating = false;
 	}
 	
+	/**
+	 * method for receiving data and 
+	 */
 	public void handleRequest() {
+	//for iteration 1 system will read input from floor and output it 
+		System.out.println("data received");
 		
 	}
 	
+	//for iteration 1 this will do nothing
 	public void sendData() {
 		
 	}
 	
+	public void
+
 	@Override
 	public void run() {
 		// check for requests from scheduler, then handle requests
 		while(true) {
+			try {
+				Thread.sleep(0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
+			if(scheduler.hasReceived() && motorOperating == false) {
+				handleRequest();
+				
+			}
 		}
 		
 	}
