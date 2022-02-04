@@ -29,11 +29,12 @@ public class FloorSubsystem implements Runnable  {
 		//sc.toggleFloorRequestFlag(true);
 	}
 	
+	
 	/*
 	 * returns the info that were read by the floor system 
 	 */
 	
-	public ArrayList<FloorData> getInfo(){
+	public ArrayList<FloorData> getReadInfo(){
 		return sentInfo;
 	}
 
@@ -41,7 +42,12 @@ public class FloorSubsystem implements Runnable  {
 	
 	@Override
 	public void run() {
+		getReadInfo();
+		System.out.println("Got the Information from the Input File!");
 		sc.putRequestFromFloor(sentInfo);
+		System.out.println("Information sent to Scheduler!");
+		sc.getElevatorIntoFloor();
+		System.out.println("All done!");
 		
 	}
 

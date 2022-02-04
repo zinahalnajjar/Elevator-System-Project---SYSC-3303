@@ -47,14 +47,13 @@ public class ElevatorSubsystem implements Runnable {
 		// check for requests from scheduler, then handle requests
 		while(true) {
 			
-			if(motorOperating == false) {
+				elevatorData = scheduler.getInfoForElevator();
 				System.out.println("Data available");
 				System.out.println("----------------"); 
-				elevatorData = scheduler.getInfoForElevator();
 				System.out.println("Current Floor: " + elevatorData.get(0).getCurrentFloor() + "/n");
 				System.out.println("Destination Floor: " + elevatorData.get(0).getDestinationFloor() + "/n");
 				System.out.println("Current time: " + elevatorData.get(0).getLocalTime() + "/n");
-			}
+				scheduler.putElevatorResponse(elevatorData);
 			
 			try {
 				Thread.sleep(1000);

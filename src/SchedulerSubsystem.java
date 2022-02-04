@@ -31,7 +31,7 @@ public class SchedulerSubsystem implements Runnable{
      * this method allows the floor to put a request into the scheduler, this method will be called in Floor
      * @param floorDatas
      */
-    public synchronized void putRequestFromFloor(ArrayList<FloorData> floorDatas){
+    public synchronized void putRequestFromFloor(ArrayList<FloorData> floorDatas){ //checked off for now
         while(!floorRequestFlag){ // while there has been a request received (true), wait
             try {
                 wait();
@@ -41,7 +41,7 @@ public class SchedulerSubsystem implements Runnable{
         }
         if(!floorDatas.isEmpty()){
             floorRequest = floorDatas;
-            floorRequestFlag = false;
+            floorRequestFlag = true;
             notifyAll();
         }
     }
@@ -49,7 +49,7 @@ public class SchedulerSubsystem implements Runnable{
     /**
      * this method gets the request from the floor. This will be called in Scheduler ?? called inside elevator instead?
      */
-    public synchronized ArrayList<FloorData> getFloorRequest() {
+    public synchronized ArrayList<FloorData> getFloorRequest() { //checked
         while (!floorRequestFlag) { // while there are no requests received (false), wait
             try {
                 wait();
@@ -68,7 +68,7 @@ public class SchedulerSubsystem implements Runnable{
      * this method puts information into the elevator. This will be called in Scheduler
      * @param info
      */
-    public synchronized void putInfoToElevator(ArrayList<FloorData> info){
+    public synchronized void putInfoToElevator(ArrayList<FloorData> info){ //checked
         while (!elevatorReceiveFlag) { // a way of determining a variable is false or not
             try {
                 wait();
@@ -89,7 +89,7 @@ public class SchedulerSubsystem implements Runnable{
      * This method gets the information from the scheduler into elevator. This will be called in Elevator
      * @return
      */
-    public synchronized ArrayList<FloorData> getInfoForElevator() {
+    public synchronized ArrayList<FloorData> getInfoForElevator() { //checked
         while (!elevatorReceiveFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
@@ -109,7 +109,7 @@ public class SchedulerSubsystem implements Runnable{
      * This method puts the elevator's response. This will be called in Elevator
      * @param decision
      */
-    public synchronized void putElevatorDecision(ArrayList<FloorData> decision){
+    public synchronized void putElevatorResponse(ArrayList<FloorData> decision){ // checked
         while (!elevatorRequestFlag) { // a way of determining a variable is false or not
             try {
                 wait();
@@ -129,7 +129,7 @@ public class SchedulerSubsystem implements Runnable{
      * This method gets the elevators response. This will be called in Scheduler
      * @return
      */
-    public synchronized ArrayList<FloorData> getElevatorDecision() {
+    public synchronized ArrayList<FloorData> getElevatorResponse() { //checked
         while (!elevatorRequestFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
@@ -149,7 +149,7 @@ public class SchedulerSubsystem implements Runnable{
      * This method puts the elevator's decision into the floor class. This will be called in scheduler
      * @param floor
      */
-    public synchronized void putElevatorIntoFloor(ArrayList<FloorData> floor){
+    public synchronized void putElevatorIntoFloor(ArrayList<FloorData> floor){ //check
         while (!floorReceiveFlag) { // a way of determining a variable is false or not
             try {
                 wait();
@@ -170,7 +170,7 @@ public class SchedulerSubsystem implements Runnable{
      * This method gets the Elevator's decision. This will be called in floor
      * @return
      */
-    public synchronized ArrayList<FloorData> getElevatorIntoFloor() {
+    public synchronized ArrayList<FloorData> getElevatorIntoFloor() { //check
         while (!floorReceiveFlag) { // a way of determining a variable is false or not, must start with ! before
             try {
                 wait();
@@ -189,6 +189,15 @@ public class SchedulerSubsystem implements Runnable{
     @Override
     public void run() {
         while(true) {
+        	ArrayList<FloorData> information = getFloorRequest();
+        	System.out.println("Request obtain from Floor by Scheduler!!");
+        	putInfoToElevator(information);
+        	System.out.println("Put information into Elevator by Scheduler!!");
+        	ArrayList<FloorData> response = getElevatorResponse();
+        	System.out.println("Response received from Elevator by Scheduler!!");
+        	putElevatorIntoFloor(response);
+        	System.out.println("Sheduler sent Elevator response to the Floor");
+        	
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
