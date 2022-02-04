@@ -1,7 +1,7 @@
 
 import java.time.LocalTime;
 
-public class FloorData implements InformationHandler {
+public class FloorData {
 	private LocalTime time;
 	private int currentFloor;
 	private int destinationFloor; 
