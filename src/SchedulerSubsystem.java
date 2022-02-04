@@ -9,11 +9,18 @@
  */
 public class SchedulerSubsystem implements Runnable{
 
-	SharedData controller;
+	private boolean hasInfo;
 	
-	public SchedulerSubsystem(SharedData controller) {
-		this.controller = controller;
+	public SchedulerSubsystem() {
 		
+	}
+	
+	public void setGotInfo(boolean hasInfo) {
+		this.hasInfo = hasInfo;
+	}
+	
+	public boolean hasReceived() {
+		return hasInfo;
 	}
 	
 	@Override
