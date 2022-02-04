@@ -11,6 +11,8 @@ public class FloorSubsystem implements Runnable  {
 	
 	private SchedulerSubsystem sc; 
 	private ArrayList<InformationHandler> sentInfo;
+	
+	
 	/*
 	 * constructor 
 	 */
@@ -25,6 +27,7 @@ public class FloorSubsystem implements Runnable  {
 	 */
 	public void addInfo() throws IOException {
 		sentInfo.addAll(InputReader.getInfo("src/InputInformation.txt"));
+		sc.setGotInfo(true); // lets scheduler know that it got info
 	}
 	
 	/*
@@ -35,8 +38,6 @@ public class FloorSubsystem implements Runnable  {
 		return sentInfo;
 	}
 
-
-	
 	
 	
 	@Override

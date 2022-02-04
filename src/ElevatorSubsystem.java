@@ -36,7 +36,6 @@ public class ElevatorSubsystem implements Runnable {
 		
 	}
 	
-	public void
 
 	@Override
 	public void run() {
