@@ -31,7 +31,5 @@ public class FloorTest {
 		assertEquals(floorList.get(1).getLocalTime(), testCase.getLocalTime());
 		assertFalse(floorList.get(1).isGoingUp());
 
-
-		
 	}
 }
