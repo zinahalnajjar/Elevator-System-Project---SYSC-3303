@@ -42,4 +42,4 @@
  Mack Wallace:Implementation of all classes, Testing.
  Vilmos Feher: Implementation of all classes, Sequence Diagram.
  Shawaiz Khan: UML Diagram, Documentation.
- Faris Abo-Mazeed:
+ Faris Abo-Mazeed: Worked on test case
