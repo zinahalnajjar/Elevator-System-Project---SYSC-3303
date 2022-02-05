@@ -42,28 +42,6 @@ public class SchedulerSubsystem implements Runnable{
         elevatorRequestFlag = false;
         elevatorReceiveFlag = false;
     }
-
-    /**
-     * allows the floor to put a single request into the scheduler
-     * @param floorRequests, the request 
-     */
-    //PENDING synchronized
-    public void putRequestFromFloor(FloorRequest floorRequest){
-    	synchronized (floorRequestData) {
-    		while(floorRequestData.getFloorRequest() != null) {
-    			//wait until request data is cleared
-    			try {
-    				System.out.println("Awaiting FloorRequest to be CLEARED....");
-    				floorRequestData.wait();
-    			} catch (InterruptedException e) {
-    				System.err.println(e);
-    			}
-    		}
-    		floorRequestData.setFloorRequest(floorRequest);
-    		//processFloorRequest();
-    		floorRequestData.notifyAll();
-		}//synchronized
-    }
     
     /**
      * process the floor request by sending the request to ElevatorSubSystem.
@@ -75,69 +53,6 @@ public class SchedulerSubsystem implements Runnable{
     	elevatorSubsystem.moveTo(floorRequestData.getFloorRequest().getDestinationFloor());
     	//pending lamp indication.
     }
-    
-    /**
-     * allows the scheduler to put the request into elevator
-     * @param info, list holding request
-     */
-    public synchronized void putInfoToElevator(ArrayList<FloorRequest> info){ 
-        while (elevatorReceiveFlag) { // a way of determining a variable is false or not
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                System.err.println(e);
-            }
-        }
-
-        if(!info.isEmpty()){
-            elevatorInstructions = info;
-            // change something elevatorReceiveFlag to true. it will then be called in the while loop
-            elevatorReceiveFlag = true;
-            notifyAll();
-        }
-    }
-
-    /**
-     * This method gets the elevators response. This will be called in Scheduler
-     * @return newElevatorDecision, decision of the elevator
-     */
-    public synchronized ArrayList<FloorRequest> getElevatorResponse() { //checked
-        while (!elevatorRequestFlag) { // a way of determining a variable is false or not, must start with ! before
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                System.err.println(e);
-            }
-        }
-        ArrayList<FloorRequest> newElevatorDecision = elevatorDecision; // follows example from the Box class
-        elevatorDecision = null;
-        // change something (x) to false. x will then be called in the while loop
-        elevatorRequestFlag = false;
-        notifyAll();
-        return newElevatorDecision;
-    }
-
-    /**
-     * This method puts the elevator's decision into the floor class. This will be called in scheduler
-     * @param floor, list holding new request
-     */
-    public synchronized void putElevatorIntoFloor(ArrayList<FloorRequest> floor){ //check
-        while (floorReceiveFlag) { // a way of determining a variable is false or not
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                System.err.println(e);
-            }
-        }
-
-        if(!floor.isEmpty()){
-            elevatorDecision = elevatorToFloor;
-            // change something (x) to true. x will then be called in the while loop
-            floorReceiveFlag = true;
-            notifyAll();
-        }
-    }
-
 
     /**
      * Set FloorSubsystem to SchedulerSubsystem so that SchedulerSubsystem can talk to FloorSubsystem

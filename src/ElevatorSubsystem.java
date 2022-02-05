@@ -35,17 +35,6 @@ public class ElevatorSubsystem implements Runnable {
 		this.doorsOpen = false;
 		this.currentFloor = 0;//default ground floor
 	}
-
-	/**
-	 * Opens the doors
-	 */
-	public void openDoors() {doorsOpen = true;}
-	
-	/**
-	 * Closes the doors
-	 */
-	public void closeDoors() {doorsOpen = false;}
-	
 	/**
 	 * Turns on the motor
 	 */
@@ -139,6 +128,5 @@ public class ElevatorSubsystem implements Runnable {
 			}//synchronized
         	
         }
-
 	}
 }
