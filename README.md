@@ -4,7 +4,7 @@
  Zinah Al-Najjar, 101108056
  Mack Wallace, 101104366
  Vilmos Feher, 101168919
- Shawaiz Khan, 10091783
+ Shawaiz Khan, 100917863
  Faris Abo-Mazeed, 101115920
  
  Dear user,
@@ -42,4 +42,4 @@
  Mack Wallace:Implementation of all classes, Testing.
  Vilmos Feher: Implementation of all classes, Sequence Diagram.
  Shawaiz Khan: UML Diagram, Documentation.
- Faris Abo-Mazeed:
+ Faris Abo-Mazeed: Worked on test case
