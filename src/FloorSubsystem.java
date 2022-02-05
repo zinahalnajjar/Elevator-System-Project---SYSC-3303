@@ -34,7 +34,7 @@ public class FloorSubsystem implements Runnable  {
 	}
 	*/
 	
-	public static ArrayList<FloorRequest> getInfo(){ //changed from InformationHandler to FloorData
+	public ArrayList<FloorRequest> getInfo(){ //changed from InformationHandler to FloorData
 		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	//changed from InformationHandler to FloorData
 		try {
 			File fileReader = new File("./src/InputInformation.txt");
