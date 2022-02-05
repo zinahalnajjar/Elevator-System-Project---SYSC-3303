@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InputReader {
+	
 	/*
-	 * this method reads the input file and slpit it into parts
+	 * this method reads the input file and split it into parts
 	 * sets the floor data  
 	 */
 	public static ArrayList<FloorData> getInfo (String filePath)throws IOException{ //changed from InformationHandler to FloorData
