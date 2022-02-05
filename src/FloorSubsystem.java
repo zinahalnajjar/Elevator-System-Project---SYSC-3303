@@ -4,10 +4,17 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * FloorSubsystem.java
+ * 
+ * floor subsystem thread that will send 
+ * @author Zinah, Mack, Vilmos
+ *
+ */
+
 /*
- * Floor subsystem sends the data read from the input file to the schduler subsystem
+ * Floor subsystem sends the data read from the input file to the scheduler subsystem
  * receive commands to turn the floor button lamps off 
- * will have the above methods plus run
  */
 public class FloorSubsystem implements Runnable  {
 	
@@ -15,8 +22,10 @@ public class FloorSubsystem implements Runnable  {
 	private ArrayList<FloorRequest> sentInfo;
 	private FloorRequestData floorRequestData;
 
-	/*
-	 * constructor 
+	/**
+	 * base constructor
+	 * @param sc, scheduler thread
+	 * @param floorRequestData, information to be passed to floor
 	 */
 	public FloorSubsystem(SchedulerSubsystem sc, FloorRequestData floorRequestData) {
 		this.sc = sc;
@@ -25,17 +34,12 @@ public class FloorSubsystem implements Runnable  {
 		
 	}
 	
-	/*
-	 * add the info in input file  
+	/**
+	 * takes a text file and converts it into requests for the floor 
+	 * @return floorInfo, contains the requests as an ArrayList
 	 */
-	/*public ArrayList<FloorData> addInfo() throws IOException{
-		sentInfo.addAll(InputReader.getInfo("src/InputInformation.txt"));
-		return sentInfo;
-	}
-	*/
-	
-	public static ArrayList<FloorRequest> getInfo(){ //changed from InformationHandler to FloorData
-		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	//changed from InformationHandler to FloorData
+	public static ArrayList<FloorRequest> getInfo(){ 
+		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	
 		try {
 			File fileReader = new File("./src/InputInformation.txt");
 			Scanner scanner = new Scanner(fileReader);
@@ -55,9 +59,6 @@ public class FloorSubsystem implements Runnable  {
 				}
 				
 			}
-			//String lineReader = fileReader.readLine();
-			//FloorData floorRequest = new FloorData(lineReader.split(","));
-			//floorInfo.add(floorRequest);
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("error");
@@ -67,7 +68,37 @@ public class FloorSubsystem implements Runnable  {
 		
 	}
 
-	
+	/**
+	 * sends the request to scheduler
+	 * @param floorRequest, floorRequest to be sent to scheduler
+	 */
+	private void sendFloorRequest(FloorRequest floorRequest) {
+		synchronized (floorRequestData) {
+    		while(floorRequestData.getFloorRequest() != null) {
+    			//wait until request data is cleared
+    			try {
+    				//System.out.println("Awaiting FloorRequest to be Completed....");
+    				floorRequestData.wait();
+    			} catch (InterruptedException e) {
+    				System.err.println(e);
+    			}
+    		}
+    		floorRequestData.setFloorRequest(floorRequest);
+    		System.out.println("Floor up/down LAMP ON.");
+    		floorRequestData.notifyAll();
+		}//synchronized
+		
+	}
+
+	/**
+	 * sets the elevators response
+	 * @param elevatorResponse, elevators response
+	 */
+	public void setElevatorResponse(ResponseData elevatorResponse) {
+		System.out.println("Floor Received ElevatorResponse: " + elevatorResponse.getResponse());
+		System.out.println("Floor up/down LAMP OFF");
+		
+	}
 	
 	@Override
 	public void run() {
@@ -88,30 +119,6 @@ public class FloorSubsystem implements Runnable  {
 			System.out.println("--------------------X");
 		}
 
-	}
-
-	private void sendFloorRequest(FloorRequest floorRequest) {
-		synchronized (floorRequestData) {
-    		while(floorRequestData.getFloorRequest() != null) {
-    			//wait until request data is cleared
-    			try {
-//    				System.out.println("Awaiting FloorRequest to be Completed....");
-    				floorRequestData.wait();
-    			} catch (InterruptedException e) {
-    				System.err.println(e);
-    			}
-    		}
-    		floorRequestData.setFloorRequest(floorRequest);
-    		System.out.println("Floor up/down LAMP ON.");
-    		floorRequestData.notifyAll();
-		}//synchronized
-		
-	}
-
-	public void setElevatorResponse(ResponseData elevatorResponse) {
-		System.out.println("Floor Received ElevatorResponse: " + elevatorResponse.getResponse());
-		System.out.println("Floor up/down LAMP OFF");
-		
 	}
 
 }
