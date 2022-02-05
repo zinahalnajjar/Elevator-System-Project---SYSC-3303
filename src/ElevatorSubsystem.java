@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * 
  * elevator subsystem thread will try to get requests from scheduler while not operating
  * upon receiving requests, moves elevator accordingly
- * @author Vimos, Mack, Zinah
+ * @author Zinah, Mack, Vilmos
  *
  */
 public class ElevatorSubsystem implements Runnable {
@@ -138,7 +138,7 @@ public class ElevatorSubsystem implements Runnable {
         		elevatorRequest.notifyAll();
 			}//synchronized
         	
-        }//while (true)
+        }
 
 	}
 }
