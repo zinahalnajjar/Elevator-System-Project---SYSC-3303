@@ -37,10 +37,10 @@ public class FloorSubsystem implements Runnable  {
 	public static ArrayList<FloorData> getInfo(){ //changed from InformationHandler to FloorData
 		ArrayList<FloorData> floorInfo = new ArrayList<>();	//changed from InformationHandler to FloorData
 		try {
-			File fileReader = new File("/src/InputInformation.txt");
+			File fileReader = new File("./src/InputInformation.txt");
 			Scanner scanner = new Scanner(fileReader);
 			while(scanner.hasNext()) {
-				String[] tokens = scanner.nextLine().split(" ,");
+				String[] tokens = scanner.nextLine().split(",");
 				FloorData fD = new FloorData(tokens);
 				floorInfo.add(fD);
 			}
