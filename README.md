@@ -24,6 +24,8 @@
  Simulation.java
  UML_diagram.png  
  Sequence_diagram.png
+ ElevatorStateMachine.png
+ SchedulerStateMachine.png
  
  Setup:
  Download the zip file from Github or create an 
@@ -33,13 +35,20 @@
  open the main class and allow you to run the program.
  
  Testing: 
- 
- to be added
- 
- Breakdown of responsibilities: 
+ Test cases inside floorTest
+  
+ Breakdown of responsibilities iteration 1:
  Majority of work was done by everyone working on the code at the same time.
  Zinah Al-Najjar: Implementation of all classes, Sequence Diagram.
  Mack Wallace:Implementation of all classes, Testing.
  Vilmos Feher: Implementation of all classes, Sequence Diagram.
  Shawaiz Khan: UML Diagram, Documentation.
  Faris Abo-Mazeed: Worked on test case
+ 
+ Breakdown of responsibilities iteration 2:
+ Majority of work was done by everyone working on the state machines
+ Zinah Al-Najjar: State machine diagrams, code implementation
+ Mack Wallace: State machine diagrams, code implementation
+ Vilmos Feher: State machine diagrams
+ Shawaiz Khan: State machine diagrams, UML Diagram
+ Faris Abo-Mazeed: Code documentation
