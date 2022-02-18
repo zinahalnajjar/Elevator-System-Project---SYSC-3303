@@ -10,21 +10,25 @@ import java.util.ArrayList;
  *
  */
 public class SchedulerSubsystem implements Runnable{
-
-    private boolean floorReceiveFlag; //true if floor is receiving data from scheduler, false if floor is waiting
-    private boolean elevatorRequestFlag; //true if elevator has a request to give to scheduler, false otherwise
-    private boolean elevatorReceiveFlag; //true if elevator is receiving data from scheduler, false if elevator is waiting
-    private ArrayList<FloorRequest> floorRequest; // variable for floor going to scheduler
-    private ArrayList<FloorRequest> elevatorInstructions; // variable for scheduler going to elevator
-    private ArrayList<FloorRequest> elevatorDecision; // variable for Elevator going into floor
-    private ArrayList<FloorRequest> elevatorToFloor; // variable for the floor receiving elevator's decision
     
 	private FloorSubsystem floorSubSys; 
 	private ElevatorSubsystem elevatorSubsystem;
 	private FloorRequestData floorRequestData;
 	private ResponseData elevatorResponse;
 	private ElevatorRequest elevatorRequest;
+	
+	private State currentState;
 
+	/**
+	 * note:
+	 * EVENT (FLOOR_REQUEST_RECEIVED, ELEVATOR_RESPONSE_RECEIVED) 
+	 * causes ACTION (RESPONSE_SENT) results in STATE CHANGE (ELEVATOR MOVING)
+	 *
+	 */
+	enum State{
+		WAITING_FLOOR_REQUEST
+	}
+	
 	/**
 	 * base constructor
 	 * @param floorRequestData, object of FloorRequestData contains request data
@@ -38,9 +42,9 @@ public class SchedulerSubsystem implements Runnable{
 		this.elevatorRequest = elevatorRequest;
 		
 		elevatorResponse = new ResponseData();
-        floorReceiveFlag = false;
-        elevatorRequestFlag = false;
-        elevatorReceiveFlag = false;
+        
+        
+        currentState = State.WAITING_FLOOR_REQUEST;
     }
     
     /**
@@ -115,7 +119,7 @@ public class SchedulerSubsystem implements Runnable{
 	
     @Override
     public void run() {
-        while(true) {
+        while(currentState == State.WAITING_FLOOR_REQUEST) {
         	synchronized (floorRequestData) {
         		while(floorRequestData.getFloorRequest() == null) {
         			//wait until request data arrrives
