@@ -15,9 +15,13 @@ public class ElevatorSubsystem implements Runnable {
 	private int elevatorID;
 	private int currentFloor;
 	private boolean motorOperating;
-	private boolean doorsOpen;
 	private ArrayList<FloorRequest> elevatorData;
 	private ElevatorRequest elevatorRequest;
+	public State currentState;
+	
+	enum State {
+		STILL, MOVING
+	}
 	
 	/**
 	 * Constructor for Elevator Subsystem
@@ -32,8 +36,8 @@ public class ElevatorSubsystem implements Runnable {
 		this.scheduler = scheduler;
 		this.elevatorID = elevatorId;
 		this.motorOperating = false;
-		this.doorsOpen = false;
 		this.currentFloor = 0;//default ground floor
+		currentState = State.STILL;
 	}
 	/**
 	 * Turns on the motor
@@ -56,6 +60,11 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param destinationFloor, floor to move elevator to
 	 */
 	public void moveTo(int destinationFloor) {
+		/* if motor is running, Doors must be closed */
+		currentState = State.MOVING; // ensure the state Doors Closed is active
+		if(currentState == State.MOVING) {
+			System.out.println("Doors are now closed. Elevator MOVING. ");
+		}
 		//Check if motor is running
 		while (motorOperating) {
 			//wait until motor stops
@@ -70,6 +79,7 @@ public class ElevatorSubsystem implements Runnable {
 		//If Elevator at destination
 		if(currentFloor == destinationFloor) {
 			System.out.println("Elevator already at: " + destinationFloor);
+			
 		}
 		else{
 			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
@@ -81,17 +91,11 @@ public class ElevatorSubsystem implements Runnable {
 			currentFloor = destinationFloor;
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
+		currentState = State.STILL;
 		//Opens door
-		openDoor(destinationFloor);
+		//openDoor(destinationFloor);
 		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
-	}
-
-	/**
-	 * Opens the elevators doors
-	 * @param floor, floor where the doors are to open 
-	 */
-	private void openDoor(int floor) {
-		System.out.println("Door opens at: " + floor);
+		System.out.println("Elevator Door opened at: " + destinationFloor);
 	}
 
 

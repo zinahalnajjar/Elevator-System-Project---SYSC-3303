@@ -115,6 +115,7 @@ public class FloorSubsystem implements Runnable  {
 //				System.out.println("Waiting for Passenger at Floor...");
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
+				
 			}
 			System.out.println("--------------------X");
 		}
