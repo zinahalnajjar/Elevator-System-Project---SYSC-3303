@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 
 /**
- * elevator subsystem receives data from the scheduler 
- * performs instructions from data
- * @author vilmos
+ * ElevatorSubsystem.java
+ * 
+ * elevator subsystem thread will try to get requests from scheduler while not operating
+ * upon receiving requests, moves elevator accordingly
+ * @author Zinah, Mack, Vilmos
  *
  */
 public class ElevatorSubsystem implements Runnable {
@@ -13,13 +15,19 @@ public class ElevatorSubsystem implements Runnable {
 	private int elevatorID;
 	private int currentFloor;
 	private boolean motorOperating;
-	private boolean doorsOpen;
 	private ArrayList<FloorRequest> elevatorData;
 	private ElevatorRequest elevatorRequest;
+	public State currentState;
+	
+	enum State {
+		DOORSOPEN, DOORSCLOSED
+	}
 	
 	/**
-	 * Constructor
-	 * @param elevatorRequest2 
+	 * Constructor for Elevator Subsystem
+	 * @param scheduler, scheduler thread
+	 * @param elevatorId, the ID of the elevator
+	 * @param elevatorRequest, the floor where the request was made
 	 */
 	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId, ElevatorRequest elevatorRequest) {
     	//Shared with SchedulerSubsystem
@@ -28,20 +36,9 @@ public class ElevatorSubsystem implements Runnable {
 		this.scheduler = scheduler;
 		this.elevatorID = elevatorId;
 		this.motorOperating = false;
-		this.doorsOpen = false;
-		this.currentFloor = 0;//Ground  
+		this.currentFloor = 0;//default ground floor
+		currentState = State.DOORSOPEN;
 	}
-
-	/**
-	 * Opens the doors
-	 */
-	public void openDoors() {doorsOpen = true;}
-	
-	/**
-	 * Closes the doors
-	 */
-	public void closeDoors() {doorsOpen = false;}
-	
 	/**
 	 * Turns on the motor
 	 */
@@ -49,17 +46,81 @@ public class ElevatorSubsystem implements Runnable {
 		motorOperating = true;
 	}
 
+	/**
+	 * Turns motors off 
+	 */
 	public synchronized void motorOff() { 
 		motorOperating = false;
 		notifyAll();
 	}
 	
+
+	/**
+	 * moves elevator to desired floor
+	 * @param destinationFloor, floor to move elevator to
+	 */
+	public void moveTo(int destinationFloor) {
+		/* if motor is running, Doors must be closed */
+		currentState = State.DOORSCLOSED; // ensure the state Doors Closed is active
+		if(currentState == State.DOORSCLOSED) {
+			System.out.println("Doors are now closed");
+		}
+		//Check if motor is running
+		while (motorOperating) {
+			//wait until motor stops
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				System.err.println(e);
+			}
+		}
+		
+		//Checks where the Elevator is
+		//If Elevator at destination
+		if(currentFloor == destinationFloor) {
+			System.out.println("Elevator already at: " + destinationFloor);
+			currentState = State.DOORSOPEN;
+		}
+		else{
+			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+			motorsOn();
+			//Move number of floors
+			moveElevator(Math.abs(currentFloor - destinationFloor));
+			motorOff();
+			//For each move currentFloor gets changed here
+			currentFloor = destinationFloor;
+			System.out.println("Elevator reached: " + destinationFloor);
+			currentState = State.DOORSOPEN;
+		}
+		//Opens door
+		if(currentState == State.DOORSOPEN) { // checking if DOORSOPEN state is the current state
+			System.out.println("Door opens at: " + destinationFloor);
+		}
+		//openDoor(destinationFloor);
+		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
+	}
+
+
+	/**
+	 * Simulates elevator moving floors
+	 * @param numberOfFloors, floors that elevator will move
+	 */
+	private void moveElevator(int numberOfFloors) {
+		//delay
+		try {
+			for (int i = 0; i < numberOfFloors; i++) {
+				Thread.sleep(500);
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
 	@Override
 	public void run() {
         while(true) {
         	synchronized (elevatorRequest) {
         		while(elevatorRequest.getFloor() == null) {
-        			//wait until request data arrrives
+        			//wait until request data arrives
         			try {
         				System.out.println("Elevator Awaiting....");
         				elevatorRequest.wait();
@@ -72,83 +133,6 @@ public class ElevatorSubsystem implements Runnable {
         		elevatorRequest.notifyAll();
 			}//synchronized
         	
-        }//while (true)
-
+        }
 	}
-	//old 
-//	public void run() {
-//		// check for requests from scheduler, then handle requests
-//		while(true) {
-//			
-//				elevatorData = scheduler.getInfoForElevator();
-//				System.out.println("Data available");
-//				System.out.println("----------------"); 
-//				System.out.println("Current Floor: " + elevatorData.get(0).getCurrentFloor() + "/n");
-//				System.out.println("Destination Floor: " + elevatorData.get(0).getDestinationFloor() + "/n");
-//				System.out.println("Current time: " + elevatorData.get(0).getLocalTime() + "/n");
-//				scheduler.putElevatorResponse(elevatorData);
-//			
-//			try {
-//				Thread.sleep(1000);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			
-//		}
-//		
-//	}
-
-	//added
-	public void moveTo(int destinationFloor) {
-		//Check if motor is running
-		while (motorOperating) {
-			//wait until motor stops
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				System.err.println(e);
-			}
-		}
-		
-		//	Checks where the Elevator is.
-//		If Elevator at Dest
-		if(currentFloor == destinationFloor) {
-			System.out.println("Elevator already at: " + destinationFloor);
-		}
-		else{
-			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
-			motorsOn();
-			//Move number of floors
-			moveElevator(Math.abs(currentFloor - destinationFloor));
-			motorOff();
-			//For each move currentFloor gets changed here.
-			currentFloor = destinationFloor;
-			System.out.println("Elevator reached: " + destinationFloor);
-		}
-		//		Opens door.
-		openDoor(destinationFloor);
-		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
-	}
-
-	private void openDoor(int floor) {
-		System.out.println("Door opens at: " + floor);
-	}
-
-	//added
-	//simulate elevator move with required speed
-	private void moveElevator(int numberOfFloors) {
-		//delay
-		try {
-			for (int i = 0; i < numberOfFloors; i++) {
-				Thread.sleep(500);
-			}
-		} catch (InterruptedException e) {
-		}
-	}
-
-	private void openDoor() {
-		System.out.println("Door opened");
-		
-	}
-
 }
