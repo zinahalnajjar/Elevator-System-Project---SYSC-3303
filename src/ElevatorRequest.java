@@ -6,9 +6,9 @@
  *
  */
 public class ElevatorRequest {
-	// Keep it as Integer so that it can be set to null when we call 'clear()'.
+	/** Keep it as Integer so that it can be set to null when we call 'clear()'.
 	private Integer floor;
-
+	/
 	/**
 	 * base constructor
 	 */
