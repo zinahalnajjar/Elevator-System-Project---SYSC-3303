@@ -75,9 +75,11 @@ public class FloorSubsystem implements Runnable  {
 	private void sendFloorRequest(FloorRequest floorRequest) {
 		synchronized (floorRequestData) {
     		while(floorRequestData.getFloorRequest() != null) {
-    			//wait until request data is cleared
+    			/**wait until request data is cleared
+			*/
     			try {
-    				//System.out.println("Awaiting FloorRequest to be Completed....");
+    				/**System.out.println("Awaiting FloorRequest to be Completed....");
+				*/
     				floorRequestData.wait();
     			} catch (InterruptedException e) {
     				System.err.println(e);
@@ -86,7 +88,8 @@ public class FloorSubsystem implements Runnable  {
     		floorRequestData.setFloorRequest(floorRequest);
     		System.out.println("Floor up/down LAMP ON.");
     		floorRequestData.notifyAll();
-		}//synchronized
+		}/**synchronized
+		*/
 		
 	}
 
@@ -104,15 +107,19 @@ public class FloorSubsystem implements Runnable  {
 	public void run() {
 		ArrayList<FloorRequest> lines = getInfo();
 		System.out.println("Got the Information from the Input File!");
-		//Send ONE request AT A TIME.
+		/**Send ONE request AT A TIME.
+		*/
 		for (FloorRequest floorRequest : lines) {
 			System.out.println("--------------------");
 			System.out.println("Sending Request to Scheduler...");
-//			sc.putRequestFromFloor(floorRequest);
+		/**	sc.putRequestFromFloor(floorRequest);
+		*/
 			sendFloorRequest(floorRequest);
-			//SIMULATE DELAY between elevator requests.
+			/**SIMULATE DELAY between elevator requests.
+			*/
 			try {
-//				System.out.println("Waiting for Passenger at Floor...");
+		/**	System.out.println("Waiting for Passenger at Floor...");
+		*/
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
 				
