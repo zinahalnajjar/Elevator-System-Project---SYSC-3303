@@ -35,10 +35,12 @@ public class SchedulerSubsystem implements Runnable{
 	 * @param elevatorRequest, the elevators response
 	 */
     public SchedulerSubsystem(FloorRequestData floorRequestData, ElevatorRequest elevatorRequest) {
-    	//Shared with FloorSubsystem
+    	/**Shared with FloorSubsystem
+	    */
     	this.floorRequestData = floorRequestData;
     	
-    	//Shared with ElevatorSubsystem
+    	/**Shared with ElevatorSubsystem
+	*/
 		this.elevatorRequest = elevatorRequest;
 		
 		elevatorResponse = new ResponseData();
@@ -55,7 +57,8 @@ public class SchedulerSubsystem implements Runnable{
     	System.out.println("Processing FloorRequest....");
     	elevatorSubsystem.moveTo(floorRequestData.getFloorRequest().getOriginFloor());
     	elevatorSubsystem.moveTo(floorRequestData.getFloorRequest().getDestinationFloor());
-    	//pending lamp indication.
+    	/**pending lamp indication.
+	*/
     }
 
     /**
@@ -83,7 +86,8 @@ public class SchedulerSubsystem implements Runnable{
 	
     	synchronized (elevatorResponse) {
     		while(elevatorResponse.getResponse() != null) {
-    			//wait until request data is cleared
+    			/**wait until request data is cleared
+			*/
     			try {
     				System.out.println("Awaiting ElevatorResponse to be CLEARED....");
     				elevatorResponse.wait();
@@ -94,7 +98,8 @@ public class SchedulerSubsystem implements Runnable{
     		elevatorResponse.setResponse(response);
     		processResponseData();
     		elevatorResponse.notifyAll();
-		}//synchronized
+		} /**synchronized
+		*/
 		
 	}
 
@@ -104,7 +109,8 @@ public class SchedulerSubsystem implements Runnable{
 	private void processResponseData() {
 		System.out.println("Scheduler Received ElevatorResponse: " + this.elevatorResponse.getResponse());
 		System.out.println("Scheduler Sending ElevatorResponse to Floor.");
-		//Pass the response to Floor.
+		/**Pass the response to Floor.
+		*/
 		floorSubSys.setElevatorResponse(this.elevatorResponse);
 		elevatorResponse.clear();
 	}
@@ -122,20 +128,25 @@ public class SchedulerSubsystem implements Runnable{
         while(currentState == State.WAITING_FLOOR_REQUEST) {
         	synchronized (floorRequestData) {
         		while(floorRequestData.getFloorRequest() == null) {
-        			//wait until request data arrrives
+        			/**wait until request data arrrives
+				*/
         			try {
         				System.out.println("Awaiting FloorRequest....");
         				floorRequestData.wait();
         			} catch (InterruptedException e) {
         				System.err.println(e);
         			}
-        		}//while
+        		}/**while
+			*/
         		processFloorRequest();
-            	//clear floorRequest
+            	/**clear floorRequest
+		*/
             	floorRequestData.clearFloorRequest();
         		floorRequestData.notifyAll();
-			}//synchronized
+			}/**synchronized
+			*/
         	
-        }//while (true)
+        }/**while (true)
+	*/
     }
 }
