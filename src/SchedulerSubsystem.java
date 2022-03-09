@@ -1,4 +1,9 @@
 import java.util.ArrayList;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  * works as a channel to communicate data between the floors and the elevator
@@ -15,7 +20,12 @@ public class SchedulerSubsystem implements Runnable{
 	private ElevatorSubsystem elevatorSubsystem;
 	private FloorRequestData floorRequestData;
 	private ResponseData elevatorResponse;
-	private ElevatorRequest elevatorRequest;
+	//private ElevatorRequest elevatorRequest;
+	private DatagramSocket receiveSocket;
+    //private Queue<DatagramPacket> queue;
+    private InetAddress local;
+    private DatagramPacket receivedPacket, receivedResponsePacket, ackPacket;
+	
 	
 	private State currentState;
 
