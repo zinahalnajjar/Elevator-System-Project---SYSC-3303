@@ -43,7 +43,19 @@ public class FloorRequest {
 		return goingUp;
 	}
 	
-	
+	public String  toString() {
+		String printObj = " ";
+		LocalTime time = this.time;
+		int originFloor =this.originFloor;
+	    int destinationFloor = this.destinationFloor; 
+	    boolean goingUp = this.goingUp;
+	    boolean lampOn = this.lampOn;
+	    printObj = time.toString()+ Integer.toString(originFloor)+ Integer.toString(destinationFloor) + String.valueOf(goingUp)+ String.valueOf(lampOn); 
+		return printObj;
+		
+		
+		
+	}
 	
 	
 }

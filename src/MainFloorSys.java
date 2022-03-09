@@ -76,7 +76,11 @@ public class MainFloorSys {
 		byte[] inBytes = new byte[1024];
 		DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
 		System.out.println("Awaiting reply from Scheduler...");
+<<<<<<< Updated upstream
 		schedulerSocket.receive(fromHostPacket);
+=======
+		schedulerSocket.receive(fromHostPacket);// invoke the recieve method 
+>>>>>>> Stashed changes
 
 		// Get data from the received packet.
 		byte[] receivedBytes = fromHostPacket.getData();
@@ -169,10 +173,14 @@ public class MainFloorSys {
 			System.out.println("----BEGIN Request: " + i);
 			// FORMAT:
 			// floor request elevator <ELEVATOR ID> <FLOOR NUMBER> END
-			sendRequest("floor request elevator 1 3 END");
-			System.out.println("----END Request: " + i);
-			System.out.println("=============================");
-			delay();
+			ArrayList<FloorRequest> lines = getInfo();
+			for (FloorRequest request : lines) {
+				sendRequest(request.toString());
+				System.out.println("----END Request: " + i);
+				System.out.println("=============================");
+				delay();
+			}
+			
 		}
 		// send INVALID REQUEST
 		System.out.println("----BEGIN INVALID REQUEST: ");
@@ -181,5 +189,42 @@ public class MainFloorSys {
 		System.out.println("----END INVALID REQUEST: ");
 
 	}
+<<<<<<< Updated upstream
+=======
+	
+	/**
+	 * takes a text file and converts it into requests for the floor 
+	 * @return floorInfo, contains the requests as an ArrayList
+	 */
+	public static ArrayList<FloorRequest> getInfo(){ 
+		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	
+		try {
+			File fileReader = new File("./src/InputInformation.txt");
+			Scanner scanner = new Scanner(fileReader);
+			while(scanner.hasNext()) {
+				String line = null;
+				try {
+					line = scanner.nextLine();
+					String[] tokens = line.split(",");
+					Integer originFloor = Integer.valueOf(tokens[1]);
+					LocalTime time = LocalTime.parse(tokens[0]);
+					Integer destinationFloor = Integer.valueOf(tokens[3]);
+					Boolean goingUp = Boolean.valueOf(tokens[2]);
+					FloorRequest fD = new FloorRequest(time, originFloor, destinationFloor, goingUp);
+					floorInfo.add(fD);
+				} catch(Exception e) {
+					System.out.println("Error: INVALID File format. Ignoring line: " + line);
+				}
+				
+			}
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("error");
+		} 
+		
+		return floorInfo;
+		
+	}
+>>>>>>> Stashed changes
 
 }
