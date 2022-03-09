@@ -83,8 +83,7 @@ public class MainSchedulerSys {
 			//------OLD CODE
 	
 			// send request to server 
-			DatagramPacket toServerPacket = new DatagramPacket(receivedBytes, receivedBytes.length, serverIp,
-					ELEVATOR_PORT);
+			DatagramPacket toServerPacket = new DatagramPacket(receivedBytes, receivedBytes.length, serverIp,ELEVATOR_PORT);
 			hostSocketForClient.send(toServerPacket);
 			System.out.println("Forwarded to server.");
 			delay();
