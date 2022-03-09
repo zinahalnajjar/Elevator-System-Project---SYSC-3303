@@ -1,9 +1,4 @@
 import java.util.ArrayList;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
 /**
  * works as a channel to communicate data between the floors and the elevator
@@ -20,12 +15,7 @@ public class SchedulerSubsystem implements Runnable{
 	private ElevatorSubsystem elevatorSubsystem;
 	private FloorRequestData floorRequestData;
 	private ResponseData elevatorResponse;
-	//private ElevatorRequest elevatorRequest;
-	private DatagramSocket receiveSocket;
-    //private Queue<DatagramPacket> queue;
-    private InetAddress local;
-    private DatagramPacket receivedPacket, receivedResponsePacket, ackPacket;
-	
+	private ElevatorRequest elevatorRequest;
 	
 	private State currentState;
 
@@ -44,20 +34,17 @@ public class SchedulerSubsystem implements Runnable{
 	 * @param floorRequestData, object of FloorRequestData contains request data
 	 * @param elevatorRequest, the elevators response
 	 */
-    public SchedulerSubsystem(int portNumb) {
-    	if(portNumb == 23) {
-    		currentState = State.WAITING_FLOOR_REQUEST;
-    	} else if(portNumb == 22) {
-    		// some other state
-    	}
-    	try {
-			receiveSocket = new DatagramSocket(portNumb); // new Datagram Socket
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(1);
-		}
+    public SchedulerSubsystem(FloorRequestData floorRequestData, ElevatorRequest elevatorRequest) {
+    	//Shared with FloorSubsystem
+    	this.floorRequestData = floorRequestData;
+    	
+    	//Shared with ElevatorSubsystem
+		this.elevatorRequest = elevatorRequest;
+		
+		elevatorResponse = new ResponseData();
         
+        
+        currentState = State.WAITING_FLOOR_REQUEST;
     }
     
     /**
@@ -68,8 +55,7 @@ public class SchedulerSubsystem implements Runnable{
     	System.out.println("Processing FloorRequest....");
     	elevatorSubsystem.moveTo(floorRequestData.getFloorRequest().getOriginFloor());
     	elevatorSubsystem.moveTo(floorRequestData.getFloorRequest().getDestinationFloor());
-    	/**pending lamp indication.
-	*/
+    	//pending lamp indication.
     }
 
     /**
@@ -97,8 +83,7 @@ public class SchedulerSubsystem implements Runnable{
 	
     	synchronized (elevatorResponse) {
     		while(elevatorResponse.getResponse() != null) {
-    			/**wait until request data is cleared
-			*/
+    			//wait until request data is cleared
     			try {
     				System.out.println("Awaiting ElevatorResponse to be CLEARED....");
     				elevatorResponse.wait();
@@ -109,8 +94,7 @@ public class SchedulerSubsystem implements Runnable{
     		elevatorResponse.setResponse(response);
     		processResponseData();
     		elevatorResponse.notifyAll();
-		} /**synchronized
-		*/
+		}//synchronized
 		
 	}
 
@@ -120,8 +104,7 @@ public class SchedulerSubsystem implements Runnable{
 	private void processResponseData() {
 		System.out.println("Scheduler Received ElevatorResponse: " + this.elevatorResponse.getResponse());
 		System.out.println("Scheduler Sending ElevatorResponse to Floor.");
-		/**Pass the response to Floor.
-		*/
+		//Pass the response to Floor.
 		floorSubSys.setElevatorResponse(this.elevatorResponse);
 		elevatorResponse.clear();
 	}
@@ -139,25 +122,20 @@ public class SchedulerSubsystem implements Runnable{
         while(currentState == State.WAITING_FLOOR_REQUEST) {
         	synchronized (floorRequestData) {
         		while(floorRequestData.getFloorRequest() == null) {
-        			/**wait until request data arrrives
-				*/
+        			//wait until request data arrrives
         			try {
         				System.out.println("Awaiting FloorRequest....");
         				floorRequestData.wait();
         			} catch (InterruptedException e) {
         				System.err.println(e);
         			}
-        		}/**while
-			*/
+        		}//while
         		processFloorRequest();
-            	/**clear floorRequest
-		*/
+            	//clear floorRequest
             	floorRequestData.clearFloorRequest();
         		floorRequestData.notifyAll();
-			}/**synchronized
-			*/
+			}//synchronized
         	
-        }/**while (true)
-	*/
+        }//while (true)
     }
 }

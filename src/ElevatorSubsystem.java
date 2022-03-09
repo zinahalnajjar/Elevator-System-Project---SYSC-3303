@@ -30,15 +30,13 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param elevatorRequest, the floor where the request was made
 	 */
 	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId, ElevatorRequest elevatorRequest) {
-    	/** Shared with SchedulerSubsystem
-	*/
+    	//Shared with SchedulerSubsystem
 		this.elevatorRequest = elevatorRequest;
 		
 		this.scheduler = scheduler;
 		this.elevatorID = elevatorId;
 		this.motorOperating = false;
-		this.currentFloor = 0; /**default ground floor
-		*/
+		this.currentFloor = 0;//default ground floor
 		currentState = State.STILL;
 	}
 	/**
@@ -62,18 +60,14 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param destinationFloor, floor to move elevator to
 	 */
 	public void moveTo(int destinationFloor) {
-		/** if motor is running, Doors must be closed 
-		*/
-		currentState = State.MOVING; /** ensure the state Doors Closed is active
-		*/
+		/* if motor is running, Doors must be closed */
+		currentState = State.MOVING; // ensure the state Doors Closed is active
 		if(currentState == State.MOVING) {
 			System.out.println("Doors are now closed. Elevator MOVING. ");
 		}
-		/**Check if motor is running
-		*/
+		//Check if motor is running
 		while (motorOperating) {
-			/**wait until motor stops
-			*/
+			//wait until motor stops
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -81,10 +75,8 @@ public class ElevatorSubsystem implements Runnable {
 			}
 		}
 		
-		/**Checks where the Elevator is
-		*/
-		/**If Elevator at destination
-		*/
+		//Checks where the Elevator is
+		//If Elevator at destination
 		if(currentFloor == destinationFloor) {
 			System.out.println("Elevator already at: " + destinationFloor);
 			
@@ -92,20 +84,16 @@ public class ElevatorSubsystem implements Runnable {
 		else{
 			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
 			motorsOn();
-			/**Move number of floors
-			*/
+			//Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
-			/**For each move currentFloor gets changed here
-			*/
+			//For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
 		currentState = State.STILL;
-		/**Opens door
-		*/
-		/**openDoor(destinationFloor);
-		*/
+		//Opens door
+		//openDoor(destinationFloor);
 		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
 		System.out.println("Elevator Door opened at: " + destinationFloor);
 	}
@@ -116,8 +104,7 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param numberOfFloors, floors that elevator will move
 	 */
 	private void moveElevator(int numberOfFloors) {
-		/**delay
-		*/
+		//delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
 				Thread.sleep(500);
@@ -131,21 +118,18 @@ public class ElevatorSubsystem implements Runnable {
         while(true) {
         	synchronized (elevatorRequest) {
         		while(elevatorRequest.getFloor() == null) {
-        			/**wait until request data arrives
-				*/
+        			//wait until request data arrives
         			try {
         				System.out.println("Elevator Awaiting....");
         				elevatorRequest.wait();
         			} catch (InterruptedException e) {
         				System.err.println(e);
         			}
-        		} /**while
-			*/
+        		}//while
         		moveTo(elevatorRequest.getFloor());
         		elevatorRequest.clear();
         		elevatorRequest.notifyAll();
-			}/**synchronized
-			*/
+			}//synchronized
         	
         }
 	}
