@@ -21,7 +21,7 @@ public class ElevatorButton {
 
 	public void pressButton() {
 		this.elevatorLamp.turnOn();
-		System.out.println("Elevator is currently at " + elevatorsubsystem.getcurrentFloor());
+		//System.out.println("Elevator is currently at " + elevatorsubsystem.getcurrentFloor());
 
 	}
 

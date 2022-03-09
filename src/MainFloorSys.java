@@ -67,6 +67,46 @@ public class MainFloorSys {
 	 * 
 	 */
 	private void sendRequest(String request) throws IOException {
+
+		System.out.println("Sending request: " + request);
+
+		byte[] sendBytes = request.getBytes();
+
+		// invoke the send method
+		send(sendBytes);
+
+		System.out.println("Sent request: " + request);
+		delay();
+
+		// receive request from the Scheduler
+		byte[] inBytes = new byte[1024];
+		DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
+		System.out.println("Awaiting reply from Scheduler...");
+
+		schedulerSocket.receive(fromHostPacket);
+
+		schedulerSocket.receive(fromHostPacket);// invoke the recieve method 
+
+
+		// Get data from the received packet.
+		byte[] receivedBytes = fromHostPacket.getData();
+
+		// Print
+		System.out.println("Reply Received from Host.");
+
+		boolean validReply = true; // flag for valid reply
+		// decide the type of reponse from the client to the Scheduler based on the
+		// request
+		// received back
+
+		String response = new String(receivedBytes);
+
+		// if we have a invalid request received
+		if (validReply) {
+			System.out.println("VALID reply received: " + response);
+		} else {
+			System.out.println("INVALID reply received: " + response);
+
 		ArrayList<FloorRequest> lines = getInfo();
 		for(FloorRequest req : lines) {
 			System.out.println("Sending request: " + request);
@@ -104,6 +144,7 @@ public class MainFloorSys {
 				System.out.println("INVALID reply received: " + response);
 			}
 			
+
 		}
 	}
 
@@ -176,10 +217,14 @@ public class MainFloorSys {
 			System.out.println("----BEGIN Request: " + i);
 			// FORMAT:
 			// floor request elevator <ELEVATOR ID> <FLOOR NUMBER> END
-			sendRequest("floor request elevator 1 3 END");
-			System.out.println("----END Request: " + i);
-			System.out.println("=============================");
-			delay();
+			ArrayList<FloorRequest> lines = getInfo();
+			for (FloorRequest request : lines) {
+				sendRequest(request.toString());
+				System.out.println("----END Request: " + i);
+				System.out.println("=============================");
+				delay();
+			}
+			
 		}
 		// send INVALID REQUEST
 		System.out.println("----BEGIN INVALID REQUEST: ");
@@ -188,7 +233,7 @@ public class MainFloorSys {
 		System.out.println("----END INVALID REQUEST: ");
 
 	}
-	
+
 	
 	/**
 	 * takes a text file and converts it into requests for the floor 
@@ -223,7 +268,7 @@ public class MainFloorSys {
 		return floorInfo;
 		
 	}
-	
+
 	/**
      * Convert floor request to an array of bytes
      * @param req Request being sent
@@ -233,5 +278,6 @@ public class MainFloorSys {
         byte[] arr = req.toString().getBytes();
         return arr;
     }
+
 
 }
