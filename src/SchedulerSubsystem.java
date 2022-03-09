@@ -44,19 +44,20 @@ public class SchedulerSubsystem implements Runnable{
 	 * @param floorRequestData, object of FloorRequestData contains request data
 	 * @param elevatorRequest, the elevators response
 	 */
-    public SchedulerSubsystem(FloorRequestData floorRequestData, ElevatorRequest elevatorRequest) {
-    	/**Shared with FloorSubsystem
-	    */
-    	this.floorRequestData = floorRequestData;
-    	
-    	/**Shared with ElevatorSubsystem
-	*/
-		this.elevatorRequest = elevatorRequest;
-		
-		elevatorResponse = new ResponseData();
+    public SchedulerSubsystem(int portNumb) {
+    	if(portNumb == 23) {
+    		currentState = State.WAITING_FLOOR_REQUEST;
+    	} else if(portNumb == 22) {
+    		// some other state
+    	}
+    	try {
+			receiveSocket = new DatagramSocket(portNumb); // new Datagram Socket
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
         
-        
-        currentState = State.WAITING_FLOOR_REQUEST;
     }
     
     /**
