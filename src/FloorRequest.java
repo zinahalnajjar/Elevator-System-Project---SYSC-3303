@@ -45,7 +45,4 @@ public class FloorRequest {
 		return goingUp;
 	}
 	
-	
-	
-	
 }

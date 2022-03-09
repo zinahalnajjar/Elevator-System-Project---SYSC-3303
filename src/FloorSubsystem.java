@@ -3,6 +3,10 @@ import java.io.FileNotFoundException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 /**
  * FloorSubsystem.java
@@ -106,27 +110,59 @@ public class FloorSubsystem implements Runnable  {
 	@Override
 	public void run() {
 		ArrayList<FloorRequest> lines = getInfo();
-		System.out.println("Got the Information from the Input File!");
-		/**Send ONE request AT A TIME.
-		*/
-		for (FloorRequest floorRequest : lines) {
-			System.out.println("--------------------");
-			System.out.println("Sending Request to Scheduler...");
-		/**	sc.putRequestFromFloor(floorRequest);
-		*/
-			sendFloorRequest(floorRequest);
-			/**SIMULATE DELAY between elevator requests.
-			*/
-			try {
-		/**	System.out.println("Waiting for Passenger at Floor...");
-		*/
-				Thread.sleep(1500);
-			} catch (InterruptedException e) {
-				
+		try {
+			DatagramSocket socket = new DatagramSocket(5000); //Creates a new socket. This will be used for sending and receiving packets
+			InetAddress local = InetAddress.getLocalHost(); //Gets the local address of the computer
+			for (FloorRequest request : lines) {
+                byte[] dataArray = byteArray(request);
+                DatagramPacket packetToSend = new DatagramPacket(dataArray, dataArray.length, local, 23); //Creates a packet from the dataArray, to be sent to the intermediate host
+                DatagramPacket replyPacket = new DatagramPacket(new byte[20], 20); //Creates a packet to receive the acknowledgement in.
+                printPacket(packetToSend, true); //Prints the contents of the packet to be sent
+                socket.send(packetToSend); //Sends the packetToSend
+                socket.receive(replyPacket); //Receive the ack from the intermediate host
+                printPacket(replyPacket, false);
 			}
-			System.out.println("--------------------X");
-		}
-
+			socket.close(); //Close the socket
+		 } catch (IOException e) {
+	            e.printStackTrace();
+	     }
 	}
-
+	
+	/**
+     * This method prints the information in recievedPacket, formatted according to if it was sent or recieved
+     *
+     * @param receivedPacket takes in the packet to be printed
+     * @param sending        Boolean value that indicates if the packet is to be sent, or was recieved
+     */
+    public static void printPacket(DatagramPacket receivedPacket, boolean sending) {
+        if (!sending) { //If the packet was recieved
+            System.out.println("Floor: Received the following packet (String): " + new String(receivedPacket.getData())); //Print data as string (Binary values will not appear correctly in the string,
+            System.out.println("Recived the following packet (Bytes): "); //but this is what the assignment said to do)
+            for (int z = 0; z < receivedPacket.getData().length - 1; z++) { //Prints the byte array one index at a time
+                System.out.print(receivedPacket.getData()[z] + ", ");
+            }
+            System.out.println(receivedPacket.getData()[receivedPacket.getData().length - 1]);
+            System.out.println("From:" + receivedPacket.getAddress() + " on port: " + receivedPacket.getPort()); //Prints the address and port the packet was recieved on
+            System.out.println(""); //Adds a newline between packet sending and receiving
+        } else { //The packet is being sent
+            System.out.println("Floor: Sending the following packet (String): " + new String(receivedPacket.getData()));//Print data as string (Binary values will not appear correctly in the string,
+            System.out.println("Sending the following packet (Bytes): "); //but this is what the assignment said to do)
+            for (int z = 0; z < receivedPacket.getData().length - 1; z++) { //Prints the byte array one index at a time
+                System.out.print(receivedPacket.getData()[z] + ", ");
+            }
+            System.out.println(receivedPacket.getData()[receivedPacket.getData().length - 1]);
+            System.out.println("To:" + receivedPacket.getAddress() + " on port: " + receivedPacket.getPort()); //Prints the address and port the packet is being sent to
+            System.out.println(""); //Adds a newline between packet sending and receiving
+        }
+    }
+    
+    /**
+     * Convert floor request to an array of bytes
+     * @param request Request being sent
+     * @return request converted to array of bytes
+     */
+    public static byte[] byteArray(FloorRequest request) {
+        byte[] arr = request.toString().getBytes();
+        return arr;
+    }
 }
