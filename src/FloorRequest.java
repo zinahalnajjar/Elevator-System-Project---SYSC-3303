@@ -1,14 +1,12 @@
 import java.time.LocalTime;
 
-/**Name Changed from FloorData to  FloorRequest
-*/
+//Name Changed from FloorData to  FloorRequest
 public class FloorRequest {
 	private LocalTime time;
 	private int originFloor;
 	private int destinationFloor; 
 	private boolean goingUp;
-	private boolean lampOn; /** this turns on when the floor button is pressed 
-	*/
+	private boolean lampOn; // this turns on when the floor button is pressed 
 	
 	
 	/**
@@ -44,5 +42,8 @@ public class FloorRequest {
 	public boolean isGoingUp() {
 		return goingUp;
 	}
+	
+	
+	
 	
 }
