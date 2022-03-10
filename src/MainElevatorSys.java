@@ -18,7 +18,13 @@ public class MainElevatorSys {
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
 
-	private int currentFloor = 0;
+	private int currentFloor;
+	private boolean motorOperating;
+	public State currentState;
+
+	enum State {
+		STILL, MOVING
+	}
 
 	/*
 	 * constructor
@@ -97,27 +103,27 @@ public class MainElevatorSys {
 		// Format:
 		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER>
 		String[] tokens = request.split(" ");
-		int elevatorId = Integer.parseInt(tokens[3]);
-		int requestedFloorNum = Integer.parseInt(tokens[4]);
+		int originFloor = Integer.parseInt(tokens[3]);
+		int destFloor = Integer.parseInt(tokens[4]);
 
-		boolean atFloor = (requestedFloorNum == currentFloor);
-		// CHECK if Elevator is at the floorNum
-		if (!atFloor) {
-			// move elevator to requestedFloorNum
-			// pending print motor ON/running/STOP
-			System.out.println("pending move elevator to requestedFloorNum");
-			System.out.println("pending print motor ON/running/STOP");
-			atFloor = true;
-		}
+		//request elevator to ORIGIN floor
+		moveTo(originFloor);
+		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		
+		//request elevator to DEST floor
+		moveTo(destFloor);
+		
+//		boolean atFloor = (requestedFloorNum == currentFloor);
+//		// CHECK if Elevator is at the floorNum
+//		if (!atFloor) {
+//			// move elevator to requestedFloorNum
+//			// pending print motor ON/running/STOP
+//			System.out.println("pending move elevator to requestedFloorNum");
+//			System.out.println("pending print motor ON/running/STOP");
+//			atFloor = true;
+//		}
 
-		String reply;
-		if (atFloor) {
-			reply = "elevator " + elevatorId + " at " + requestedFloorNum;
-		} else {
-			reply = "error";
-		}
-
-		byte[] replyBytes = reply.getBytes();
+		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
 	}
 
@@ -201,6 +207,83 @@ public class MainElevatorSys {
 		String text = new String(receivedBytes, offset, length);
 		return text;
 	}
+
+	/**
+	 * moves elevator to desired floor
+	 * 
+	 * @param destinationFloor, floor to move elevator to
+	 * @return
+	 */
+	public boolean moveTo(int destinationFloor) {
+		
+		// Check if motor is running
+//		while (motorOperating) {
+//			// wait until motor stops
+//			try {
+//				wait();
+//			} catch (InterruptedException e) {
+//				System.err.println(e);
+//			}
+//		}
+
+		// Checks where the Elevator is
+		// If Elevator at destination
+		if (currentFloor == destinationFloor) {
+			System.out.println("Elevator already at: " + destinationFloor);
+
+		} else {
+			/* if motor is running, Doors must be closed */
+			currentState = State.MOVING; // ensure the state Doors Closed is active
+			if (currentState == State.MOVING) {
+				System.out.println("Doors are now closed. Elevator MOVING. ");
+			}
+			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+			motorsOn();
+			// Move number of floors
+			moveElevator(Math.abs(currentFloor - destinationFloor));
+			motorOff();
+			// For each move currentFloor gets changed here
+			currentFloor = destinationFloor;
+			System.out.println("Elevator reached: " + destinationFloor);
+		}
+		currentState = State.STILL;
+		// Opens door
+		// openDoor(destinationFloor);
+		System.out.println("Elevator reached: " + destinationFloor);
+		System.out.println("Elevator Door opened at: " + destinationFloor);
+		return true;
+	}
+
+	/**
+	 * Turns on the motor
+	 */
+	public synchronized void motorsOn() {
+		motorOperating = true;
+	}
+
+	/**
+	 * Turns motors off
+	 */
+	public synchronized void motorOff() {
+		motorOperating = false;
+		notifyAll();
+	}
+
+	/**
+	 * Simulates elevator moving floors
+	 * 
+	 * @param numberOfFloors, floors that elevator will move
+	 */
+	private void moveElevator(int numberOfFloors) {
+		// delay
+		try {
+			for (int i = 0; i < numberOfFloors; i++) {
+				Thread.sleep(500);
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
 	/*
 	 * main method
 	 */
