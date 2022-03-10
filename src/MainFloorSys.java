@@ -12,7 +12,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class MainFloorSys {
@@ -67,7 +66,6 @@ public class MainFloorSys {
 	 * 
 	 */
 	private void sendRequest(String request) throws IOException {
-
 		System.out.println("Sending request: " + request);
 
 		byte[] sendBytes = request.getBytes();
@@ -82,11 +80,7 @@ public class MainFloorSys {
 		byte[] inBytes = new byte[1024];
 		DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
 		System.out.println("Awaiting reply from Scheduler...");
-
 		schedulerSocket.receive(fromHostPacket);
-
-		schedulerSocket.receive(fromHostPacket);// invoke the recieve method 
-
 
 		// Get data from the received packet.
 		byte[] receivedBytes = fromHostPacket.getData();
@@ -106,45 +100,6 @@ public class MainFloorSys {
 			System.out.println("VALID reply received: " + response);
 		} else {
 			System.out.println("INVALID reply received: " + response);
-
-		ArrayList<FloorRequest> lines = getInfo();
-		for(FloorRequest req : lines) {
-			System.out.println("Sending request: " + request);
-			byte[] dataArray = generateByteArray(req);
-			//byte[] sendBytes = request.getBytes();
-			
-			send(dataArray); // invoke the send method
-			
-			System.out.println("Sent request: " + request);
-			delay();
-			
-			// receive request from the Scheduler
-			byte[] inBytes = new byte[1024];
-			DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
-			System.out.println("Awaiting reply from Scheduler...");
-			schedulerSocket.receive(fromHostPacket);
-			
-			// Get data from the received packet.
-			byte[] receivedBytes = fromHostPacket.getData();
-
-			// Print
-			System.out.println("Reply Received from Host.");
-
-			boolean validReply = true; // flag for valid reply
-			// decide the type of reponse from the client to the Scheduler based on the
-			// request
-			// received back
-
-			String response = new String(receivedBytes);
-
-			// if we have a invalid request received
-			if (validReply) {
-				System.out.println("VALID reply received: " + response);
-			} else {
-				System.out.println("INVALID reply received: " + response);
-			}
-			
-
 		}
 	}
 
@@ -160,8 +115,9 @@ public class MainFloorSys {
 	}
 
 	/*
-	 *sending requests to Scheduler
+	 * /*sending requests to Scheduler
 	 */
+
 	public void send(byte outBytes[]) throws UnknownHostException {
 
 		try {
@@ -213,18 +169,25 @@ public class MainFloorSys {
 	}
 
 	private void floorRequests() throws IOException {
-		for (int i = 1; i <= 1; i++) {
-			System.out.println("----BEGIN Request: " + i);
+		int i = 1;
+		ArrayList<FloorRequest> lines = getInfo();
+		for (FloorRequest floorRequest : lines) {
+//		for (int i = 1; i <= 1; i++) {
+			System.out.println("----*** new BEGIN Request: " + i++);
 			// FORMAT:
-			// floor request elevator <ELEVATOR ID> <FLOOR NUMBER> END
-			ArrayList<FloorRequest> lines = getInfo();
-			for (FloorRequest request : lines) {
-				sendRequest(request.toString());
-				System.out.println("----END Request: " + i);
-				System.out.println("=============================");
-				delay();
-			}
-			
+			// floor request elevator <ORIGIN FLOOR NUMBER> <DESTINATION FLOOR NUMBER> END
+//			sendRequest("floor request elevator 1 3 END");
+
+			// Convert file format into 'RPC format'
+
+			String request = "floor request elevator " + floorRequest.getOriginFloor() + " "
+					+ floorRequest.getDestinationFloor() + " END";
+			sendRequest(request);
+
+			System.out.println("----END Request: " + i);
+			System.out.println("=============================");
+			delay();
+			break;// TEMP
 		}
 		// send INVALID REQUEST
 		System.out.println("----BEGIN INVALID REQUEST: ");
@@ -234,20 +197,21 @@ public class MainFloorSys {
 
 	}
 
-	
 	/**
-	 * takes a text file and converts it into requests for the floor 
+	 * takes a text file and converts it into requests for the floor
+	 * 
 	 * @return floorInfo, contains the requests as an ArrayList
 	 */
-	public static ArrayList<FloorRequest> getInfo(){ 
-		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	
+	public static ArrayList<FloorRequest> getInfo() {
+		ArrayList<FloorRequest> floorInfo = new ArrayList<>();
 		try {
 			File fileReader = new File("./src/InputInformation.txt");
 			Scanner scanner = new Scanner(fileReader);
-			while(scanner.hasNext()) {
+			while (scanner.hasNext()) {
 				String line = null;
 				try {
 					line = scanner.nextLine();
+					System.out.println("Line: " + line);
 					String[] tokens = line.split(",");
 					Integer originFloor = Integer.valueOf(tokens[1]);
 					LocalTime time = LocalTime.parse(tokens[0]);
@@ -255,29 +219,18 @@ public class MainFloorSys {
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
 					FloorRequest fD = new FloorRequest(time, originFloor, destinationFloor, goingUp);
 					floorInfo.add(fD);
-				} catch(Exception e) {
+				} catch (Exception e) {
 					System.out.println("Error: INVALID File format. Ignoring line: " + line);
 				}
-				
+
 			}
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("error");
-		} 
-		
+		}
+
 		return floorInfo;
-		
+
 	}
-
-	/**
-     * Convert floor request to an array of bytes
-     * @param req Request being sent
-     * @return request converted to array of bytes
-     */
-    public static byte[] generateByteArray(FloorRequest req) {
-        byte[] arr = req.toString().getBytes();
-        return arr;
-    }
-
 
 }
