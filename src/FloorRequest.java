@@ -54,7 +54,6 @@ public class FloorRequest {
 		return printObj;
 		
 		
-		
 	}
 	
 	
