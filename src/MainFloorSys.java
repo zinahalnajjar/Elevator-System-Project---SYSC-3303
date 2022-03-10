@@ -42,8 +42,7 @@ public class MainFloorSys {
 
 	/*
 	 * send read, write, invalid requests
-	 */
-
+	 *
 	public void packetRequests() throws IOException {
 		for (int i = 1; i <= 10; i++) {
 			System.out.println("----BEGIN Request: " + i);
@@ -61,69 +60,28 @@ public class MainFloorSys {
 		send(invalidBytes);
 		System.out.println("----END INVALID REQUEST: ");
 	}
+	*/
 
 	/**
 	 * @throws IOException
 	 * 
 	 */
 	private void sendRequest(String request) throws IOException {
-
-		System.out.println("Sending request: " + request);
-
-		byte[] sendBytes = request.getBytes();
-
-		// invoke the send method
-		send(sendBytes);
-
-		System.out.println("Sent request: " + request);
-		delay();
-
-		// receive request from the Scheduler
-		byte[] inBytes = new byte[1024];
-		DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
-		System.out.println("Awaiting reply from Scheduler...");
-
-		schedulerSocket.receive(fromHostPacket);
-
-		schedulerSocket.receive(fromHostPacket);// invoke the recieve method 
-
-
-		// Get data from the received packet.
-		byte[] receivedBytes = fromHostPacket.getData();
-
-		// Print
-		System.out.println("Reply Received from Host.");
-
-		boolean validReply = true; // flag for valid reply
-		// decide the type of reponse from the client to the Scheduler based on the
-		// request
-		// received back
-
-		String response = new String(receivedBytes);
-
-		// if we have a invalid request received
-		if (validReply) {
-			System.out.println("VALID reply received: " + response);
-		} else {
-			System.out.println("INVALID reply received: " + response);
-
-		ArrayList<FloorRequest> lines = getInfo();
-		for(FloorRequest req : lines) {
 			System.out.println("Sending request: " + request);
-			byte[] dataArray = generateByteArray(req);
+			byte[] dataArray = generateByteArray(request);
 			//byte[] sendBytes = request.getBytes();
-			
+
 			send(dataArray); // invoke the send method
-			
+
 			System.out.println("Sent request: " + request);
 			delay();
-			
+
 			// receive request from the Scheduler
 			byte[] inBytes = new byte[1024];
 			DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
 			System.out.println("Awaiting reply from Scheduler...");
 			schedulerSocket.receive(fromHostPacket);
-			
+
 			// Get data from the received packet.
 			byte[] receivedBytes = fromHostPacket.getData();
 
@@ -131,7 +89,7 @@ public class MainFloorSys {
 			System.out.println("Reply Received from Host.");
 
 			boolean validReply = true; // flag for valid reply
-			// decide the type of reponse from the client to the Scheduler based on the
+			// decide the type of response from the client to the Scheduler based on the
 			// request
 			// received back
 
@@ -143,9 +101,6 @@ public class MainFloorSys {
 			} else {
 				System.out.println("INVALID reply received: " + response);
 			}
-			
-
-		}
 	}
 
 	/*
@@ -274,8 +229,8 @@ public class MainFloorSys {
      * @param req Request being sent
      * @return request converted to array of bytes
      */
-    public static byte[] generateByteArray(FloorRequest req) {
-        byte[] arr = req.toString().getBytes();
+    public static byte[] generateByteArray(String req) {
+        byte[] arr = req.getBytes();
         return arr;
     }
 
