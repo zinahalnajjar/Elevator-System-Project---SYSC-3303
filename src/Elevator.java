@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Elevator implements Runnable {
 
 	private int elevatorID;
+
 	private int currentFloor;
 	private boolean motorOperating;
 	private ArrayList<FloorMovementData> elevatorData;
@@ -74,7 +75,7 @@ public class Elevator implements Runnable {
 		// Check if motor is running
 		while (isMotorOperating()) {
 			if (currentState == State.MOVING) {
-				System.out.println("Elevator is ON THE MOVE...");
+				System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
 			}
 			// wait until motor stops
 			try {
@@ -87,23 +88,23 @@ public class Elevator implements Runnable {
 		// Checks where the Elevator is
 		// If Elevator at destination
 		if (currentFloor == destinationFloor) {
-			System.out.println("Elevator already at: " + destinationFloor);
+			System.out.println("Elevator " + elevatorID + " already at: " + destinationFloor);
 		} else {
-			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+			System.out.println("Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
 			motorsOn();
 			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
-			System.out.println("Elevator reached: " + destinationFloor);
+			System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
 		}
 		// floor request IS SERVICED. CLEAR IT.
 		floorRequest.clear();
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);
-		System.out.println("Elevator Door opened at: " + destinationFloor);
+		System.out.println("Elevator " + elevatorID + " Door opened at: " + destinationFloor);
 	}
 
 	/**
@@ -146,12 +147,17 @@ public class Elevator implements Runnable {
 			} // synchronized
 
 			try {
-				System.out.println("Elevator sleep delay");
+				// TEMP?
+				System.out.println("Elevator " + elevatorID + " sleep delay");
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		} // while
+	}
+
+	public int getElevatorID() {
+		return elevatorID;
 	}
 
 	public boolean isMotorOperating() {

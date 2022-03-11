@@ -86,6 +86,15 @@ public class MainElevatorSys {
 		elevatorThread1.start();
 		System.out.println("--- AFTER elevatorThread1 STARTED.");
 
+//		
+//		FloorRequest floorRequest2 = new FloorRequest();
+//		Elevator elevator2 = new Elevator(2, floorRequest2);
+//		elevatorList.add(elevator2);
+//		
+//		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
+//		elevatorThread2.start();
+//		System.out.println("--- AFTER elevatorThread2 STARTED.");
+//		
 	}
 
 	/*
@@ -152,6 +161,7 @@ public class MainElevatorSys {
 	private void dispatchFloorRequest(int targetFloor) {
 		// find close by elevator
 		Elevator elevator = getCloseByElevator(targetFloor);
+		System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
