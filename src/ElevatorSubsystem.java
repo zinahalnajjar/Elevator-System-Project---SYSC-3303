@@ -16,7 +16,7 @@ public class ElevatorSubsystem implements Runnable {
 	private int currentFloor;
 	private boolean motorOperating;
 	private ArrayList<FloorMovementData> elevatorData;
-	private ElevatorRequest elevatorRequest;
+	private FloorRequest elevatorRequest;
 	public State currentState;
 	
 	enum State {
@@ -29,7 +29,7 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param elevatorId, the ID of the elevator
 	 * @param elevatorRequest, the floor where the request was made
 	 */
-	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId, ElevatorRequest elevatorRequest) {
+	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId, FloorRequest elevatorRequest) {
     	//Shared with SchedulerSubsystem
 		this.elevatorRequest = elevatorRequest;
 		

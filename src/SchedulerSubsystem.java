@@ -15,7 +15,7 @@ public class SchedulerSubsystem implements Runnable{
 	private ElevatorSubsystem elevatorSubsystem;
 	private FloorRequestData floorRequestData;
 	private ResponseData elevatorResponse;
-	private ElevatorRequest elevatorRequest;
+	private FloorRequest elevatorRequest;
 	
 	private State currentState;
 
@@ -34,7 +34,7 @@ public class SchedulerSubsystem implements Runnable{
 	 * @param floorRequestData, object of FloorRequestData contains request data
 	 * @param elevatorRequest, the elevators response
 	 */
-    public SchedulerSubsystem(FloorRequestData floorRequestData, ElevatorRequest elevatorRequest) {
+    public SchedulerSubsystem(FloorRequestData floorRequestData, FloorRequest elevatorRequest) {
     	//Shared with FloorSubsystem
     	this.floorRequestData = floorRequestData;
     	

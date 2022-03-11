@@ -19,7 +19,7 @@ public class Elevator implements Runnable {
 	private ArrayList<FloorMovementData> elevatorData;
 	public State currentState;
 
-	private ElevatorRequest elevatorRequest;
+	private FloorRequest floorRequest;
 
 	enum State {
 		STILL, MOVING
@@ -30,11 +30,11 @@ public class Elevator implements Runnable {
 	 * 
 	 * @param scheduler,       scheduler thread
 	 * @param elevatorId,      the ID of the elevator
-	 * @param elevatorRequest, the floor where the request was made
+	 * @param floorRequest, the floor where the request was made
 	 */
-	public Elevator(int elevatorId, ElevatorRequest elevatorRequest) {
+	public Elevator(int elevatorId, FloorRequest floorRequest) {
 		// Shared
-		this.elevatorRequest = elevatorRequest;
+		this.floorRequest = floorRequest;
 
 		this.elevatorID = elevatorId;
 		this.motorOperating = false;
@@ -46,8 +46,8 @@ public class Elevator implements Runnable {
 		return currentFloor;
 	}
 
-	public ElevatorRequest getElevatorRequest() {
-		return elevatorRequest;
+	public FloorRequest getElevatorRequest() {
+		return floorRequest;
 	}
 
 	/**
@@ -99,6 +99,8 @@ public class Elevator implements Runnable {
 			motorOff();
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
+			//floor request IS SERVICED. CLEAR IT.
+			floorRequest.clear();
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
 		currentState = State.STILL;
@@ -123,20 +125,24 @@ public class Elevator implements Runnable {
 		}
 	}
 
+	
+	//Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1
+	//Controller ELEVAGTOR SYS <--floorRequest 2--> ELV 2
+	//Controller ELEVAGTOR SYS <--floorRequest 3--> ELV 3
 	@Override
 	public void run() {
 		while (true) {
-			synchronized (elevatorRequest) {
+			synchronized (floorRequest) {
 				// CHECK IF any request to a floor
-				if (elevatorRequest.hasRequest()) {
+				if (floorRequest.hasRequest()) {
 					// Move to requested floor.
-					moveTo(elevatorRequest.getFloor());
-					elevatorRequest.notifyAll();
+					moveTo(floorRequest.getFloor());
+					floorRequest.notifyAll();
 				} else {
 					try {
 						// NO REQUEST WAIT
 						System.out.println("ElevatOR " + elevatorID + " WAITING...");
-						elevatorRequest.wait();
+						floorRequest.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

@@ -78,11 +78,11 @@ public class MainElevatorSys {
 
 	private void startElevatorThreads() {
 
-		ElevatorRequest elevatorRequest1 = new ElevatorRequest();
-		Elevator elevator1 = new Elevator(1, elevatorRequest1);
+		FloorRequest floorRequest1 = new FloorRequest();
+		Elevator elevator1 = new Elevator(1, floorRequest1);
 		elevatorList.add(elevator1);
 
-		Thread elevatorThread1 = new Thread(elevator1, "Elevator Process 1");
+		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
 		elevatorThread1.run();
 	}
 
@@ -142,9 +142,31 @@ public class MainElevatorSys {
 		send(replyBytes, hostIP, hostPort);
 	}
 
+	/**
+	 * Dispatch floor request to an close by elevator.
+	 * 
+	 * @param targetFloor
+	 */
 	private void dispatchFloorRequest(int targetFloor) {
+		// find close by elevator
 		Elevator elevator = getCloseByElevator(targetFloor);
-		elevator.moveTo(targetFloor);
+
+		// get 'SHARED' FloorRequest for the elevator.
+		FloorRequest floorRequest = elevator.getElevatorRequest();
+		synchronized (floorRequest) {
+			// CHECK IF ANY REQUEST in queue
+			if (floorRequest.hasRequest()) {
+				try {
+					// There is a request in queue to be completed
+					floorRequest.wait();
+				} catch (InterruptedException e) {
+				}
+			} else {
+				// Elevator is free.
+				floorRequest.setFloor(targetFloor);
+				floorRequest.notifyAll();
+			}
+		} // synchronized
 	}
 
 	/**
@@ -160,11 +182,13 @@ public class MainElevatorSys {
 		int min = -1;
 		Elevator closeByElevator = null;
 		for (Elevator elevator : elevatorList) {
-			ElevatorRequest elevatorRequest = elevator.getElevatorRequest();
-			synchronized (elevatorRequest) {
-				if(elevatorRequest.)
-			}//synchronized
-			
+			// check if elevator is on the move
+			if (elevator.isMotorOperating()) {
+				// elevator is on the move
+				// skip this elevator
+				continue;
+			}
+			// elevator is not moving. check the distance
 			int dist = elevator.getCurrentFloor() - targetFloor;
 			if (dist == -1) {
 				// first check. Just pick the elevator.

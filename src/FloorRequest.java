@@ -5,14 +5,14 @@
  * @author Zinah, Mack, Vilmos
  *
  */
-public class ElevatorRequest {
+public class FloorRequest {
 	// Keep it as Integer so that it can be set to null when we call 'clear()'.
 	private Integer floor;
 
 	/**
 	 * base constructor
 	 */
-	public ElevatorRequest() {
+	public FloorRequest() {
 	}
 
 	/**

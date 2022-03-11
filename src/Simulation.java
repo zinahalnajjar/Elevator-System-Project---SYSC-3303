@@ -8,7 +8,7 @@ public class Simulation {
 		FloorRequestData floorRequestData = new FloorRequestData();
 		
 		//This will be REFACTORED with DataGramPacket info later.
-		ElevatorRequest elevatorRequest = new ElevatorRequest();
+		FloorRequest elevatorRequest = new FloorRequest();
 
 		//SchedulerSubsystem 
 		SchedulerSubsystem schedulerSubSys = new SchedulerSubsystem(floorRequestData, elevatorRequest);
