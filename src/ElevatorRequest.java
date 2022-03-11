@@ -37,4 +37,12 @@ public class ElevatorRequest {
 	public void clear() {
 		this.floor = null;
 	}
+
+	/**
+	 * Returns true, if there is any floor request, otherwise false.
+	 * @return
+	 */
+	public boolean hasRequest() {
+		return (this.floor != null);
+	}
 }

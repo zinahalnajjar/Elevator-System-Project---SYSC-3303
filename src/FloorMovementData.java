@@ -1,7 +1,7 @@
 import java.time.LocalTime;
 
 //Name Changed from FloorData to  FloorRequest
-public class FloorRequest {
+public class FloorMovementData {
 	private LocalTime time;
 	private int originFloor;
 	private int destinationFloor; 
@@ -16,7 +16,7 @@ public class FloorRequest {
 	 * @param destinationFloor
 	 * @param goingUp
 	 */
-	public FloorRequest(LocalTime time, int originFloor, int destinationFloor, boolean goingUp) {
+	public FloorMovementData(LocalTime time, int originFloor, int destinationFloor, boolean goingUp) {
 		this.time = time;
 		this.originFloor = originFloor;
 		this.destinationFloor = destinationFloor;

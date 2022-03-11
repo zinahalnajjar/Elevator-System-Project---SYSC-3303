@@ -3,42 +3,53 @@ import java.util.ArrayList;
 /**
  * ElevatorSubsystem.java
  * 
- * elevator subsystem thread will try to get requests from scheduler while not operating
- * upon receiving requests, moves elevator accordingly
+ * elevator subsystem thread will try to get requests from scheduler while not
+ * operating upon receiving requests, moves elevator accordingly
+ * 
  * @author Zinah, Mack, Vilmos
  *
  */
-public class ElevatorSubsystem implements Runnable {
-	
+public class Elevator implements Runnable {
+
 	private SchedulerSubsystem scheduler;
 
 	private int elevatorID;
 	private int currentFloor;
 	private boolean motorOperating;
 	private ArrayList<FloorMovementData> elevatorData;
-	private ElevatorRequest elevatorRequest;
 	public State currentState;
-	
+
+	private ElevatorRequest elevatorRequest;
+
 	enum State {
 		STILL, MOVING
 	}
-	
+
 	/**
 	 * Constructor for Elevator Subsystem
-	 * @param scheduler, scheduler thread
-	 * @param elevatorId, the ID of the elevator
+	 * 
+	 * @param scheduler,       scheduler thread
+	 * @param elevatorId,      the ID of the elevator
 	 * @param elevatorRequest, the floor where the request was made
 	 */
-	public ElevatorSubsystem(SchedulerSubsystem scheduler, int elevatorId, ElevatorRequest elevatorRequest) {
-    	//Shared with SchedulerSubsystem
+	public Elevator(int elevatorId, ElevatorRequest elevatorRequest) {
+		// Shared
 		this.elevatorRequest = elevatorRequest;
-		
-		this.scheduler = scheduler;
+
 		this.elevatorID = elevatorId;
 		this.motorOperating = false;
-		this.currentFloor = 0;//default ground floor
+		this.currentFloor = 0;// default ground floor
 		currentState = State.STILL;
 	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
+	}
+
+	public ElevatorRequest getElevatorRequest() {
+		return elevatorRequest;
+	}
+
 	/**
 	 * Turns on the motor
 	 */
@@ -47,67 +58,66 @@ public class ElevatorSubsystem implements Runnable {
 	}
 
 	/**
-	 * Turns motors off 
+	 * Turns motors off
 	 */
-	public synchronized void motorOff() { 
+	public synchronized void motorOff() {
 		motorOperating = false;
 		notifyAll();
 	}
-	
 
 	/**
 	 * moves elevator to desired floor
+	 * 
 	 * @param destinationFloor, floor to move elevator to
 	 */
 	public void moveTo(int destinationFloor) {
 		/* if motor is running, Doors must be closed */
 		currentState = State.MOVING; // ensure the state Doors Closed is active
-		if(currentState == State.MOVING) {
+		if (currentState == State.MOVING) {
 			System.out.println("Doors are now closed. Elevator MOVING. ");
 		}
-		//Check if motor is running
-		while (motorOperating) {
-			//wait until motor stops
+		// Check if motor is running
+		while (isMotorOperating()) {
+			// wait until motor stops
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				System.err.println(e);
 			}
 		}
-		
-		//Checks where the Elevator is
-		//If Elevator at destination
-		if(currentFloor == destinationFloor) {
+
+		// Checks where the Elevator is
+		// If Elevator at destination
+		if (currentFloor == destinationFloor) {
 			System.out.println("Elevator already at: " + destinationFloor);
-			
-		}
-		else{
+
+		} else {
 			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
 			motorsOn();
-			//Move number of floors
+			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
-			//For each move currentFloor gets changed here
+			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
 		currentState = State.STILL;
-		//Opens door
-		//openDoor(destinationFloor);
+		// Opens door
+		// openDoor(destinationFloor);
 		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
 		System.out.println("Elevator Door opened at: " + destinationFloor);
 	}
 
-
 	/**
 	 * Simulates elevator moving floors
+	 * 
 	 * @param numberOfFloors, floors that elevator will move
 	 */
 	private void moveElevator(int numberOfFloors) {
-		//delay
+		// delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			}
 		} catch (InterruptedException e) {
 		}
@@ -115,22 +125,27 @@ public class ElevatorSubsystem implements Runnable {
 
 	@Override
 	public void run() {
-        while(true) {
-        	synchronized (elevatorRequest) {
-        		while(elevatorRequest.getFloor() == null) {
-        			//wait until request data arrives
-        			try {
-        				System.out.println("Elevator Awaiting....");
-        				elevatorRequest.wait();
-        			} catch (InterruptedException e) {
-        				System.err.println(e);
-        			}
-        		}//while
-        		moveTo(elevatorRequest.getFloor());
-        		elevatorRequest.clear();
-        		elevatorRequest.notifyAll();
-			}//synchronized
-        	
-        }
+		while (true) {
+			synchronized (elevatorRequest) {
+				// CHECK IF any request to a floor
+				if (elevatorRequest.hasRequest()) {
+					// Move to requested floor.
+					moveTo(elevatorRequest.getFloor());
+					elevatorRequest.notifyAll();
+				} else {
+					try {
+						// NO REQUEST WAIT
+						System.out.println("ElevatOR " + elevatorID + " WAITING...");
+						elevatorRequest.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			} // synchronized
+		}//while
+	}
+
+	public boolean isMotorOperating() {
+		return motorOperating;
 	}
 }

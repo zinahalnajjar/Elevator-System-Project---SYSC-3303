@@ -170,8 +170,8 @@ public class MainFloorSys {
 
 	private void floorRequests() throws IOException {
 		int i = 1;
-		ArrayList<FloorRequest> lines = getInfo();
-		for (FloorRequest floorRequest : lines) {
+		ArrayList<FloorMovementData> lines = getInfo();
+		for (FloorMovementData floorRequest : lines) {
 			System.out.println("----*** new BEGIN Request: " + i++);
 			// FORMAT:
 			// floor request elevator <ORIGIN FLOOR NUMBER> <DESTINATION FLOOR NUMBER> END
@@ -198,8 +198,8 @@ public class MainFloorSys {
 	 * 
 	 * @return floorInfo, contains the requests as an ArrayList
 	 */
-	public static ArrayList<FloorRequest> getInfo() {
-		ArrayList<FloorRequest> floorInfo = new ArrayList<>();
+	public static ArrayList<FloorMovementData> getInfo() {
+		ArrayList<FloorMovementData> floorInfo = new ArrayList<>();
 		try {
 			File fileReader = new File("./src/InputInformation.txt");
 			Scanner scanner = new Scanner(fileReader);
@@ -213,7 +213,7 @@ public class MainFloorSys {
 					LocalTime time = LocalTime.parse(tokens[0]);
 					Integer destinationFloor = Integer.valueOf(tokens[3]);
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
-					FloorRequest fD = new FloorRequest(time, originFloor, destinationFloor, goingUp);
+					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp);
 					floorInfo.add(fD);
 				} catch (Exception e) {
 					System.out.println("Error: INVALID File format. Ignoring line: " + line);

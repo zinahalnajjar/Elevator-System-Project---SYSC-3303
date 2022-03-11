@@ -7,7 +7,7 @@
  */
 public class FloorRequestData {
 
-	private FloorRequest floorRequest;
+	private FloorMovementData floorRequest;
 
 	/**
 	 * base constructor
@@ -20,7 +20,7 @@ public class FloorRequestData {
 	 * setter for floor request
 	 * @param floorRequest, floor request data
 	 */
-	public synchronized void setFloorRequest(FloorRequest floorRequest) {
+	public synchronized void setFloorRequest(FloorMovementData floorRequest) {
 		this.floorRequest = floorRequest;
 	}
 
@@ -28,7 +28,7 @@ public class FloorRequestData {
 	 * getter for floor request
 	 * @return floorRequest, floor request data
 	 */
-	public synchronized FloorRequest getFloorRequest() {
+	public synchronized FloorMovementData getFloorRequest() {
 		return floorRequest;
 	}
 

@@ -2,11 +2,11 @@ public class FloorButton {
 	
 	private int destinationfloor;
 	private boolean isUp;
-	private FloorRequest floorRequest;
+	private FloorMovementData floorRequest;
 	
 	
 	
-	public FloorButton( FloorRequest floorRequest) {
+	public FloorButton( FloorMovementData floorRequest) {
 		this.isUp = false ;
 		this.floorRequest =  floorRequest;
 		this.destinationfloor = floorRequest.getDestinationFloor();

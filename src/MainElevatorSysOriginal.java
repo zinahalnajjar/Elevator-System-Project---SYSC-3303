@@ -7,11 +7,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class MainElevatorSys {
+public class MainElevatorSysOriginal {
 	private static final int SERVER_PORT = 69;
 
 	public static final byte[] validReadReply = new byte[] { 0, 3, 0, 1 };
@@ -24,8 +22,6 @@ public class MainElevatorSys {
 	private boolean motorOperating;
 	public State currentState;
 
-	private List<Elevator> elevatorList = new ArrayList<Elevator>();
-
 	enum State {
 		STILL, MOVING
 	}
@@ -33,7 +29,7 @@ public class MainElevatorSys {
 	/*
 	 * constructor
 	 */
-	public MainElevatorSys() throws SocketException {
+	public MainElevatorSysOriginal() throws SocketException {
 		// Construct a datagram socket and bind it to port SERVER_PORT
 		// on the local host machine. This socket will be used to
 		// receive UDP Datagram packets.
@@ -47,7 +43,6 @@ public class MainElevatorSys {
 	 * method to receive requests from the host
 	 */
 	public void start() {
-		startElevatorThreads();
 
 		try {
 			byte[] inBytes;
@@ -74,16 +69,6 @@ public class MainElevatorSys {
 			serverSocket.close();
 		}
 
-	}
-
-	private void startElevatorThreads() {
-
-		ElevatorRequest elevatorRequest1 = new ElevatorRequest();
-		Elevator elevator1 = new Elevator(1, elevatorRequest1);
-		elevatorList.add(elevator1);
-
-		Thread elevatorThread1 = new Thread(elevator1, "Elevator Process 1");
-		elevatorThread1.run();
 	}
 
 	/*
@@ -121,62 +106,25 @@ public class MainElevatorSys {
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
 
-		// ---OLD VERSION --- BEGIN
-//		//request elevator to ORIGIN floor
-//		moveTo(originFloor);
-//		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
-//		
-//		//request elevator to DEST floor
-//		moveTo(destFloor);
-		// ---OLD VERSION --- END
-
-		// request elevator to ORIGIN floor
-		dispatchFloorRequest(originFloor);
+		//request elevator to ORIGIN floor
+		moveTo(originFloor);
 		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
-
-		// request elevator to DEST floor
-		dispatchFloorRequest(destFloor);
-		System.out.println("Reached DEST floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		
+		//request elevator to DEST floor
+		moveTo(destFloor);
+		
+//		boolean atFloor = (requestedFloorNum == currentFloor);
+//		// CHECK if Elevator is at the floorNum
+//		if (!atFloor) {
+//			// move elevator to requestedFloorNum
+//			// pending print motor ON/running/STOP
+//			System.out.println("pending move elevator to requestedFloorNum");
+//			System.out.println("pending print motor ON/running/STOP");
+//			atFloor = true;
+//		}
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
-	}
-
-	private void dispatchFloorRequest(int targetFloor) {
-		Elevator elevator = getCloseByElevator(targetFloor);
-		elevator.moveTo(targetFloor);
-	}
-
-	/**
-	 * Return the close by elevator based on the distance to the targetFloor from
-	 * each elevator's current floor.
-	 * 
-	 * @param targetFloor
-	 * @return
-	 */
-	private Elevator getCloseByElevator(int targetFloor) {
-		// Find distance from targetFloor for each elevator's current floor
-		//
-		int min = -1;
-		Elevator closeByElevator = null;
-		for (Elevator elevator : elevatorList) {
-			ElevatorRequest elevatorRequest = elevator.getElevatorRequest();
-			synchronized (elevatorRequest) {
-				if(elevatorRequest.)
-			}//synchronized
-			
-			int dist = elevator.getCurrentFloor() - targetFloor;
-			if (dist == -1) {
-				// first check. Just pick the elevator.
-				min = dist;
-				closeByElevator = elevator;
-			} else if (dist < min) {
-				// this elevator is close by than the previous
-				min = dist;
-				closeByElevator = elevator;
-			}
-		}
-		return closeByElevator;
 	}
 
 	/*
@@ -267,7 +215,7 @@ public class MainElevatorSys {
 	 * @return
 	 */
 	public boolean moveTo(int destinationFloor) {
-
+		
 		// Check if motor is running
 //		while (motorOperating) {
 //			// wait until motor stops
@@ -341,9 +289,9 @@ public class MainElevatorSys {
 	 */
 
 	public static void main(String[] args) {
-		MainElevatorSys server;
+		MainElevatorSysOriginal server;
 		try {
-			server = new MainElevatorSys();
+			server = new MainElevatorSysOriginal();
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
