@@ -1,60 +1,48 @@
-import java.time.LocalTime;
-
-//Name Changed from FloorData to  FloorRequest
+/**
+ * ElevatorRequest.java
+ * 
+ * 
+ * @author Zinah, Mack, Vilmos
+ *
+ */
 public class FloorRequest {
-	private LocalTime time;
-	private int originFloor;
-	private int destinationFloor; 
-	private boolean goingUp;
-	private boolean lampOn; // this turns on when the floor button is pressed 
-	
-	
+	// Keep it as Integer so that it can be set to null when we call 'clear()'.
+	private Integer floor;
+
 	/**
-	 * 
-	 * @param time
-	 * @param originFloor
-	 * @param destinationFloor
-	 * @param goingUp
+	 * base constructor
 	 */
-	public FloorRequest(LocalTime time, int originFloor, int destinationFloor, boolean goingUp) {
-		this.time = time;
-		this.originFloor = originFloor;
-		this.destinationFloor = destinationFloor;
-		this.goingUp = goingUp;
-		this.lampOn = false;
+	public FloorRequest() {
 	}
 
-	public int getOriginFloor() {
-		return originFloor;
+	/**
+	 * getter for floor
+	 * @return floor, value of floor
+	 */
+	public Integer getFloor() {
+		return floor;
 	}
-	
-	
-	public int getDestinationFloor() {
-		return destinationFloor;
+
+	/**
+	 * setter for floor
+	 * @param floor, value of floor
+	 */
+	public void setFloor(Integer floor) {
+		this.floor = floor;
 	}
-	
-	
-	public LocalTime getLocalTime() {
-		return time;
+
+	/**
+	 * clears value of floor
+	 */
+	public void clear() {
+		this.floor = null;
 	}
-	
-	
-	public boolean isGoingUp() {
-		return goingUp;
+
+	/**
+	 * Returns true, if there is any floor request, otherwise false.
+	 * @return
+	 */
+	public boolean hasRequest() {
+		return (this.floor != null);
 	}
-	
-	public String  toString() {
-		String printObj = " ";
-		LocalTime time = this.time;
-		int originFloor =this.originFloor;
-	    int destinationFloor = this.destinationFloor; 
-	    boolean goingUp = this.goingUp;
-	    boolean lampOn = this.lampOn;
-	    printObj = time.toString()+ Integer.toString(originFloor)+ Integer.toString(destinationFloor) + String.valueOf(goingUp)+ String.valueOf(lampOn); 
-		return printObj;
-		
-		
-	}
-	
-	
 }

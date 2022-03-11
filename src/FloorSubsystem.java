@@ -19,7 +19,7 @@ import java.util.Scanner;
 public class FloorSubsystem implements Runnable  {
 	
 	private SchedulerSubsystem sc; 
-	private ArrayList<FloorRequest> sentInfo;
+	private ArrayList<FloorMovementData> sentInfo;
 	private FloorRequestData floorRequestData;
 
 	/**
@@ -30,7 +30,7 @@ public class FloorSubsystem implements Runnable  {
 	public FloorSubsystem(SchedulerSubsystem sc, FloorRequestData floorRequestData) {
 		this.sc = sc;
 		this.floorRequestData = floorRequestData;
-		this.sentInfo = new ArrayList<FloorRequest>();
+		this.sentInfo = new ArrayList<FloorMovementData>();
 		
 	}
 	
@@ -38,8 +38,8 @@ public class FloorSubsystem implements Runnable  {
 	 * takes a text file and converts it into requests for the floor 
 	 * @return floorInfo, contains the requests as an ArrayList
 	 */
-	public static ArrayList<FloorRequest> getInfo(){ 
-		ArrayList<FloorRequest> floorInfo = new ArrayList<>();	
+	public static ArrayList<FloorMovementData> getInfo(){ 
+		ArrayList<FloorMovementData> floorInfo = new ArrayList<>();	
 		try {
 			File fileReader = new File("./src/InputInformation.txt");
 			Scanner scanner = new Scanner(fileReader);
@@ -52,7 +52,7 @@ public class FloorSubsystem implements Runnable  {
 					LocalTime time = LocalTime.parse(tokens[0]);
 					Integer destinationFloor = Integer.valueOf(tokens[3]);
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
-					FloorRequest fD = new FloorRequest(time, originFloor, destinationFloor, goingUp);
+					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp);
 					floorInfo.add(fD);
 				} catch(Exception e) {
 					System.out.println("Error: INVALID File format. Ignoring line: " + line);
@@ -72,7 +72,7 @@ public class FloorSubsystem implements Runnable  {
 	 * sends the request to scheduler
 	 * @param floorRequest, floorRequest to be sent to scheduler
 	 */
-	private void sendFloorRequest(FloorRequest floorRequest) {
+	private void sendFloorRequest(FloorMovementData floorRequest) {
 		synchronized (floorRequestData) {
     		while(floorRequestData.getFloorRequest() != null) {
     			//wait until request data is cleared
@@ -102,10 +102,10 @@ public class FloorSubsystem implements Runnable  {
 	
 	@Override
 	public void run() {
-		ArrayList<FloorRequest> lines = getInfo();
+		ArrayList<FloorMovementData> lines = getInfo();
 		System.out.println("Got the Information from the Input File!");
 		//Send ONE request AT A TIME.
-		for (FloorRequest floorRequest : lines) {
+		for (FloorMovementData floorRequest : lines) {
 			System.out.println("--------------------");
 			System.out.println("Sending Request to Scheduler...");
 //			sc.putRequestFromFloor(floorRequest);

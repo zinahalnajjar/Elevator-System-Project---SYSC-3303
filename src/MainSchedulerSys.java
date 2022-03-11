@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 public class MainSchedulerSys {
 
-	// Receive Client request AND reply back.
-	private DatagramSocket hostSocketForClient;
+	// Receive Floor request AND reply back.
+	private DatagramSocket hostSocketForFloor;
 
 	// IP and port address
 	private InetAddress serverIp;
@@ -29,7 +29,7 @@ public class MainSchedulerSys {
 
 		// Construct a datagram socket and bind it to port HOST_PORT
 		// on the local host machine.
-		hostSocketForClient = new DatagramSocket(HOST_PORT);
+		hostSocketForFloor = new DatagramSocket(HOST_PORT);
 
 	}
 
@@ -58,9 +58,9 @@ public class MainSchedulerSys {
 
 			// Listen for client request
 			System.out.println("Awaiting data...");
-			hostSocketForClient.receive(clientPacket);
+			hostSocketForFloor.receive(clientPacket);
 
-			// Client Details
+			// Floor Details
 			InetAddress clientIP = clientPacket.getAddress();
 			int clientPort = clientPacket.getPort();
 
@@ -68,8 +68,8 @@ public class MainSchedulerSys {
 			byte[] receivedBytes = clientPacket.getData();
 
 			// Print
-			System.out.println("Received from Client - Bytes: " + Arrays.toString(receivedBytes));
-			System.out.println("Received from Client - String: " + new String(receivedBytes));
+			System.out.println("Received from Floor - Bytes: " + Arrays.toString(receivedBytes));
+			System.out.println("Received from Floor - String: " + new String(receivedBytes));
 
 			String request = new String(receivedBytes);
 
@@ -109,27 +109,27 @@ public class MainSchedulerSys {
 		// send request to Elevator
 		DatagramPacket toElevatorPacket = new DatagramPacket(requestBytes, requestBytes.length, serverIp,
 				ELEVATOR_PORT); //might have something to do with this in order to check the elevator ports. 
-		hostSocketForClient.send(toElevatorPacket);
+		hostSocketForFloor.send(toElevatorPacket);
 		System.out.println("Forwarded to Elevator.");
 		delay();
 
 		// receive reply from server
 		byte[] inBytes = new byte[4];
 		DatagramPacket fromServerPacket = new DatagramPacket(inBytes, inBytes.length);
-		System.out.println("Awaiting reply from server...");
-		hostSocketForClient.receive(fromServerPacket);
+		System.out.println("Awaiting reply from Elevator...");
+		hostSocketForFloor.receive(fromServerPacket);
 
 		// Get data from the received packet.
 		byte[] receivedBytes = fromServerPacket.getData();
 
 		// Print
-		System.out.println("Received from Server - Bytes: " + Arrays.toString(receivedBytes));
-		System.out.println("Received from Server - String: " + new String(receivedBytes));
+		System.out.println("Received from Elevator - Bytes: " + Arrays.toString(receivedBytes));
+		System.out.println("Received from Elevator - String: " + new String(receivedBytes));
 
 		// forward to client
-		DatagramPacket toClientPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP, clientPort);
-		hostSocketForClient.send(toClientPacket);
-		System.out.println("Forwarded to Client: " + new String(receivedBytes));
+		DatagramPacket toFloorPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP, clientPort);
+		hostSocketForFloor.send(toFloorPacket);
+		System.out.println("Forwarded to Floor: " + new String(receivedBytes));
 		delay();
 
 		System.out.println("=============================");
