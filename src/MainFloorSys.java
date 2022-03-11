@@ -108,7 +108,7 @@ public class MainFloorSys {
 	 */
 	private void delay() {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -172,12 +172,9 @@ public class MainFloorSys {
 		int i = 1;
 		ArrayList<FloorRequest> lines = getInfo();
 		for (FloorRequest floorRequest : lines) {
-//		for (int i = 1; i <= 1; i++) {
 			System.out.println("----*** new BEGIN Request: " + i++);
 			// FORMAT:
 			// floor request elevator <ORIGIN FLOOR NUMBER> <DESTINATION FLOOR NUMBER> END
-//			sendRequest("floor request elevator 1 3 END");
-
 			// Convert file format into 'RPC format'
 
 			String request = "floor request elevator " + floorRequest.getOriginFloor() + " "
@@ -187,7 +184,6 @@ public class MainFloorSys {
 			System.out.println("----END Request: " + i);
 			System.out.println("=============================");
 			delay();
-			break;// TEMP
 		}
 		// send INVALID REQUEST
 		System.out.println("----BEGIN INVALID REQUEST: ");
