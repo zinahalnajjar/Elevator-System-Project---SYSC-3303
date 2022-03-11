@@ -9,8 +9,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 
-public class MainElevatorSys implements Runnable{
-	private  int SERVER_PORT = 69; // originally had this hard coded as port 69
+public class MainElevatorSys {
+	private static final int SERVER_PORT = 69;
 
 	public static final byte[] validReadReply = new byte[] { 0, 3, 0, 1 };
 	public static final byte[] validWriteReply = new byte[] { 0, 4, 0, 0 };
@@ -29,32 +29,23 @@ public class MainElevatorSys implements Runnable{
 	/*
 	 * constructor
 	 */
-	public MainElevatorSys(int currentFloor) throws SocketException {
-		//this.SERVER_PORT = SERVER_PORT;
-		this.currentFloor = currentFloor;
+	public MainElevatorSys() throws SocketException {
 		// Construct a datagram socket and bind it to port SERVER_PORT
 		// on the local host machine. This socket will be used to
 		// receive UDP Datagram packets.
+		serverSocket = new DatagramSocket(SERVER_PORT);
 
 		// to test socket timeout (2 seconds)
 		// receiveSocket.setSoTimeout(2000);
-	}
-	
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		startSystem();
-		
 	}
 
 	/*
 	 * method to receive requests from the host
 	 */
-	public void startSystem() {
+	public void start() {
 
 		try {
 			byte[] inBytes;
-			serverSocket = new DatagramSocket(SERVER_PORT);
 			while (true) {
 				System.out.println("Awaiting Host data...");
 				inBytes = new byte[1024];
@@ -156,7 +147,7 @@ public class MainElevatorSys implements Runnable{
 
 	private void delay() {
 		try {
-			Thread.sleep(100);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -292,31 +283,12 @@ public class MainElevatorSys implements Runnable{
 		} catch (InterruptedException e) {
 		}
 	}
-	
-	
-	/**
-	 * Chooses which elevator services the request
-	 */
-	private void serviceRequest() {
-		
-	}
 
 	/*
 	 * main method
 	 */
-	public static void main(String[] args) throws SocketException { // I was forced to put a throw so idk if its supposed to be like that but here it is
-		
-		Thread  elevator1, elevator2, elevator3;
-		// currently all threads are on port 69, not sure if this is allowed, but we have it like this. Another option is to have them on different ports but then idk how to check it in scheduler
-        elevator1 = new Thread (new MainElevatorSys(0),"Elevator1");
-        elevator2 = new Thread (new MainElevatorSys(0),"Elevator2");
-        elevator3 = new Thread (new MainElevatorSys(0),"Elevator3");
-        elevator1.start();
-        elevator2.start();
-        elevator3.start();
-		
-		
-		/* keeping this cuz I dont wanna break shit
+
+	public static void main(String[] args) {
 		MainElevatorSys server;
 		try {
 			server = new MainElevatorSys();
@@ -326,6 +298,5 @@ public class MainElevatorSys implements Runnable{
 			System.out.println("\n\n ERROR: " + e.getMessage());
 			System.exit(1);
 		}
-		*/
 	}
 }
