@@ -17,7 +17,7 @@ public class MainSchedulerSys {
 	// Receive Client request AND reply back.
 	private DatagramSocket hostSocketForClient;
 
-	//IP and port address 
+	// IP and port address
 	private InetAddress serverIp;
 	private int ELEVATOR_PORT = 69;
 
@@ -43,7 +43,7 @@ public class MainSchedulerSys {
 		}
 	}
 	/*
-	 * start method will send and receive requests from both client and server 
+	 * start method will send and receive requests from both client and server
 	 */
 
 	private void start() throws IOException {
@@ -52,7 +52,7 @@ public class MainSchedulerSys {
 			// data holder
 			byte[] inBytes;
 
-			// receive from client 
+			// receive from client
 			inBytes = new byte[1024];
 			DatagramPacket clientPacket = new DatagramPacket(inBytes, inBytes.length);
 
@@ -70,77 +70,50 @@ public class MainSchedulerSys {
 			// Print
 			System.out.println("Received from Client - Bytes: " + Arrays.toString(receivedBytes));
 			System.out.println("Received from Client - String: " + new String(receivedBytes));
-			
+
 			String request = new String(receivedBytes);
-			
-			if(request.startsWith("floor ")) {
+
+			if (request.startsWith("floor ")) {
 				processRequestFromFloor(request, clientIP, clientPort);
+			} else if (request.startsWith("elevator ")) {
+				// pending
 			}
-			else if(request.startsWith("elevator ")) {
-				//pending
-			}
 
-			//------OLD CODE
-	
-			// send request to server 
-			DatagramPacket toServerPacket = new DatagramPacket(receivedBytes, receivedBytes.length, serverIp,ELEVATOR_PORT);
-			hostSocketForClient.send(toServerPacket);
-			System.out.println("Forwarded to server.");
-			delay();
-
-			// receive reply from server 
-			inBytes = new byte[4];
-			DatagramPacket fromServerPacket = new DatagramPacket(inBytes, inBytes.length);
-			System.out.println("Awaiting reply from server...");
-			hostSocketForClient.receive(fromServerPacket);
-
-			// Get data from the received packet.
-			receivedBytes = fromServerPacket.getData();
-
-			// Print
-			System.out.println("Received from Server - Bytes: " + Arrays.toString(receivedBytes));
-			System.out.println("Received from Server - String: " + new String(receivedBytes));
-
-			// forward to client 
-			DatagramPacket toClientPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP,
-					clientPort);
-			hostSocketForClient.send(toClientPacket);
-			System.out.println("Forwarded to Client.");
 			delay();
 
 			System.out.println("=============================");
 
 		} // while
 	}
+
 	/*
-	 * delay 
+	 * delay
 	 */
 	private void delay() {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 	private void processRequestFromFloor(String request, InetAddress clientIP, int clientPort) throws IOException {
-		if(request.startsWith("floor request elevator ")) {
+		if (request.startsWith("floor request elevator ")) {
 			requestElevatorToFloor(request, clientIP, clientPort);
 		}
 	}
-	
+
 	private void requestElevatorToFloor(String request, InetAddress clientIP, int clientPort) throws IOException {
 		byte[] requestBytes = request.getBytes();
 
-		// send request to Elevator 
+		// send request to Elevator
 		DatagramPacket toElevatorPacket = new DatagramPacket(requestBytes, requestBytes.length, serverIp,
-				ELEVATOR_PORT);
+				ELEVATOR_PORT); //might have something to do with this in order to check the elevator ports. 
 		hostSocketForClient.send(toElevatorPacket);
 		System.out.println("Forwarded to Elevator.");
 		delay();
 
-		// receive reply from server 
+		// receive reply from server
 		byte[] inBytes = new byte[4];
 		DatagramPacket fromServerPacket = new DatagramPacket(inBytes, inBytes.length);
 		System.out.println("Awaiting reply from server...");
@@ -153,16 +126,15 @@ public class MainSchedulerSys {
 		System.out.println("Received from Server - Bytes: " + Arrays.toString(receivedBytes));
 		System.out.println("Received from Server - String: " + new String(receivedBytes));
 
-		// forward to client 
-		DatagramPacket toClientPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP,
-				clientPort);
+		// forward to client
+		DatagramPacket toClientPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP, clientPort);
 		hostSocketForClient.send(toClientPacket);
 		System.out.println("Forwarded to Client: " + new String(receivedBytes));
 		delay();
 
 		System.out.println("=============================");
 
-		
 	}
+	
 
 }
