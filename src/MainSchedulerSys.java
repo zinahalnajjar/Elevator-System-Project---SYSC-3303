@@ -1,3 +1,4 @@
+
 /*
  * host will work like a channel between the client and the server 
  * from client's perspective it will act like a server 
@@ -39,7 +40,7 @@ public class MainSchedulerSys {
 			host = new MainSchedulerSys();
 			host.start();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Output.print("Scheduler", "Main", Output.FATAL, e.getMessage());
 		}
 	}
 	/*
@@ -57,7 +58,7 @@ public class MainSchedulerSys {
 			DatagramPacket clientPacket = new DatagramPacket(inBytes, inBytes.length);
 
 			// Listen for client request
-			System.out.println("Awaiting data...");
+			Output.print("Scheduler", "Main", Output.INFO, "Awaiting data...");
 			hostSocketForFloor.receive(clientPacket);
 
 			// Floor Details
@@ -108,7 +109,7 @@ public class MainSchedulerSys {
 
 		// send request to Elevator
 		DatagramPacket toElevatorPacket = new DatagramPacket(requestBytes, requestBytes.length, serverIp,
-				ELEVATOR_PORT); //might have something to do with this in order to check the elevator ports. 
+				ELEVATOR_PORT); // might have something to do with this in order to check the elevator ports.
 		hostSocketForFloor.send(toElevatorPacket);
 		System.out.println("Forwarded to Elevator.");
 		delay();
@@ -135,6 +136,5 @@ public class MainSchedulerSys {
 		System.out.println("=============================");
 
 	}
-	
 
 }
