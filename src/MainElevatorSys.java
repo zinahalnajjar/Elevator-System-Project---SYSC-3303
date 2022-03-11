@@ -48,11 +48,11 @@ public class MainElevatorSys {
 	 */
 	public void start() {
 		startElevatorThreads();
-
+		System.out.println("-------Thread Started");
 		try {
 			byte[] inBytes;
 			while (true) {
-				System.out.println("Awaiting Host data...");
+				System.out.println("Awaiting Schedular data...");
 				inBytes = new byte[1024];
 				receivedPacket = new DatagramPacket(inBytes, inBytes.length);
 
@@ -83,7 +83,9 @@ public class MainElevatorSys {
 		elevatorList.add(elevator1);
 
 		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
-		elevatorThread1.run();
+		elevatorThread1.start();
+		System.out.println("--- AFTER elevatorThread1 STARTED.");
+
 	}
 
 	/*

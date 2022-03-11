@@ -11,8 +11,6 @@ import java.util.ArrayList;
  */
 public class Elevator implements Runnable {
 
-	private SchedulerSubsystem scheduler;
-
 	private int elevatorID;
 	private int currentFloor;
 	private boolean motorOperating;
@@ -28,8 +26,8 @@ public class Elevator implements Runnable {
 	/**
 	 * Constructor for Elevator Subsystem
 	 * 
-	 * @param scheduler,       scheduler thread
-	 * @param elevatorId,      the ID of the elevator
+	 * @param scheduler,    scheduler thread
+	 * @param elevatorId,   the ID of the elevator
 	 * @param floorRequest, the floor where the request was made
 	 */
 	public Elevator(int elevatorId, FloorRequest floorRequest) {
@@ -99,14 +97,13 @@ public class Elevator implements Runnable {
 			motorOff();
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
-			//floor request IS SERVICED. CLEAR IT.
+			// floor request IS SERVICED. CLEAR IT.
 			floorRequest.clear();
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);
-		scheduler.setElevatorResponse("Elevator reached: " + destinationFloor);
 		System.out.println("Elevator Door opened at: " + destinationFloor);
 	}
 
@@ -125,30 +122,37 @@ public class Elevator implements Runnable {
 		}
 	}
 
-	
-	//Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1
-	//Controller ELEVAGTOR SYS <--floorRequest 2--> ELV 2
-	//Controller ELEVAGTOR SYS <--floorRequest 3--> ELV 3
+	// Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1
+	// Controller ELEVAGTOR SYS <--floorRequest 2--> ELV 2
+	// Controller ELEVAGTOR SYS <--floorRequest 3--> ELV 3
 	@Override
 	public void run() {
+		// REPEAT LISTENING FOR REQUEST AGAIN AND AGAIN
 		while (true) {
 			synchronized (floorRequest) {
-				// CHECK IF any request to a floor
-				if (floorRequest.hasRequest()) {
-					// Move to requested floor.
-					moveTo(floorRequest.getFloor());
-					floorRequest.notifyAll();
-				} else {
+				// check if any request is in queue
+				while (!floorRequest.hasRequest()) {
 					try {
-						// NO REQUEST WAIT
-						System.out.println("ElevatOR " + elevatorID + " WAITING...");
+						// NO REQUEST for floor. WAIT for a request
+						System.out.println("Elevator " + elevatorID + " WAITING...");
 						floorRequest.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-				}
+				} // while
+
+				// Move to requested floor.
+				moveTo(floorRequest.getFloor());
+				floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
 			} // synchronized
-		}//while
+
+			try {
+				System.out.println("Elevator sleep delay");
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} // while
 	}
 
 	public boolean isMotorOperating() {
