@@ -84,7 +84,7 @@ public class MainElevatorSys {
 
 		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
 		elevatorThread1.start();
-		System.out.println("--- AFTER elevatorThread1 STARTED.");
+		System.out.println("--- elevatorThread1 STARTED.");
 
 		FloorRequest floorRequest2 = new FloorRequest();
 		Elevator elevator2 = new Elevator(2, floorRequest2);
@@ -92,7 +92,15 @@ public class MainElevatorSys {
 
 		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
 		elevatorThread2.start();
-		System.out.println("--- AFTER elevatorThread2 STARTED.");
+		System.out.println("--- elevatorThread2 STARTED.");
+
+		FloorRequest floorRequest3 = new FloorRequest();
+		Elevator elevator3 = new Elevator(3, floorRequest3);
+		elevatorList.add(elevator3);
+
+		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
+		elevatorThread3.start();
+		System.out.println("--- elevatorThread3 STARTED.");
 
 	}
 
