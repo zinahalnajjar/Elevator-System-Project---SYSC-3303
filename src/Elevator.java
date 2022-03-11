@@ -71,11 +71,11 @@ public class Elevator implements Runnable {
 	public void moveTo(int destinationFloor) {
 		/* if motor is running, Doors must be closed */
 		currentState = State.MOVING; // ensure the state Doors Closed is active
-		if (currentState == State.MOVING) {
-			System.out.println("Doors are now closed. Elevator MOVING. ");
-		}
 		// Check if motor is running
 		while (isMotorOperating()) {
+			if (currentState == State.MOVING) {
+				System.out.println("Elevator is ON THE MOVE...");
+			}
 			// wait until motor stops
 			try {
 				wait();
@@ -88,7 +88,6 @@ public class Elevator implements Runnable {
 		// If Elevator at destination
 		if (currentFloor == destinationFloor) {
 			System.out.println("Elevator already at: " + destinationFloor);
-
 		} else {
 			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
 			motorsOn();
@@ -97,10 +96,10 @@ public class Elevator implements Runnable {
 			motorOff();
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
-			// floor request IS SERVICED. CLEAR IT.
-			floorRequest.clear();
 			System.out.println("Elevator reached: " + destinationFloor);
 		}
+		// floor request IS SERVICED. CLEAR IT.
+		floorRequest.clear();
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);

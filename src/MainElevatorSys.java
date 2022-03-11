@@ -191,8 +191,8 @@ public class MainElevatorSys {
 				continue;
 			}
 			// elevator is not moving. check the distance
-			int dist = elevator.getCurrentFloor() - targetFloor;
-			if (dist == -1) {
+			int dist = Math.abs(elevator.getCurrentFloor() - targetFloor);
+			if (min == -1) {
 				// first check. Just pick the elevator.
 				min = dist;
 				closeByElevator = elevator;
