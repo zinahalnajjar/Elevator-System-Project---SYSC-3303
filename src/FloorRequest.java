@@ -8,6 +8,7 @@
 public class FloorRequest {
 	// Keep it as Integer so that it can be set to null when we call 'clear()'.
 	private Integer floor;
+	private int elevatorID;
 
 	/**
 	 * base constructor
@@ -17,6 +18,7 @@ public class FloorRequest {
 
 	/**
 	 * getter for floor
+	 * 
 	 * @return floor, value of floor
 	 */
 	public Integer getFloor() {
@@ -25,6 +27,7 @@ public class FloorRequest {
 
 	/**
 	 * setter for floor
+	 * 
 	 * @param floor, value of floor
 	 */
 	public void setFloor(Integer floor) {
@@ -40,6 +43,7 @@ public class FloorRequest {
 
 	/**
 	 * Returns true, if there is any floor request, otherwise false.
+	 * 
 	 * @return
 	 */
 	public boolean hasRequest() {

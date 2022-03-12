@@ -61,6 +61,7 @@ public class MainElevatorSys {
 
 				processReceivedBytes(receivedPacket);
 				System.out.println("============================");
+				delay();
 
 			} // while
 		} catch (Exception e) {
@@ -135,22 +136,11 @@ public class MainElevatorSys {
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
 
-		// ---OLD VERSION --- BEGIN
-//		//request elevator to ORIGIN floor
-//		moveTo(originFloor);
-//		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
-//		
-//		//request elevator to DEST floor
-//		moveTo(destFloor);
-		// ---OLD VERSION --- END
-
 		// request elevator to ORIGIN floor
-		dispatchFloorRequest(originFloor);
-		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		Elevator elevator = dispatchFloorRequest(null, originFloor);
 
 		// request elevator to DEST floor
-		dispatchFloorRequest(destFloor);
-		System.out.println("Reached DEST floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		dispatchFloorRequest(elevator, destFloor);
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
@@ -160,11 +150,14 @@ public class MainElevatorSys {
 	 * Dispatch floor request to an close by elevator.
 	 * 
 	 * @param targetFloor
+	 * @return
 	 */
-	private void dispatchFloorRequest(int targetFloor) {
-		// find close by elevator
-		Elevator elevator = getCloseByElevator(targetFloor);
-		System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+	private Elevator dispatchFloorRequest(Elevator elevator, int targetFloor) {
+		if (elevator == null) {
+			// find close by elevator
+			elevator = getCloseByElevator(targetFloor);
+			System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+		}
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
@@ -182,6 +175,7 @@ public class MainElevatorSys {
 				floorRequest.notifyAll();
 			}
 		} // synchronized
+		return elevator;
 	}
 
 	/**
