@@ -1,5 +1,7 @@
 /*
- * client sends and receive data in the form of byte from the Scheduler 
+ * class responsible for reading the input file and sending the requests to the scheduler 
+ * 
+ * @author Zinah, Mack 
  */
 
 import java.io.File;
@@ -28,7 +30,7 @@ public class MainFloorSys {
 	private InetAddress schedulerIp;
 	private int schedulerPort;
 
-	/*
+	/**
 	 * constructor
 	 */
 
@@ -39,7 +41,7 @@ public class MainFloorSys {
 
 	}
 
-	/*
+	/**
 	 * send read, write, invalid requests
 	 */
 
@@ -120,7 +122,7 @@ public class MainFloorSys {
 		}
 	}
 
-	/*
+	/**
 	 * delay
 	 */
 	private void delay() {
@@ -131,8 +133,8 @@ public class MainFloorSys {
 		}
 	}
 
-	/*
-	 * /*sending requests to Scheduler
+	/**
+	 * sending requests to Scheduler
 	 */
 
 	public void send(byte outBytes[]) throws UnknownHostException {
@@ -154,7 +156,7 @@ public class MainFloorSys {
 		}
 
 	}
-	/*
+	/**
 	 * receive reply from the Scheduler
 	 */
 
@@ -185,6 +187,10 @@ public class MainFloorSys {
 		}
 	}
 
+	/**
+	 * send a RPC containing the requests that were read from the input file 
+	 * @throws IOException
+	 */
 	private void floorRequests() throws IOException {
 		int i = 1;
 		ArrayList<FloorMovementData> lines = getInfo();

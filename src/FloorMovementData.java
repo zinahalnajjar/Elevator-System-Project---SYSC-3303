@@ -1,3 +1,9 @@
+/*
+ * this class is responsible for setting the information read from the file 
+ * @author Zinah 
+ */
+
+
 import java.time.LocalTime;
 
 //Name Changed from FloorData to  FloorRequest

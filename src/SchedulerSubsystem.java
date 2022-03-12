@@ -6,6 +6,8 @@ import java.util.ArrayList;
  * receives data from the elevator subsystem
  * sends data back to the elevator subsystem
  * sends data back to the floor subsystem
+ * 
+ * ------old code----
  * @Author Zinah, Mack, Vilmos
  *
  */

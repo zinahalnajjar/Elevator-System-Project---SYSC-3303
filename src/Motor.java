@@ -1,3 +1,9 @@
+/*
+ * class responsible for setting the motor of the elevator on and off 
+ * 
+ * @author Zinah, Mack 
+ */
+
 public class Motor {
 
 	private boolean motorOperating;

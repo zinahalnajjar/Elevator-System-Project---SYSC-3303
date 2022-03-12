@@ -4,7 +4,7 @@
  * elevator subsystem thread will try to get requests from scheduler while not
  * operating upon receiving requests, moves elevator accordingly
  * 
- * @author Zinah, Mack, Vilmos
+ * @author Zinah, Mack
  *
  */
 public class Elevator implements Runnable {
@@ -139,6 +139,10 @@ public class Elevator implements Runnable {
 		currentState = State.STILL;
 		printCurrentState();
 	}
+	
+	/**
+	 * run method 
+	 */
 
 	
 	@Override
@@ -165,7 +169,7 @@ public class Elevator implements Runnable {
 			} // synchronized
 
 			try {
-				// TEMP?
+				
 				//System.out.println("Elevator " + elevatorID + " sleep delay");
 				Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " sleep delay");
 
@@ -175,11 +179,19 @@ public class Elevator implements Runnable {
 			}
 		} // while
 	}
+	/**
+	 * getter for elevatorID
+	 * @return
+	 */
 
 	public int getElevatorID() {
 		return elevatorID;
 	}
 
+	/**
+	 * setter for motor flag 
+	 * @return
+	 */
 	public boolean isMotorOperating() {
 		return motor.isMotorOperating();
 	}
