@@ -8,7 +8,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainElevatorSys {
@@ -228,7 +227,7 @@ public class MainElevatorSys {
 		//
 //		//Send Packet
 		serverSocket.send(packetSend);
-		System.out.println("Sent reply: " + Arrays.toString(bytes));
+		System.out.println("Sent reply: " + new String(bytes));
 		delay();
 
 	}

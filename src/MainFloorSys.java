@@ -33,7 +33,7 @@ public class MainFloorSys {
 	 */
 
 	public MainFloorSys() throws UnknownHostException {
-		// Host details
+		// Scheduler details
 		schedulerIp = InetAddress.getByName("localhost");
 		schedulerPort = 23;
 
@@ -78,15 +78,15 @@ public class MainFloorSys {
 
 		// receive request from the Scheduler
 		byte[] inBytes = new byte[1024];
-		DatagramPacket fromHostPacket = new DatagramPacket(inBytes, inBytes.length);
+		DatagramPacket fromSchedulerPacket = new DatagramPacket(inBytes, inBytes.length);
 		System.out.println("Awaiting reply from Scheduler...");
-		schedulerSocket.receive(fromHostPacket);
+		schedulerSocket.receive(fromSchedulerPacket);
 
 		// Get data from the received packet.
-		byte[] receivedBytes = fromHostPacket.getData();
+		byte[] receivedBytes = fromSchedulerPacket.getData();
 
 		// Print
-		System.out.println("Reply Received from Host.");
+		System.out.println("Reply Received from Scheduler.");
 
 		boolean validReply = true; // flag for valid reply
 		// decide the type of reponse from the client to the Scheduler based on the
@@ -172,7 +172,7 @@ public class MainFloorSys {
 		int i = 1;
 		ArrayList<FloorMovementData> lines = getInfo();
 		for (FloorMovementData floorRequest : lines) {
-			System.out.println("----*** new BEGIN Request: " + i++);
+			System.out.println("----BEGIN Request: " + i++);
 			// FORMAT:
 			// floor request elevator <ORIGIN FLOOR NUMBER> <DESTINATION FLOOR NUMBER> END
 			// Convert file format into 'RPC format'

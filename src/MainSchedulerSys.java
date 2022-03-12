@@ -11,7 +11,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class MainSchedulerSys {
 
@@ -69,8 +68,7 @@ public class MainSchedulerSys {
 			byte[] receivedBytes = clientPacket.getData();
 
 			// Print
-			System.out.println("Received from Floor - Bytes: " + Arrays.toString(receivedBytes));
-			System.out.println("Received from Floor - String: " + new String(receivedBytes));
+			System.out.println("Received from Floor: " + new String(receivedBytes));
 
 			String request = new String(receivedBytes);
 
@@ -124,8 +122,7 @@ public class MainSchedulerSys {
 		byte[] receivedBytes = fromServerPacket.getData();
 
 		// Print
-		System.out.println("Received from Elevator - Bytes: " + Arrays.toString(receivedBytes));
-		System.out.println("Received from Elevator - String: " + new String(receivedBytes));
+		System.out.println("Received from Elevator: " + new String(receivedBytes));
 
 		// forward to client
 		DatagramPacket toFloorPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP, clientPort);
