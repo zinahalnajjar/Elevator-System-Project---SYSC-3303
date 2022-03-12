@@ -35,6 +35,7 @@ public class Elevator implements Runnable {
 		this.elevatorID = elevatorId;
 		this.currentFloor = 0;// default ground floor
 		currentState = State.STILL;
+		printCurrentState();
 	}
 
 	public int getCurrentFloor() {
@@ -67,7 +68,6 @@ public class Elevator implements Runnable {
 	 */
 	public void moveTo(int destinationFloor) {
 		/* if motor is running, Doors must be closed */
-//		currentState = State.MOVING; // ensure the state Doors Closed is active
 		// Check if motor is running
 
 		while (isMotorOperating()) {
@@ -105,6 +105,10 @@ public class Elevator implements Runnable {
 		System.out.println("Elevator " + elevatorID + " Door opened at: " + destinationFloor);
 	}
 
+	private void printCurrentState() {
+		System.out.println("Elevator " + elevatorID + " CURRENT STATE: " + currentState);
+	}
+
 	/**
 	 * Simulates elevator moving floors
 	 * 
@@ -112,6 +116,7 @@ public class Elevator implements Runnable {
 	 */
 	private void moveElevator(int numberOfFloors) {
 		currentState = State.MOVING;
+		printCurrentState();
 		// delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
@@ -120,6 +125,7 @@ public class Elevator implements Runnable {
 		} catch (InterruptedException e) {
 		}
 		currentState = State.STILL;
+		printCurrentState();
 	}
 
 	// Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1

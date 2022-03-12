@@ -60,8 +60,8 @@ public class MainElevatorSys {
 				}
 
 				processReceivedBytes(receivedPacket);
-				System.out.println("============================");
 				delay();
+				System.out.println("============================");
 
 			} // while
 		} catch (Exception e) {
