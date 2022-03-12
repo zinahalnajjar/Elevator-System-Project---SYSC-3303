@@ -49,6 +49,7 @@ public class MainFloorSys {
 		for (int i = 1; i <= 10; i++) {
 			System.out.println("----BEGIN Request: " + i);
 			if (i % 2 == 0) {
+				// invoke sendRequest
 				sendRequest("read");
 			} else {
 				sendRequest("write");

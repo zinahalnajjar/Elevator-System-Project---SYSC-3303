@@ -127,8 +127,8 @@ public class Elevator implements Runnable {
 	 * @param numberOfFloors, floors that elevator will move
 	 */
 	private void moveElevator(int numberOfFloors) {
-		currentState = State.MOVING;
-		printCurrentState();
+		currentState = State.MOVING; // set the state of the elevator car 
+		printCurrentState(); // print the current state machine of the elevator car 
 		// delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
@@ -136,15 +136,14 @@ public class Elevator implements Runnable {
 			}
 		} catch (InterruptedException e) {
 		}
-		currentState = State.STILL;
-		printCurrentState();
+		currentState = State.STILL; // set the state of the elevator car 
+		printCurrentState(); //  print the state of the elevator car 
 	}
 	
 	/**
 	 * run method 
 	 */
 
-	
 	@Override
 	public void run() {
 		// REPEAT LISTENING FOR REQUEST AGAIN AND AGAIN
