@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /**
  * ElevatorSubsystem.java
  * 
@@ -14,8 +12,7 @@ public class Elevator implements Runnable {
 	private int elevatorID;
 
 	private int currentFloor;
-	private boolean motorOperating;
-	private ArrayList<FloorMovementData> elevatorData;
+	private Motor motor = new Motor();
 	public State currentState;
 
 	private FloorRequest floorRequest;
@@ -36,7 +33,6 @@ public class Elevator implements Runnable {
 		this.floorRequest = floorRequest;
 
 		this.elevatorID = elevatorId;
-		this.motorOperating = false;
 		this.currentFloor = 0;// default ground floor
 		currentState = State.STILL;
 	}
@@ -53,14 +49,14 @@ public class Elevator implements Runnable {
 	 * Turns on the motor
 	 */
 	public synchronized void motorsOn() {
-		motorOperating = true;
+		motor.motorsOn();
 	}
 
 	/**
 	 * Turns motors off
 	 */
 	public synchronized void motorOff() {
-		motorOperating = false;
+		motor.motorOff();
 		notifyAll();
 	}
 
@@ -71,8 +67,9 @@ public class Elevator implements Runnable {
 	 */
 	public void moveTo(int destinationFloor) {
 		/* if motor is running, Doors must be closed */
-		currentState = State.MOVING; // ensure the state Doors Closed is active
+//		currentState = State.MOVING; // ensure the state Doors Closed is active
 		// Check if motor is running
+
 		while (isMotorOperating()) {
 			if (currentState == State.MOVING) {
 				System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
@@ -95,6 +92,7 @@ public class Elevator implements Runnable {
 			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
+			currentState = State.STILL;
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
 			System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
@@ -113,6 +111,7 @@ public class Elevator implements Runnable {
 	 * @param numberOfFloors, floors that elevator will move
 	 */
 	private void moveElevator(int numberOfFloors) {
+		currentState = State.MOVING;
 		// delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
@@ -120,6 +119,7 @@ public class Elevator implements Runnable {
 			}
 		} catch (InterruptedException e) {
 		}
+		currentState = State.STILL;
 	}
 
 	// Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1
@@ -161,6 +161,6 @@ public class Elevator implements Runnable {
 	}
 
 	public boolean isMotorOperating() {
-		return motorOperating;
+		return motor.isMotorOperating();
 	}
 }

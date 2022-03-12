@@ -1,11 +1,11 @@
-public class ElevatorMotor {
+public class Motor {
 
 	private boolean motorOperating;
-	
-	public ElevatorMotor() {
+
+	public Motor() {
 		this.motorOperating = false;
 	}
-	
+
 	/**
 	 * Turns on the motor
 	 */
@@ -14,12 +14,15 @@ public class ElevatorMotor {
 	}
 
 	/**
-	 * Turns motors off 
+	 * Turns motors off
 	 */
-	public synchronized void motorOff() { 
+	public synchronized void motorOff() {
 		motorOperating = false;
 		notifyAll();
 	}
-	
-	
+
+	public boolean isMotorOperating() {
+		return motorOperating;
+	}
+
 }

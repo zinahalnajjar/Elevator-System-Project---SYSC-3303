@@ -14,9 +14,6 @@ import java.util.List;
 public class MainElevatorSys {
 	private static final int SERVER_PORT = 69;
 
-	public static final byte[] validReadReply = new byte[] { 0, 3, 0, 1 };
-	public static final byte[] validWriteReply = new byte[] { 0, 4, 0, 0 };
-
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
 
@@ -246,61 +243,6 @@ public class MainElevatorSys {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/*
-	 * method to confirm that the format is valid
-	 */
-	private boolean processRequest(byte[] receivedBytes, String requestType) {
-		int offset;
-		int zeroByteIndex;
-		// ignore first 2 bytes. start index from 2.
-		offset = 2;
-		zeroByteIndex = getIndexOfZeroByte(receivedBytes, offset);
-		String fileName = getTextUntilZeroByte(receivedBytes, offset, zeroByteIndex);
-		if (fileName == null || fileName.trim().isEmpty()) {
-			return false;
-		}
-		System.out.println("FileName: " + fileName);
-
-		// start index from PREVIOUS zeroByteIndex + 1
-
-		offset = zeroByteIndex + 1;
-		zeroByteIndex = getIndexOfZeroByte(receivedBytes, offset);
-		String mode = getTextUntilZeroByte(receivedBytes, offset, zeroByteIndex);
-		if (mode == null || mode.trim().isEmpty()) {
-			return false;
-		}
-		System.out.println("Mode: " + mode);
-
-		return true;
-	}
-
-	/*
-	 * look for 0 byte index
-	 */
-	private int getIndexOfZeroByte(byte[] receivedBytes, int offset) {
-
-		int zeroByteIndex = -1;
-		for (int i = offset; i < receivedBytes.length; i++) {
-			if (receivedBytes[i] == 0) {
-				zeroByteIndex = i;
-				break;
-			}
-		}
-		return zeroByteIndex;
-	}
-
-	/*
-	 * get text between 2 and zeroByteIndex 7 (excluding)
-	 */
-	private String getTextUntilZeroByte(byte[] receivedBytes, int offset, int zeroByteIndex) {
-		// example:
-		// 0 1 2 3 4 5 6 7
-		// a . t x t 0
-		int length = zeroByteIndex - 2; // 7 - 2 = 5 (length)
-		String text = new String(receivedBytes, offset, length);
-		return text;
 	}
 
 	/**
