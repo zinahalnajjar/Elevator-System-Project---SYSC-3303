@@ -131,7 +131,7 @@ public class MainSchedulerSys {
 		Output.print("Scheduler", "Main", Output.INFO,  "Forwarded to Elevator.");
 		delay();
 
-		// receive reply from server
+		// receive reply from server (elevator)
 		byte[] inBytes = new byte[4];
 		DatagramPacket fromServerPacket = new DatagramPacket(inBytes, inBytes.length);
 		//System.out.println("Awaiting reply from Elevator...");

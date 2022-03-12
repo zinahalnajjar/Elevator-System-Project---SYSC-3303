@@ -29,7 +29,7 @@ public class MainElevatorSys {
 		STILL, MOVING
 	}
 
-	/*
+	/**
 	 * constructor
 	 */
 	public MainElevatorSys() throws SocketException {
@@ -42,8 +42,10 @@ public class MainElevatorSys {
 		// receiveSocket.setSoTimeout(2000);
 	}
 
-	/*
-	 * method to receive requests from the host
+	/**
+	 * 
+	 * method to receive requests from the host (scheduler)
+	 * @return
 	 */
 	public void start() {
 		startElevatorThreads();
@@ -81,6 +83,10 @@ public class MainElevatorSys {
 		}
 
 	}
+	/**
+	 * method that starts the three elevator threads (cars)
+	 * @return
+	 */
 
 	private void startElevatorThreads() {
 
@@ -115,8 +121,12 @@ public class MainElevatorSys {
 
 	}
 
-	/*
+	/**
+	 * 
 	 * method to process the received requests from the hosts
+	 * @param receivedPacket
+	 * @return
+	 * 
 	 */
 
 	private void processReceivedBytes(DatagramPacket receivedPacket) throws Exception {
@@ -277,6 +287,7 @@ public class MainElevatorSys {
 	 * @param destinationFloor, floor to move elevator to
 	 * @return
 	 */
+	/*
 	public boolean moveTo(int destinationFloor) {
 
 		// Check if motor is running
@@ -297,7 +308,7 @@ public class MainElevatorSys {
 
 
 		} else {
-			/* if motor is running, Doors must be closed */
+			/* if motor is running, Doors must be closed 
 			currentState = State.MOVING; // ensure the state Doors Closed is active
 			if (currentState == State.MOVING) {
 				//System.out.println("Doors are now closed. Elevator MOVING. ");
@@ -328,6 +339,7 @@ public class MainElevatorSys {
 
 		return true;
 	}
+	*/
 
 	/**
 	 * Turns on the motor
@@ -343,12 +355,13 @@ public class MainElevatorSys {
 		motorOperating = false;
 		notifyAll();
 	}
+	/*
 
 	/**
 	 * Simulates elevator moving floors
 	 * 
 	 * @param numberOfFloors, floors that elevator will move
-	 */
+	 
 	private void moveElevator(int numberOfFloors) {
 		// delay
 		try {
@@ -358,7 +371,7 @@ public class MainElevatorSys {
 		} catch (InterruptedException e) {
 		}
 	}
-
+*/
 	/**
 	 * main method
 	 */
