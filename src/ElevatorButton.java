@@ -4,13 +4,11 @@
  */
 public class ElevatorButton {
 
-	private ElevatorSubsystem elevatorsubsystem;
 	private ElevatorLamp elevatorLamp;
 	// private int currentFloor;
 
-	public ElevatorButton(ElevatorLamp elevatorLamp, ElevatorSubsystem elevatorsubsystem) {
+	public ElevatorButton(ElevatorLamp elevatorLamp) {
 		this.elevatorLamp = elevatorLamp;
-		this.elevatorsubsystem = elevatorsubsystem;
 		// this.currentFloor = 0;
 
 	}
@@ -21,7 +19,8 @@ public class ElevatorButton {
 
 	public void pressButton() {
 		this.elevatorLamp.turnOn();
-		//System.out.println("Elevator is currently at " + elevatorsubsystem.getcurrentFloor());
+		// System.out.println("Elevator is currently at " +
+		// elevatorsubsystem.getcurrentFloor());
 
 	}
 

@@ -8,14 +8,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainElevatorSys {
 	private static final int SERVER_PORT = 69;
-
-	public static final byte[] validReadReply = new byte[] { 0, 3, 0, 1 };
-	public static final byte[] validWriteReply = new byte[] { 0, 4, 0, 0 };
 
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
@@ -64,6 +60,7 @@ public class MainElevatorSys {
 				}
 
 				processReceivedBytes(receivedPacket);
+				delay();
 				System.out.println("============================");
 
 			} // while
@@ -139,22 +136,11 @@ public class MainElevatorSys {
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
 
-		// ---OLD VERSION --- BEGIN
-//		//request elevator to ORIGIN floor
-//		moveTo(originFloor);
-//		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
-//		
-//		//request elevator to DEST floor
-//		moveTo(destFloor);
-		// ---OLD VERSION --- END
-
 		// request elevator to ORIGIN floor
-		dispatchFloorRequest(originFloor);
-		System.out.println("Reached ORIGIN floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		Elevator elevator = dispatchFloorRequest(null, originFloor);
 
 		// request elevator to DEST floor
-		dispatchFloorRequest(destFloor);
-		System.out.println("Reached DEST floor. Users board the car and PRESS DESTINATION: " + destFloor);
+		dispatchFloorRequest(elevator, destFloor);
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
@@ -164,11 +150,14 @@ public class MainElevatorSys {
 	 * Dispatch floor request to an close by elevator.
 	 * 
 	 * @param targetFloor
+	 * @return
 	 */
-	private void dispatchFloorRequest(int targetFloor) {
-		// find close by elevator
-		Elevator elevator = getCloseByElevator(targetFloor);
-		System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+	private Elevator dispatchFloorRequest(Elevator elevator, int targetFloor) {
+		if (elevator == null) {
+			// find close by elevator
+			elevator = getCloseByElevator(targetFloor);
+			System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+		}
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
@@ -186,6 +175,7 @@ public class MainElevatorSys {
 				floorRequest.notifyAll();
 			}
 		} // synchronized
+		return elevator;
 	}
 
 	/**
@@ -231,7 +221,7 @@ public class MainElevatorSys {
 		//
 //		//Send Packet
 		serverSocket.send(packetSend);
-		System.out.println("Sent reply: " + Arrays.toString(bytes));
+		System.out.println("Sent reply: " + new String(bytes));
 		delay();
 
 	}
@@ -246,61 +236,6 @@ public class MainElevatorSys {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/*
-	 * method to confirm that the format is valid
-	 */
-	private boolean processRequest(byte[] receivedBytes, String requestType) {
-		int offset;
-		int zeroByteIndex;
-		// ignore first 2 bytes. start index from 2.
-		offset = 2;
-		zeroByteIndex = getIndexOfZeroByte(receivedBytes, offset);
-		String fileName = getTextUntilZeroByte(receivedBytes, offset, zeroByteIndex);
-		if (fileName == null || fileName.trim().isEmpty()) {
-			return false;
-		}
-		System.out.println("FileName: " + fileName);
-
-		// start index from PREVIOUS zeroByteIndex + 1
-
-		offset = zeroByteIndex + 1;
-		zeroByteIndex = getIndexOfZeroByte(receivedBytes, offset);
-		String mode = getTextUntilZeroByte(receivedBytes, offset, zeroByteIndex);
-		if (mode == null || mode.trim().isEmpty()) {
-			return false;
-		}
-		System.out.println("Mode: " + mode);
-
-		return true;
-	}
-
-	/*
-	 * look for 0 byte index
-	 */
-	private int getIndexOfZeroByte(byte[] receivedBytes, int offset) {
-
-		int zeroByteIndex = -1;
-		for (int i = offset; i < receivedBytes.length; i++) {
-			if (receivedBytes[i] == 0) {
-				zeroByteIndex = i;
-				break;
-			}
-		}
-		return zeroByteIndex;
-	}
-
-	/*
-	 * get text between 2 and zeroByteIndex 7 (excluding)
-	 */
-	private String getTextUntilZeroByte(byte[] receivedBytes, int offset, int zeroByteIndex) {
-		// example:
-		// 0 1 2 3 4 5 6 7
-		// a . t x t 0
-		int length = zeroByteIndex - 2; // 7 - 2 = 5 (length)
-		String text = new String(receivedBytes, offset, length);
-		return text;
 	}
 
 	/**
