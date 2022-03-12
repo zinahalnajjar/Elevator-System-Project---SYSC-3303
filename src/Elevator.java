@@ -72,7 +72,9 @@ public class Elevator implements Runnable {
 
 		while (isMotorOperating()) {
 			if (currentState == State.MOVING) {
-				System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
+				//System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
+				Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " is ON THE MOVE...");
+
 			}
 			// wait until motor stops
 			try {
@@ -85,9 +87,13 @@ public class Elevator implements Runnable {
 		// Checks where the Elevator is
 		// If Elevator at destination
 		if (currentFloor == destinationFloor) {
-			System.out.println("Elevator " + elevatorID + " already at: " + destinationFloor);
+			//System.out.println("Elevator " + elevatorID + " already at: " + destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " already at: " + destinationFloor);
+
 		} else {
-			System.out.println("Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
+			//System.out.println("Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
+
 			motorsOn();
 			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
@@ -95,18 +101,24 @@ public class Elevator implements Runnable {
 			currentState = State.STILL;
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
-			System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
+			//System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " reached: " + destinationFloor);
+
 		}
 		// floor request IS SERVICED. CLEAR IT.
 		floorRequest.clear();
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);
-		System.out.println("Elevator " + elevatorID + " Door opened at: " + destinationFloor);
+		//System.out.println("Elevator " + elevatorID + " Door opened at: " + destinationFloor);
+		Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " Door opened at: " + destinationFloor);
+
 	}
 
 	private void printCurrentState() {
-		System.out.println("Elevator " + elevatorID + " CURRENT STATE: " + currentState);
+		//System.out.println("Elevator " + elevatorID + " CURRENT STATE: " + currentState);
+		Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " CURRENT STATE: " + currentState);
+
 	}
 
 	/**
@@ -128,9 +140,7 @@ public class Elevator implements Runnable {
 		printCurrentState();
 	}
 
-	// Controller ELEVAGTOR SYS <--floorRequest 1--> ELV 1
-	// Controller ELEVAGTOR SYS <--floorRequest 2--> ELV 2
-	// Controller ELEVAGTOR SYS <--floorRequest 3--> ELV 3
+	
 	@Override
 	public void run() {
 		// REPEAT LISTENING FOR REQUEST AGAIN AND AGAIN
@@ -140,7 +150,9 @@ public class Elevator implements Runnable {
 				while (!floorRequest.hasRequest()) {
 					try {
 						// NO REQUEST for floor. WAIT for a request
-						System.out.println("Elevator " + elevatorID + " WAITING...");
+						//System.out.println("Elevator " + elevatorID + " WAITING...");
+						Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " WAITING...");
+
 						floorRequest.wait();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -154,7 +166,9 @@ public class Elevator implements Runnable {
 
 			try {
 				// TEMP?
-				System.out.println("Elevator " + elevatorID + " sleep delay");
+				//System.out.println("Elevator " + elevatorID + " sleep delay");
+				Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " sleep delay");
+
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();

@@ -1,6 +1,4 @@
-/*
- * class server sends and receive requests from the host 
- */
+
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -44,11 +42,15 @@ public class MainElevatorSys {
 	 */
 	public void start() {
 		startElevatorThreads();
-		System.out.println("-------Thread Started");
+		//System.out.println("-------Thread Started");
+		Output.print("Elevator", "Main", Output.INFO, "-------Thread Started");
+
 		try {
 			byte[] inBytes;
 			while (true) {
-				System.out.println("Awaiting Schedular data...");
+				//System.out.println("Awaiting Schedular data...");
+				Output.print("Elevator", "Main", Output.INFO, "Awaiting Schedular data...");
+
 				inBytes = new byte[1024];
 				receivedPacket = new DatagramPacket(inBytes, inBytes.length);
 
@@ -67,7 +69,9 @@ public class MainElevatorSys {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			System.out.println("Close serverSocket...");
+			//System.out.println("Close serverSocket...");
+			Output.print("Elevator", "Main", Output.INFO,"Close serverSocket...");
+
 			serverSocket.close();
 		}
 
@@ -81,7 +85,9 @@ public class MainElevatorSys {
 
 		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
 		elevatorThread1.start();
-		System.out.println("--- elevatorThread1 STARTED.");
+		//System.out.println("--- elevatorThread1 STARTED.");
+		Output.print("Elevator", "Main", Output.INFO,"--- elevatorThread1 STARTED.");
+
 
 		FloorRequest floorRequest2 = new FloorRequest();
 		Elevator elevator2 = new Elevator(2, floorRequest2);
@@ -89,7 +95,8 @@ public class MainElevatorSys {
 
 		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
 		elevatorThread2.start();
-		System.out.println("--- elevatorThread2 STARTED.");
+		//System.out.println("--- elevatorThread2 STARTED.");
+		Output.print("Elevator", "Main", Output.INFO,"--- elevatorThread2 STARTED.");
 
 		FloorRequest floorRequest3 = new FloorRequest();
 		Elevator elevator3 = new Elevator(3, floorRequest3);
@@ -97,7 +104,9 @@ public class MainElevatorSys {
 
 		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
 		elevatorThread3.start();
-		System.out.println("--- elevatorThread3 STARTED.");
+		//System.out.println("--- elevatorThread3 STARTED.");
+		Output.print("Elevator", "Main", Output.INFO,"--- elevatorThread3 STARTED.");
+
 
 	}
 
@@ -112,10 +121,14 @@ public class MainElevatorSys {
 
 		// Get data from the received packet.
 		byte[] receivedBytes = receivedPacket.getData();
-		System.out.println("Received Length: " + receivedBytes.length);
+		//System.out.println("Received Length: " + receivedBytes.length);
+		Output.print("Elevator", "Main", Output.INFO,"Received Length: " + receivedBytes.length);
+
 
 		String request = new String(receivedBytes);
-		System.out.println("Received REQUEST: " + request);
+		//System.out.println("Received REQUEST: " + request);
+		Output.print("Elevator", "Main", Output.INFO,"Received REQUEST: " + request);
+
 
 		if (request.startsWith("floor request elevator ")) {
 			processFloorRequest(request, hostIP, hostPort);
@@ -123,7 +136,9 @@ public class MainElevatorSys {
 			// Throw Exception
 //			PENDING SEND RESPONSE
 //			throw new Exception("Invalid request.");
-			System.out.println("Invalid request.");
+			//System.out.println("Invalid request.");
+			Output.print("Elevator", "Main", Output.INFO,"Invalid request.");
+
 		}
 
 	}
@@ -156,7 +171,10 @@ public class MainElevatorSys {
 		if (elevator == null) {
 			// find close by elevator
 			elevator = getCloseByElevator(targetFloor);
-			System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+			//System.out.println("CLOSE BY Elevator: " + elevator.getElevatorID());
+			Output.print("Elevator", "Main", Output.INFO,"CLOSE BY Elevator: " + elevator.getElevatorID());
+
+			
 		}
 
 		// get 'SHARED' FloorRequest for the elevator.
@@ -221,7 +239,9 @@ public class MainElevatorSys {
 		//
 //		//Send Packet
 		serverSocket.send(packetSend);
-		System.out.println("Sent reply: " + new String(bytes));
+		//System.out.println("Sent reply: " + new String(bytes));
+		Output.print("Elevator", "Main", Output.INFO,"Sent reply: " + new String(bytes));
+
 		delay();
 
 	}
@@ -259,28 +279,40 @@ public class MainElevatorSys {
 		// Checks where the Elevator is
 		// If Elevator at destination
 		if (currentFloor == destinationFloor) {
-			System.out.println("Elevator already at: " + destinationFloor);
+			//System.out.println("Elevator already at: " + destinationFloor);
+			Output.print("Elevator", "Main", Output.INFO,"Elevator already at: " + destinationFloor);
+
 
 		} else {
 			/* if motor is running, Doors must be closed */
 			currentState = State.MOVING; // ensure the state Doors Closed is active
 			if (currentState == State.MOVING) {
-				System.out.println("Doors are now closed. Elevator MOVING. ");
+				//System.out.println("Doors are now closed. Elevator MOVING. ");
+				Output.print("Elevator", "Main", Output.INFO,"Doors are now closed. Elevator MOVING. ");
+
 			}
-			System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+			//System.out.println("Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+			Output.print("Elevator", "Main", Output.INFO,"Elevator moving from: " + currentFloor + " to: " + destinationFloor);
+
 			motorsOn();
 			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
 			// For each move currentFloor gets changed here
 			currentFloor = destinationFloor;
-			System.out.println("Elevator reached: " + destinationFloor);
+			//System.out.println("Elevator reached: " + destinationFloor);
+			Output.print("Elevator", "Main", Output.INFO,"Elevator reached: " + destinationFloor);
+
 		}
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);
-		System.out.println("Elevator reached: " + destinationFloor);
-		System.out.println("Elevator Door opened at: " + destinationFloor);
+		//System.out.println("Elevator reached: " + destinationFloor);
+		Output.print("Elevator", "Main", Output.INFO,"Elevator reached: " + destinationFloor);
+
+		//System.out.println("Elevator Door opened at: " + destinationFloor);
+		Output.print("Elevator", "Main", Output.INFO,"Elevator Door opened at: " + destinationFloor);
+
 		return true;
 	}
 
@@ -325,8 +357,11 @@ public class MainElevatorSys {
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("\n\n ERROR: " + e.getMessage());
+			//System.out.println("\n\n ERROR: " + e.getMessage());
+			Output.print("Elevator", "Main", Output.FATAL, e.getMessage());
 			System.exit(1);
 		}
 	}
 }
+
+
