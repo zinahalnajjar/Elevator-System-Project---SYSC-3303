@@ -50,7 +50,7 @@ public class FloorMovementData {
 	    int destinationFloor = this.destinationFloor; 
 	    boolean goingUp = this.goingUp;
 	    boolean lampOn = this.lampOn;
-	    printObj = time.toString()+ Integer.toString(originFloor)+ Integer.toString(destinationFloor) + String.valueOf(goingUp)+ String.valueOf(lampOn); 
+	    printObj = time.toString()+Integer.toString(originFloor)+ Integer.toString(destinationFloor) + String.valueOf(goingUp)+ String.valueOf(lampOn); 
 		return printObj;
 		
 		

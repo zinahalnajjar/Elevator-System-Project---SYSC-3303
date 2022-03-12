@@ -68,7 +68,8 @@ public class MainSchedulerSys {
 			byte[] receivedBytes = clientPacket.getData();
 
 			// Print
-			System.out.println("Received from Floor: " + new String(receivedBytes));
+			//System.out.println("Received from Floor: " + new String(receivedBytes));
+			Output.print("Scheduler", "Main", Output.INFO, "Received from Floor: " + new String(receivedBytes));
 
 			String request = new String(receivedBytes);
 
@@ -109,25 +110,32 @@ public class MainSchedulerSys {
 		DatagramPacket toElevatorPacket = new DatagramPacket(requestBytes, requestBytes.length, serverIp,
 				ELEVATOR_PORT); // might have something to do with this in order to check the elevator ports.
 		hostSocketForFloor.send(toElevatorPacket);
-		System.out.println("Forwarded to Elevator.");
+		
+		//System.out.println("Forwarded to Elevator.");
+		Output.print("Scheduler", "Main", Output.INFO,  "Forwarded to Elevator.");
 		delay();
 
 		// receive reply from server
 		byte[] inBytes = new byte[4];
 		DatagramPacket fromServerPacket = new DatagramPacket(inBytes, inBytes.length);
-		System.out.println("Awaiting reply from Elevator...");
+		//System.out.println("Awaiting reply from Elevator...");
+		Output.print("Scheduler", "Main", Output.INFO,  "Awaiting reply from Elevator...");
 		hostSocketForFloor.receive(fromServerPacket);
 
 		// Get data from the received packet.
 		byte[] receivedBytes = fromServerPacket.getData();
 
 		// Print
-		System.out.println("Received from Elevator: " + new String(receivedBytes));
+		//System.out.println("Received from Elevator: " + new String(receivedBytes));
+		Output.print("Scheduler", "Main", Output.INFO, "Received from Elevator: " + new String(receivedBytes));
+
 
 		// forward to client
 		DatagramPacket toFloorPacket = new DatagramPacket(receivedBytes, receivedBytes.length, clientIP, clientPort);
 		hostSocketForFloor.send(toFloorPacket);
-		System.out.println("Forwarded to Floor: " + new String(receivedBytes));
+		//System.out.println("Forwarded to Floor: " + new String(receivedBytes));
+		Output.print("Scheduler", "Main", Output.INFO, "Forwarded to Floor: " + new String(receivedBytes));
+
 		delay();
 
 		System.out.println("=============================");
