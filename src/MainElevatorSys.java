@@ -1,4 +1,9 @@
-
+/*
+ * elevator controller system 
+ * it controls the movement of the elevator threads and coordinate between them when depending on the request coming from scheduler 
+ * 
+ * @author Zinah, Mack 
+ */
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -142,10 +147,16 @@ public class MainElevatorSys {
 		}
 
 	}
+	/**
+	 * processing the requests
+	 * @param  request hostIP hostPort
+	 * @return
+	 * 
+	 */
 
 	private void processFloorRequest(String request, InetAddress hostIP, int hostPort) throws Exception {
 
-		// Format:
+		// Format needed:
 		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER>
 		String[] tokens = request.split(" ");
 		int originFloor = Integer.parseInt(tokens[3]);
@@ -230,8 +241,10 @@ public class MainElevatorSys {
 		return closeByElevator;
 	}
 
-	/*
+	/**
+	 * 
 	 * send reply to host
+	 * @param  bytes, hostIP,  hostPort
 	 */
 	private void send(byte[] bytes, InetAddress hostIP, int hostPort) throws IOException {
 //		//Create Send Packet 
@@ -246,7 +259,7 @@ public class MainElevatorSys {
 
 	}
 
-	/*
+	/**
 	 * delay method
 	 */
 
@@ -346,7 +359,7 @@ public class MainElevatorSys {
 		}
 	}
 
-	/*
+	/**
 	 * main method
 	 */
 

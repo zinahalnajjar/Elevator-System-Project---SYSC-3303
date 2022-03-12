@@ -1,3 +1,8 @@
+/*
+ * class used to chnage the print statemtns in the requested output format [date][module][submodule][type]
+ * 
+ * @author Zinah 
+ */
 import java.util.Date;
 
 public class Output {

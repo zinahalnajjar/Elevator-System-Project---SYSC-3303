@@ -1,9 +1,6 @@
-
 /*
- * host will work like a channel between the client and the server 
- * from client's perspective it will act like a server 
- * from server perspective it will act like a client 
- * 
+ * scheduler works like a channel between the elevator and the floor 
+ * @author Zinah, Mack 
  */
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -32,6 +29,10 @@ public class MainSchedulerSys {
 		hostSocketForFloor = new DatagramSocket(HOST_PORT);
 
 	}
+	/**
+	 * main
+	 * @param args
+	 */
 
 	public static void main(String[] args) {
 		MainSchedulerSys host;
@@ -42,7 +43,7 @@ public class MainSchedulerSys {
 			Output.print("Scheduler", "Main", Output.FATAL, e.getMessage());
 		}
 	}
-	/*
+	/**
 	 * start method will send and receive requests from both client and server
 	 */
 
@@ -86,7 +87,7 @@ public class MainSchedulerSys {
 		} // while
 	}
 
-	/*
+	/**
 	 * delay
 	 */
 	private void delay() {
@@ -96,6 +97,14 @@ public class MainSchedulerSys {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * method reponsible for making sure that the request recieved is a floor request 
+	 * @param request
+	 * @param clientIP
+	 * @param clientPort
+	 * @throws IOException
+	 */
 
 	private void processRequestFromFloor(String request, InetAddress clientIP, int clientPort) throws IOException {
 		if (request.startsWith("floor request elevator ")) {
@@ -103,6 +112,13 @@ public class MainSchedulerSys {
 		}
 	}
 
+	/**
+	 * method responsible for sending and receiving responses (UDP) between the elevator and the scheduler 
+	 * @param request
+	 * @param clientIP
+	 * @param clientPort
+	 * @throws IOException
+	 */
 	private void requestElevatorToFloor(String request, InetAddress clientIP, int clientPort) throws IOException {
 		byte[] requestBytes = request.getBytes();
 

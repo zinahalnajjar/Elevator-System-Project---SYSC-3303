@@ -5,6 +5,8 @@ import java.util.ArrayList;
  * 
  * elevator subsystem thread will try to get requests from scheduler while not operating
  * upon receiving requests, moves elevator accordingly
+ * 
+ * -----old code---
  * @author Zinah, Mack, Vilmos
  *
  */
