@@ -119,7 +119,7 @@ public class ElevatorSubsystem implements Runnable {
 	public void run() {
         while(true) {
         	synchronized (elevatorRequest) {
-        		while(elevatorRequest.getFloor() == null) {
+        		while(elevatorRequest.getOriginFloor() == null) {
         			//wait until request data arrives
         			try {
         				System.out.println("Elevator Awaiting....");
@@ -128,8 +128,8 @@ public class ElevatorSubsystem implements Runnable {
         				System.err.println(e);
         			}
         		}//while
-        		moveTo(elevatorRequest.getFloor());
-        		elevatorRequest.clear();
+        		moveTo(elevatorRequest.getOriginFloor());
+        		elevatorRequest.clearOriginFloor();
         		elevatorRequest.notifyAll();
 			}//synchronized
         	
