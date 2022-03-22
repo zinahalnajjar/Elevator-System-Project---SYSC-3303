@@ -72,8 +72,8 @@ public class Elevator implements Runnable {
 
 		while (isMotorOperating()) {
 			if (currentState == State.MOVING) {
-				//System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
-				Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " is ON THE MOVE...");
+				// System.out.println("Elevator " + elevatorID + " is ON THE MOVE...");
+				Output.print("Elevator", "moveTo", Output.INFO, "Elevator " + elevatorID + " is ON THE MOVE...");
 
 			}
 			// wait until motor stops
@@ -87,49 +87,62 @@ public class Elevator implements Runnable {
 		// Checks where the Elevator is
 		// If Elevator at destination
 		if (currentFloor == destinationFloor) {
-			//System.out.println("Elevator " + elevatorID + " already at: " + destinationFloor);
-			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " already at: " + destinationFloor);
+			// System.out.println("Elevator " + elevatorID + " already at: " +
+			// destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO,
+					"Elevator " + elevatorID + " already at: " + destinationFloor);
 
 		} else {
-			//System.out.println("Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
-			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
+			// System.out.println("Elevator " + elevatorID + " moving from: " + currentFloor
+			// + " to: " + destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO,
+					"Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
 
 			motorsOn();
-			// moving to the destination floor 
+			// moving to the destination floor
 			// Move number of floors
-			moveElevator(Math.abs(currentFloor - destinationFloor));
+			moveElevatorSimulate(currentFloor, destinationFloor);
 			motorOff();
 			currentState = State.STILL;
 			// For each move currentFloor gets changed here
-			currentFloor = destinationFloor;// now the elevator is at the user floor 
-			//System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
-			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " reached: " + destinationFloor);
+			currentFloor = destinationFloor;// now the elevator is at the user floor
+			// System.out.println("Elevator " + elevatorID + " reached: " +
+			// destinationFloor);
+			Output.print("Elevator", "moveTo", Output.INFO, "Elevator " + elevatorID + " reached: " + destinationFloor);
 
 		}
 		// floor request IS SERVICED. CLEAR IT.
-		floorRequest.clear();
+		floorRequest.clearOriginFloor();
 		currentState = State.STILL;
 		// Opens door
 		// openDoor(destinationFloor);
-		//System.out.println("Elevator " + elevatorID + " Door opened at: " + destinationFloor);
-		Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " Door opened at: " + destinationFloor);
+		// System.out.println("Elevator " + elevatorID + " Door opened at: " +
+		// destinationFloor);
+		Output.print("Elevator", "moveTo", Output.INFO,
+				"Elevator " + elevatorID + " Door opened at: " + destinationFloor);
 
 	}
 
 	private void printCurrentState() {
-		//System.out.println("Elevator " + elevatorID + " CURRENT STATE: " + currentState);
-		Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " CURRENT STATE: " + currentState);
+		// System.out.println("Elevator " + elevatorID + " CURRENT STATE: " +
+		// currentState);
+		Output.print("Elevator", "currentState", Output.INFO,
+				"Elevator " + elevatorID + " CURRENT STATE: " + currentState);
 
 	}
 
 	/**
 	 * Simulates elevator moving floors
 	 * 
-	 * @param numberOfFloors, floors that elevator will move
+	 * @param originFloor
+	 * @param destinationFloor
+	 * 
+	 * @param numberOfFloors,  floors that elevator will move
 	 */
-	private void moveElevator(int numberOfFloors) {
-		currentState = State.MOVING; // set the state of the elevator car 
-		printCurrentState(); // print the current state machine of the elevator car 
+	private void moveElevatorSimulate(int originFloor, int destinationFloor) {
+		int numberOfFloors = Math.abs(originFloor - destinationFloor);
+		currentState = State.MOVING; // set the state of the elevator car
+		printCurrentState(); // print the current state machine of the elevator car
 		// delay
 		try {
 			for (int i = 0; i < numberOfFloors; i++) {
@@ -137,12 +150,12 @@ public class Elevator implements Runnable {
 			}
 		} catch (InterruptedException e) {
 		}
-		currentState = State.STILL; // set the state of the elevator car 
-		printCurrentState(); //  print the state of the elevator car 
+		currentState = State.STILL; // set the state of the elevator car
+		printCurrentState(); // print the state of the elevator car
 	}
-	
+
 	/**
-	 * run method 
+	 * run method
 	 */
 
 	@Override
@@ -154,8 +167,8 @@ public class Elevator implements Runnable {
 				while (!floorRequest.hasRequest()) {
 					try {
 						// NO REQUEST for floor. WAIT for a request
-						//System.out.println("Elevator " + elevatorID + " WAITING...");
-						Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " WAITING...");
+						// System.out.println("Elevator " + elevatorID + " WAITING...");
+						Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " WAITING...");
 
 						floorRequest.wait();
 					} catch (InterruptedException e) {
@@ -163,15 +176,21 @@ public class Elevator implements Runnable {
 					}
 				} // while
 
-				// Move to requested floor.
-				moveTo(floorRequest.getFloor());
+				// Move to origin floor.
+				moveTo(floorRequest.getOriginFloor());
+				floorRequest.clearOriginFloor();
+				Output.print("Elevator", "currentState", Output.INFO,
+						"Elevator " + elevatorID + " BOARDING passengers...");
+				// Move to dest floor.
+				moveTo(floorRequest.getDestFloor());
+				floorRequest.clearDestFloor();
 				floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
 			} // synchronized
 
 			try {
-				
-				//System.out.println("Elevator " + elevatorID + " sleep delay");
-				Output.print("Elevator", "currentState", Output.INFO,"Elevator " + elevatorID + " sleep delay");
+
+				// System.out.println("Elevator " + elevatorID + " sleep delay");
+				Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " sleep delay");
 
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -179,8 +198,10 @@ public class Elevator implements Runnable {
 			}
 		} // while
 	}
+
 	/**
 	 * getter for elevatorID
+	 * 
 	 * @return
 	 */
 
@@ -189,7 +210,8 @@ public class Elevator implements Runnable {
 	}
 
 	/**
-	 * setter for motor flag 
+	 * setter for motor flag
+	 * 
 	 * @return
 	 */
 	public boolean isMotorOperating() {

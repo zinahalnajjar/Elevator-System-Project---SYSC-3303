@@ -7,7 +7,8 @@
  */
 public class FloorRequest {
 	// Keep it as Integer so that it can be set to null when we call 'clear()'.
-	private Integer floor;
+	private Integer originFloor;
+	private Integer destFloor;
 	private int elevatorID;
 
 	/**
@@ -21,8 +22,8 @@ public class FloorRequest {
 	 * 
 	 * @return floor, value of floor
 	 */
-	public Integer getFloor() {
-		return floor;
+	public Integer getOriginFloor() {
+		return originFloor;
 	}
 
 	/**
@@ -30,15 +31,30 @@ public class FloorRequest {
 	 * 
 	 * @param floor, value of floor
 	 */
-	public void setFloor(Integer floor) {
-		this.floor = floor;
+	public void setOriginFloor(Integer originFloor) {
+		this.originFloor = originFloor;
+	}
+
+	public Integer getDestFloor() {
+		return destFloor;
+	}
+
+	public void setDestFloor(Integer destFloor) {
+		this.destFloor = destFloor;
 	}
 
 	/**
-	 * clears value of floor
+	 * clears value of OriginFloor
 	 */
-	public void clear() {
-		this.floor = null;
+	public void clearOriginFloor() {
+		this.originFloor = null;
+	}
+
+	/**
+	 * clears value of OriginFloor
+	 */
+	public void clearDestFloor() {
+		this.destFloor = null;
 	}
 
 	/**
@@ -47,6 +63,6 @@ public class FloorRequest {
 	 * @return
 	 */
 	public boolean hasRequest() {
-		return (this.floor != null);
+		return (this.originFloor != null) || (this.destFloor != null);
 	}
 }
