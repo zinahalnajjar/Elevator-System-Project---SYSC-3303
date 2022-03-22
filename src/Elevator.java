@@ -15,6 +15,8 @@ public class Elevator implements Runnable {
 	private Motor motor = new Motor();
 	public State currentState;
 
+	private ArrivalSensor arrivalSensor;
+
 	private FloorRequest floorRequest;
 
 	enum State {
@@ -35,6 +37,8 @@ public class Elevator implements Runnable {
 		this.elevatorID = elevatorId;
 		this.currentFloor = 0;// default ground floor
 		currentState = State.STILL;
+
+		this.arrivalSensor = new ArrivalSensor(elevatorId);
 		printCurrentState();
 	}
 
@@ -144,10 +148,17 @@ public class Elevator implements Runnable {
 		currentState = State.MOVING; // set the state of the elevator car
 		printCurrentState(); // print the current state machine of the elevator car
 		// delay
+		int moveTime = 0;
+		int moveToNextFloorTimeMillis = 100;
 		try {
-			for (int i = 0; i < numberOfFloors; i++) {
-				Thread.sleep(100);
+			for (int i = 1; i <= numberOfFloors; i++) {
+				Thread.sleep(moveToNextFloorTimeMillis);
+				moveTime += moveToNextFloorTimeMillis;
+				Output.print("Elevator", "TIMER", Output.INFO, "Elevator " + elevatorID + " ON THE MOVE for: " + moveTime + " milliseconds.");
+				arrivalSensor.setReachedFloor(originFloor + i);
+
 			}
+
 		} catch (InterruptedException e) {
 		}
 		currentState = State.STILL; // set the state of the elevator car
