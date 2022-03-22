@@ -95,12 +95,13 @@ public class Elevator implements Runnable {
 			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " moving from: " + currentFloor + " to: " + destinationFloor);
 
 			motorsOn();
+			// moving to the destination floor 
 			// Move number of floors
 			moveElevator(Math.abs(currentFloor - destinationFloor));
 			motorOff();
 			currentState = State.STILL;
 			// For each move currentFloor gets changed here
-			currentFloor = destinationFloor;
+			currentFloor = destinationFloor;// now the elevator is at the user floor 
 			//System.out.println("Elevator " + elevatorID + " reached: " + destinationFloor);
 			Output.print("Elevator", "moveTo", Output.INFO,"Elevator " + elevatorID + " reached: " + destinationFloor);
 

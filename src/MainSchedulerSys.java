@@ -77,7 +77,7 @@ public class MainSchedulerSys {
 			if (request.startsWith("floor ")) {
 				processRequestFromFloor(request, clientIP, clientPort);
 			} else if (request.startsWith("elevator ")) {
-				// pending
+				
 			}
 
 			delay();
