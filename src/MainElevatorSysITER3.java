@@ -13,7 +13,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainElevatorSys {
+public class MainElevatorSysITER3 {
 	private static final int SERVER_PORT = 69;
 
 	private DatagramPacket receivedPacket;
@@ -22,7 +22,6 @@ public class MainElevatorSys {
 	private int currentFloor;
 	private boolean motorOperating;
 	public State currentState;
-	private boolean stopRequested = false;
 
 	private List<Elevator> elevatorList = new ArrayList<Elevator>();
 
@@ -33,7 +32,7 @@ public class MainElevatorSys {
 	/**
 	 * constructor
 	 */
-	public MainElevatorSys() throws SocketException {
+	public MainElevatorSysITER3() throws SocketException {
 		// Construct a datagram socket and bind it to port SERVER_PORT
 		// on the local host machine. This socket will be used to
 		// receive UDP Datagram packets.
@@ -174,11 +173,9 @@ public class MainElevatorSys {
 		String[] tokens = request.split(" ");
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
-		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest
-													// floor are doing
 
 		// Find close by elevator to handle request.
-		dispatchFloorRequest(originFloor, destFloor, error);
+		dispatchFloorRequest(originFloor, destFloor);
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
@@ -191,7 +188,7 @@ public class MainElevatorSys {
 	 * @param destFloor
 	 * @return
 	 */
-	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
+	private void dispatchFloorRequest(int originFloor, int destFloor) {
 		Elevator elevator = getCloseByElevator(originFloor);
 		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
 
@@ -209,81 +206,9 @@ public class MainElevatorSys {
 				// Elevator is free.
 				floorRequest.setOriginFloor(originFloor);
 				floorRequest.setDestFloor(destFloor);
-				floorRequest.setError(error);
 				floorRequest.notifyAll();
 			}
 		} // synchronized
-	}
-
-	/**
-	 * Dispatch floor request to an close by elevator.
-	 * 
-	 * @param originFloor
-	 * @param destFloor
-	 * @return
-	 */
-	private void dispatchFloorRequestNEW(int originFloor, int destFloor, int error) {
-		Elevator elevator = getCloseByElevator(originFloor);
-		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
-
-		// get 'SHARED' FloorRequest for the elevator.
-		FloorRequest floorRequest = elevator.getElevatorRequest();
-		// if the request contains 0 for error it means that no errors detected and all
-		// elevators work
-		if (floorRequest.getTheError() == 0) {
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.setError(error);
-					floorRequest.notifyAll();
-				}
-			}
-
-			// elevator is down for 300 MS (current elevator is down)
-		} else if (floorRequest.getTheError() == 1) {
-			// the current elevator thread sleeps for 300 ms
-			try {
-				Thread.sleep(300);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-
-			}
-			// you will need to get the second next close by elevator
-			elevator = getCloseByElevator(originFloor);
-			// it will service the request same way as above
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.notifyAll();
-				}
-			} // synchronized
-				// pending show in the console which elevator is off per request
-
-		} else if (floorRequest.getTheError() == 2) {
-			// this means that the current elevator thread is stopped
-			// pick the next close by elevator
-			// service the request same as above
-
-		}
-
 	}
 
 	/**
@@ -299,11 +224,6 @@ public class MainElevatorSys {
 		int min = -1;
 		Elevator closeByElevator = null;
 		for (Elevator elevator : elevatorList) {
-			// check if elevator is OUT OF SERVICE
-			if (elevator.isOutOfService()) {
-				// skip this elevator
-				continue;
-			}
 			// check if elevator is on the move
 			if (elevator.isMotorOperating()) {
 				// elevator is on the move
@@ -422,14 +342,6 @@ public class MainElevatorSys {
 		notifyAll();
 	}
 
-	public synchronized void requestStop() {
-		stopRequested = true;
-	}
-
-	private synchronized boolean stopRequested() {
-		return stopRequested;
-	}
-
 	/*
 	 * 
 	 * /** Simulates elevator moving floors
@@ -445,9 +357,9 @@ public class MainElevatorSys {
 	 */
 
 	public static void main(String[] args) {
-		MainElevatorSys server;
+		MainElevatorSysITER3 server;
 		try {
-			server = new MainElevatorSys();
+			server = new MainElevatorSysITER3();
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();

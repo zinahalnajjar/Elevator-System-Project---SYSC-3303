@@ -19,6 +19,8 @@ public class Elevator implements Runnable {
 
 	private FloorRequest floorRequest;
 
+	private boolean outOfService;
+
 	enum State {
 		STILL, MOVING
 	}
@@ -154,7 +156,8 @@ public class Elevator implements Runnable {
 			for (int i = 1; i <= numberOfFloors; i++) {
 				Thread.sleep(moveToNextFloorTimeMillis);
 				moveTime += moveToNextFloorTimeMillis;
-				Output.print("Elevator", "TIMER", Output.INFO, "Elevator " + elevatorID + " ON THE MOVE for: " + moveTime + " milliseconds.");
+				Output.print("Elevator", "TIMER", Output.INFO,
+						"Elevator " + elevatorID + " ON THE MOVE for: " + moveTime + " milliseconds.");
 				arrivalSensor.setReachedFloor(originFloor + i);
 
 			}
@@ -187,15 +190,28 @@ public class Elevator implements Runnable {
 					}
 				} // while
 
-				// Move to origin floor.
-				moveTo(floorRequest.getOriginFloor());
-				floorRequest.clearOriginFloor();
-				Output.print("Elevator", "currentState", Output.INFO,
-						"Elevator " + elevatorID + " BOARDING passengers...");
-				// Move to dest floor.
-				moveTo(floorRequest.getDestFloor());
-				floorRequest.clearDestFloor();
-				floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
+				// HANDLE ERROR SCENARIOS
+				handleErrorScenario(floorRequest);
+
+				// proceed
+				if ((floorRequest.getTheError() == 0) || (floorRequest.getTheError() == 1)) {
+					// Move to origin floor.
+					moveTo(floorRequest.getOriginFloor());
+					floorRequest.clearOriginFloor();
+					Output.print("Elevator", "currentState", Output.INFO,
+							"Elevator " + elevatorID + " BOARDING passengers...");
+
+					// Move to dest floor.
+					moveTo(floorRequest.getDestFloor());
+					floorRequest.clearDestFloor();
+					floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
+				} else if (floorRequest.getTheError() == 2) {
+					// STUCK
+					// error
+					this.setOutOfService(true);
+					Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " is OUT OF SERVICE.");
+				}
+
 			} // synchronized
 
 			try {
@@ -203,11 +219,38 @@ public class Elevator implements Runnable {
 				// System.out.println("Elevator " + elevatorID + " sleep delay");
 				Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " sleep delay");
 
-				Thread.sleep(100);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		} // while
+	}
+
+	public boolean isOutOfService() {
+		return outOfService;
+	}
+
+	private void setOutOfService(boolean outOfService) {
+		this.outOfService = outOfService;
+
+	}
+
+	private void handleErrorScenario(FloorRequest floorRequest) {
+		if (floorRequest.getTheError() == 0) {
+			// NO ISSUES.
+		} else if (floorRequest.getTheError() == 1) {
+			// current elevator is 'DELAYED'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " DELAYED");
+			try {
+				Thread.sleep(10 * 1000); // stuck for 10 seconds
+			} catch (InterruptedException e) {
+			}
+		} else if (floorRequest.getTheError() == 2) {
+			// current elevator is 'STUCK'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " STUCK");
+			
+		}
+
 	}
 
 	/**
