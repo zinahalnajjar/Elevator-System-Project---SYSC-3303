@@ -22,6 +22,7 @@ public class MainElevatorSys {
 	private int currentFloor;
 	private boolean motorOperating;
 	public State currentState;
+	private boolean stopRequested = false;
 
 	private List<Elevator> elevatorList = new ArrayList<Elevator>();
 
@@ -195,22 +196,68 @@ public class MainElevatorSys {
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
-		synchronized (floorRequest) {
-			// CHECK IF ANY REQUEST in queue
-			if (floorRequest.hasRequest()) {
-				try {
-					// There is a request in queue to be completed
-					floorRequest.wait();
-				} catch (InterruptedException e) {
+		// if the request contains 0 for error it means that no errors detected and all elevators work 
+		if(floorRequest.getTheError() == 0) {
+			synchronized (floorRequest) {
+				// CHECK IF ANY REQUEST in queue
+				if (floorRequest.hasRequest()) {
+					try {
+						// There is a request in queue to be completed
+						floorRequest.wait();
+					} catch (InterruptedException e) {
+					}
+				} else {
+					// Elevator is free.
+					floorRequest.setOriginFloor(originFloor);
+					floorRequest.setDestFloor(destFloor);
+					floorRequest.notifyAll();
 				}
+<<<<<<< Updated upstream
 			} else {
 				// Elevator is free.
 				floorRequest.setOriginFloor(originFloor);
 				floorRequest.setDestFloor(destFloor);
 				floorRequest.setTheError(error);
 				floorRequest.notifyAll();
+=======
+			} // synchronized
+			
+			// elevator is down for 300 MS (current elevator is down)
+		}else if(floorRequest.getTheError() == 1) {
+			// the current elevator thread sleeps for 300 ms 
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+>>>>>>> Stashed changes
 			}
-		} // synchronized
+			// you will need to get the second next close by elevator
+			elevator = getCloseByElevator(originFloor);
+			// it will service the request same way as above 
+			synchronized (floorRequest) {
+				// CHECK IF ANY REQUEST in queue
+				if (floorRequest.hasRequest()) {
+					try {
+						// There is a request in queue to be completed
+						floorRequest.wait();
+					} catch (InterruptedException e) {
+					}
+				} else {
+					// Elevator is free.
+					floorRequest.setOriginFloor(originFloor);
+					floorRequest.setDestFloor(destFloor);
+					floorRequest.notifyAll();
+				}
+			} // synchronized
+			// pending show in the console which elevator is off per request 
+			
+		}else if (floorRequest.getTheError() == 2) {
+			// this means that the current elevator thread is stopped
+			// pick the next close by elevator 
+			// service the request same as above 
+			
+		}
+		
 	}
 
 	/**
@@ -342,6 +389,14 @@ public class MainElevatorSys {
 	public synchronized void motorOff() {
 		motorOperating = false;
 		notifyAll();
+	}
+	
+	public synchronized void requestStop() {
+		stopRequested = true;
+	}
+
+	private synchronized boolean stopRequested() {
+		return stopRequested;
 	}
 
 	/*

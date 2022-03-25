@@ -55,7 +55,7 @@ public class FloorSubsystem implements Runnable  {
 					LocalTime time = LocalTime.parse(tokens[0]);
 					Integer destinationFloor = Integer.valueOf(tokens[3]);
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
-					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp);
+					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp, e);
 					floorInfo.add(fD);
 				} catch(Exception e) {
 					System.out.println("Error: INVALID File format. Ignoring line: " + line);
