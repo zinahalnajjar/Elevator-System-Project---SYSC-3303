@@ -212,24 +212,16 @@ public class MainElevatorSys {
 					floorRequest.setDestFloor(destFloor);
 					floorRequest.notifyAll();
 				}
-<<<<<<< Updated upstream
-			} else {
-				// Elevator is free.
-				floorRequest.setOriginFloor(originFloor);
-				floorRequest.setDestFloor(destFloor);
-				floorRequest.setTheError(error);
-				floorRequest.notifyAll();
-=======
-			} // synchronized
-			
+			}
+
 			// elevator is down for 300 MS (current elevator is down)
-		}else if(floorRequest.getTheError() == 1) {
+			}else if(floorRequest.getTheError() == 1) {
 			// the current elevator thread sleeps for 300 ms 
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
->>>>>>> Stashed changes
+
 			}
 			// you will need to get the second next close by elevator
 			elevator = getCloseByElevator(originFloor);
