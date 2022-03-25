@@ -196,7 +196,7 @@ public class Elevator implements Runnable {
 				} // while
 
 				// HANDLE ERROR SCENARIOS
-				handleErrorScenario(floorRequest);
+//				handleErrorScenario(floorRequest);
 
 				// proceed
 				if ((floorRequest.getTheError() == 0) || (floorRequest.getTheError() == 1)) {
@@ -236,26 +236,8 @@ public class Elevator implements Runnable {
 		return outOfService;
 	}
 
-	private void setOutOfService(boolean outOfService) {
+	public void setOutOfService(boolean outOfService) {
 		this.outOfService = outOfService;
-
-	}
-
-	private void handleErrorScenario(FloorRequest floorRequest) {
-		if (floorRequest.getTheError() == 0) {
-			// NO ISSUES.
-		} else if (floorRequest.getTheError() == 1) {
-			// current elevator is 'DELAYED'
-			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " DELAYED");
-			try {
-				Thread.sleep(10 * 1000); // stuck for 10 seconds
-			} catch (InterruptedException e) {
-			}
-		} else if (floorRequest.getTheError() == 2) {
-			// current elevator is 'STUCK'
-			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " STUCK");
-			
-		}
 
 	}
 

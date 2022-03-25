@@ -170,18 +170,38 @@ public class MainElevatorSys {
 	private void processFloorRequest(String request, InetAddress hostIP, int hostPort) throws Exception {
 
 		// Format needed:
-		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER>
+		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> END
 		String[] tokens = request.split(" ");
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
 		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest
 													// floor are doing
 
+		// REPEAT UNTIL the request is processed
+//		while (true) {
 		// Find close by elevator to handle request.
 		dispatchFloorRequest(originFloor, destFloor, error);
+//		}
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
+	}
+
+	private void handleErrorScenario(Elevator elevator, int error) {
+		if (error == 0) {
+			// NO ISSUES.
+		} else if (error == 1) {
+			// current elevator is 'DELAYED'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
+			try {
+				Thread.sleep(10 * 1000); // stuck for 10 seconds
+			} catch (InterruptedException e) {
+			}
+		} else if (error == 2) {
+			// current elevator is 'STUCK'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
+			elevator.setOutOfService(true);
+		}
 	}
 
 	/**
@@ -192,8 +212,23 @@ public class MainElevatorSys {
 	 * @return
 	 */
 	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
-		Elevator elevator = getCloseByElevator(originFloor);
-		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
+
+		Elevator elevator;
+		while (true) {
+			elevator = getCloseByElevator(originFloor);
+			Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
+
+			handleErrorScenario(elevator, error);
+			if (elevator.isOutOfService()) {
+				// set error to 0 so that the next elevator would work as usual
+				error = 0;
+				// get NEXT AVAILABLE elevator
+				continue;
+			} else {
+				// process the request.
+				break;
+			}
+		}
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
@@ -213,6 +248,7 @@ public class MainElevatorSys {
 				floorRequest.notifyAll();
 			}
 		} // synchronized
+
 	}
 
 	/**
