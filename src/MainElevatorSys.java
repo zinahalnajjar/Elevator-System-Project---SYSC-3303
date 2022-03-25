@@ -1,5 +1,4 @@
-/*
- * elevator controller system 
+* elevator controller system 
  * it controls the movement of the elevator threads and coordinate between them when depending on the request coming from scheduler 
  * 
  * @author Zinah, Mack 
@@ -170,17 +169,33 @@ public class MainElevatorSys {
 	private void processFloorRequest(String request, InetAddress hostIP, int hostPort) throws Exception {
 
 		// Format needed:
-		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER>
+		// floor request elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> END
 		String[] tokens = request.split(" ");
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
-		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest floor are doing
+		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest
+													// floor are doing
 
-		// Find close by elevator to handle request.
 		dispatchFloorRequest(originFloor, destFloor, error);
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
+	}
+
+	private void applyErrorToElevator(Elevator elevator, int error) {
+		if (error == 0) {
+			// NO ISSUES.
+		} else if (error == 1) {
+			// current elevator is 'DELAYED'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
+			elevator.setDelayed(true);
+		} else if (error == 2) {
+			// current elevator is 'STUCK'
+			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
+			Output.print("Elevator", "currentState", Output.INFO,
+					"Elevator " + elevator.getElevatorID() + " is OUT OF SERVICE.");
+			elevator.setOutOfService(true);
+		}
 	}
 
 	/**
@@ -191,65 +206,63 @@ public class MainElevatorSys {
 	 * @return
 	 */
 	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
-		Elevator elevator = getCloseByElevator(originFloor);
-		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
+		// BEFORE HANDLING request
+		// make sure the 'delayed' elevators are BROUGHT BACK TO SERVICE BEFORE
+		// handling other requests.
+		fixDelayedElevators();
+
+		// choose a working elevator to handle the request
+		Elevator elevator;
+		while (true) {
+			// get close by working elevator
+			elevator = getCloseByElevator(originFloor);
+			Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
+
+			// handle error condition
+			applyErrorToElevator(elevator, error);
+
+			// check if elevator is 'available for use' after error scenario.
+			if (elevator.isDelayed() || elevator.isOutOfService()) {
+				// set error to 0 so that the next elevator would work as usual
+				error = 0;
+				// get NEXT AVAILABLE elevator
+				continue;
+			} else {
+				// elevator OK.
+				// process the request, with this 'working elevator'
+				break;
+			}
+		}
 
 		// get 'SHARED' FloorRequest for the elevator.
 		FloorRequest floorRequest = elevator.getElevatorRequest();
-		// if the request contains 0 for error it means that no errors detected and all elevators work 
-		if(floorRequest.getTheError() == 0) {
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.notifyAll();
-				} // synchronized
-			}
-			
-			// elevator is down for 300 MS (current elevator is down)
-			}else if(floorRequest.getTheError() == 1) {
-			// the current elevator thread sleeps for 300 ms 
-			try {
-				Thread.sleep(300);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-
-			}
-			// you will need to get the second next close by elevator
-			elevator = getCloseByElevator(originFloor);
-			// it will service the request same way as above 
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.notifyAll();
+		synchronized (floorRequest) {
+			// CHECK IF ANY REQUEST in queue
+			if (floorRequest.hasRequest()) {
+				try {
+					// There is a request in queue to be completed
+					floorRequest.wait();
+				} catch (InterruptedException e) {
 				}
-			} // synchronized
-			// pending show in the console which elevator is off per request 
-			
-		}else if (floorRequest.getTheError() == 2) {
-			// this means that the current elevator thread is stopped
-			// pick the next close by elevator 
-			// service the request same as above 
-			
+			} else {
+				// Elevator is free.
+				floorRequest.setOriginFloor(originFloor);
+				floorRequest.setDestFloor(destFloor);
+				floorRequest.setError(error);
+				floorRequest.notifyAll();
+			}
+		} // synchronized
+
+	}
+
+	private void fixDelayedElevators() {
+		for (Elevator elevator : elevatorList) {
+			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			if (elevator.isDelayed()) {
+				elevator.setDelayed(false);
+				Output.print("Elevator", "Main", Output.INFO, "Elevator: " + elevator.getElevatorID() + " IS FIXED.");
+			}
 		}
-		
 	}
 
 	/**
@@ -265,6 +278,11 @@ public class MainElevatorSys {
 		int min = -1;
 		Elevator closeByElevator = null;
 		for (Elevator elevator : elevatorList) {
+			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			if (elevator.isOutOfService() || elevator.isDelayed()) {
+				// skip this elevator
+				continue;
+			}
 			// check if elevator is on the move
 			if (elevator.isMotorOperating()) {
 				// elevator is on the move
@@ -382,7 +400,7 @@ public class MainElevatorSys {
 		motorOperating = false;
 		notifyAll();
 	}
-	
+
 	public synchronized void requestStop() {
 		stopRequested = true;
 	}
