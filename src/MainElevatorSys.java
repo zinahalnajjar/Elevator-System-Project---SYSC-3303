@@ -200,6 +200,8 @@ public class MainElevatorSys {
 		} else if (error == 2) {
 			// current elevator is 'STUCK'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
+			Output.print("Elevator", "currentState", Output.INFO,
+					"Elevator " + elevator.getElevatorID() + " is OUT OF SERVICE.");
 			elevator.setOutOfService(true);
 		}
 	}

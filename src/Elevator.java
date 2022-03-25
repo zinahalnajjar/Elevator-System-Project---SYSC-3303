@@ -176,8 +176,8 @@ public class Elevator implements Runnable {
 	public void run() {
 		// REPEAT LISTENING FOR REQUEST AGAIN AND AGAIN
 		while (true) {
-			if(outOfService) {
-				//End Elevator THREAD.
+			if (outOfService) {
+				// End Elevator THREAD.
 				Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " THREAD STOPPED");
 				return;
 			}
@@ -195,28 +195,17 @@ public class Elevator implements Runnable {
 					}
 				} // while
 
-				// HANDLE ERROR SCENARIOS
-//				handleErrorScenario(floorRequest);
-
 				// proceed
-				if ((floorRequest.getTheError() == 0) || (floorRequest.getTheError() == 1)) {
-					// Move to origin floor.
-					moveTo(floorRequest.getOriginFloor());
-					floorRequest.clearOriginFloor();
-					Output.print("Elevator", "currentState", Output.INFO,
-							"Elevator " + elevatorID + " BOARDING passengers...");
+				// Move to origin floor.
+				moveTo(floorRequest.getOriginFloor());
+				floorRequest.clearOriginFloor();
+				Output.print("Elevator", "currentState", Output.INFO,
+						"Elevator " + elevatorID + " BOARDING passengers...");
 
-					// Move to dest floor.
-					moveTo(floorRequest.getDestFloor());
-					floorRequest.clearDestFloor();
-					floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
-				} else if (floorRequest.getTheError() == 2) {
-					// STUCK
-					// error
-					this.setOutOfService(true);
-					Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " is OUT OF SERVICE.");
-					continue;
-				}
+				// Move to dest floor.
+				moveTo(floorRequest.getDestFloor());
+				floorRequest.clearDestFloor();
+				floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
 
 			} // synchronized
 
