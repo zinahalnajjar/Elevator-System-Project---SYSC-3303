@@ -59,12 +59,12 @@ public class MainFloorSys {
 			System.out.println("=============================");
 		}
 		// send INVALID REQUEST
-		//System.out.println("----BEGIN INVALID REQUEST: ");
+		// System.out.println("----BEGIN INVALID REQUEST: ");
 		Output.print("Floor", "Main", Output.INFO, "----BEGIN INVALID REQUEST: ");
 
 		byte[] invalidBytes = new byte[] { 9 };
 		send(invalidBytes);
-		//System.out.println("----END INVALID REQUEST: ");
+		// System.out.println("----END INVALID REQUEST: ");
 		Output.print("Floor", "Main", Output.INFO, "----END INVALID REQUEST: ");
 
 	}
@@ -74,35 +74,33 @@ public class MainFloorSys {
 	 * 
 	 */
 	private void sendRequest(String request) throws IOException {
-		//System.out.println("Sending request: " + request);
+		// System.out.println("Sending request: " + request);
 		Output.print("Floor", "Main", Output.INFO, "Sending request: " + request);
-		
 
 		byte[] sendBytes = request.getBytes();
 
 		// invoke the send method
 		send(sendBytes);
 
-		//System.out.println("Sent request: " + request);
+		// System.out.println("Sent request: " + request);
 		Output.print("Floor", "Main", Output.INFO, "Sent request: " + request);
-		
+
 		delay();
 
 		// receive request from the Scheduler
 		byte[] inBytes = new byte[1024];
 		DatagramPacket fromSchedulerPacket = new DatagramPacket(inBytes, inBytes.length);
-		//System.out.println("Awaiting reply from Scheduler...");
+		// System.out.println("Awaiting reply from Scheduler...");
 		Output.print("Floor", "Main", Output.INFO, "Awaiting reply from Scheduler...");
-		
+
 		schedulerSocket.receive(fromSchedulerPacket);
 
 		// Get data from the received packet.
 		byte[] receivedBytes = fromSchedulerPacket.getData();
 
 		// Print
-		//System.out.println("Reply Received from Scheduler.");
+		// System.out.println("Reply Received from Scheduler.");
 		Output.print("Floor", "Main", Output.INFO, "Reply Received from Scheduler.");
-		
 
 		boolean validReply = true; // flag for valid reply
 		// decide the type of reponse from the client to the Scheduler based on the
@@ -113,14 +111,13 @@ public class MainFloorSys {
 
 		// if we have a invalid request received
 		if (validReply) {
-			//System.out.println("VALID reply received: " + response);
+			// System.out.println("VALID reply received: " + response);
 			Output.print("Floor", "Main", Output.INFO, "VALID reply received: " + response);
-			
+
 		} else {
 			System.out.println("INVALID reply received: " + response);
 			Output.print("Floor", "Main", Output.INFO, "INVALID reply received: " + response);
-			
-			
+
 		}
 	}
 
@@ -158,6 +155,7 @@ public class MainFloorSys {
 		}
 
 	}
+
 	/**
 	 * receive reply from the Scheduler
 	 */
@@ -190,7 +188,8 @@ public class MainFloorSys {
 	}
 
 	/**
-	 * send a RPC containing the requests that were read from the input file 
+	 * send a RPC containing the requests that were read from the input file
+	 * 
 	 * @throws IOException
 	 */
 	private void floorRequests() throws IOException {
@@ -203,24 +202,22 @@ public class MainFloorSys {
 			// Convert file format into 'RPC format'
 
 			String request = "floor request elevator " + floorRequest.getOriginFloor() + " "
-					+ floorRequest.getDestinationFloor() + floorRequest.getError() + " END";
+					+ floorRequest.getDestinationFloor() + " " + floorRequest.getError() + " END";
 			sendRequest(request);
 
 			System.out.println("----END Request: " + i);
-			
+
 			System.out.println("=============================");
 			delay();
 		}
 		// send INVALID REQUEST
-		//System.out.println("----BEGIN INVALID REQUEST: ");
+		// System.out.println("----BEGIN INVALID REQUEST: ");
 		Output.print("Floor", "Main", Output.INFO, "----BEGIN INVALID REQUEST: ");
-		
+
 		byte[] invalidBytes = new byte[] { 9 };
 		send(invalidBytes);
-		//System.out.println("----END INVALID REQUEST: ");
+		// System.out.println("----END INVALID REQUEST: ");
 		Output.print("Floor", "Main", Output.INFO, "----END INVALID REQUEST: ");
-		
-		
 
 	}
 
@@ -244,21 +241,26 @@ public class MainFloorSys {
 					LocalTime time = LocalTime.parse(tokens[0]);
 					Integer destinationFloor = Integer.valueOf(tokens[3]);
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
-					Integer error = Integer.valueOf(tokens[4]); // made error as token[4] cuz I added an error number at the last part of the input info text file
-					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp, error); // made sure to include error 
+					Integer error = Integer.valueOf(tokens[4]); // made error as token[4] cuz I added an error number at
+																// the last part of the input info text file
+					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp, error); // made
+																														// sure
+																														// to
+																														// include
+																														// error
 					floorInfo.add(fD);
 				} catch (Exception e) {
-					//System.out.println("Error: INVALID File format. Ignoring line: " + line);
+					// System.out.println("Error: INVALID File format. Ignoring line: " + line);
 					Output.print("Floor", "Main", Output.WARNING, "----END INVALID REQUEST: ");
-					
+
 				}
 
 			}
 			scanner.close();
 		} catch (FileNotFoundException e) {
-			//System.out.println("error");
+			// System.out.println("error");
 			Output.print("Floor", "Main", Output.FATAL, "error");
-			
+
 		}
 
 		return floorInfo;

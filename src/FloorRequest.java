@@ -43,15 +43,16 @@ public class FloorRequest {
 	public void setDestFloor(Integer destFloor) {
 		this.destFloor = destFloor;
 	}
-	
+
 	/**
 	 * Making getter and setter for error
+	 * 
 	 * @return error
 	 */
 	public Integer getTheError() {
 		return error;
 	}
-	
+
 	public void setTheError(Integer error) {
 		this.error = error;
 	}
@@ -71,11 +72,16 @@ public class FloorRequest {
 	}
 
 	/**
-	 * Returns true, if there is any floor request, otherwise false. NOT SURE IF WE GOTTA DO SOMETHING ABOUT THE ERROR HERE
+	 * Returns true, if there is any floor request, otherwise false. NOT SURE IF WE
+	 * GOTTA DO SOMETHING ABOUT THE ERROR HERE
 	 * 
 	 * @return
 	 */
 	public boolean hasRequest() {
 		return (this.originFloor != null) || (this.destFloor != null);
+	}
+
+	public void setError(int error) {
+		this.error = error;
 	}
 }

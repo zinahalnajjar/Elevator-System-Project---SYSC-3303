@@ -210,6 +210,7 @@ public class MainElevatorSys {
 					// Elevator is free.
 					floorRequest.setOriginFloor(originFloor);
 					floorRequest.setDestFloor(destFloor);
+					floorRequest.setError(error);
 					floorRequest.notifyAll();
 				}
 			}
