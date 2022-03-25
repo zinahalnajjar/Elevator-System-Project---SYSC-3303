@@ -10,6 +10,7 @@ public class FloorRequest {
 	private Integer originFloor;
 	private Integer destFloor;
 	private int elevatorID;
+	private Integer error;
 
 	/**
 	 * base constructor
@@ -42,6 +43,18 @@ public class FloorRequest {
 	public void setDestFloor(Integer destFloor) {
 		this.destFloor = destFloor;
 	}
+	
+	/**
+	 * Making getter and setter for error
+	 * @return error
+	 */
+	public Integer getTheError() {
+		return error;
+	}
+	
+	public void setTheError(Integer error) {
+		this.error = error;
+	}
 
 	/**
 	 * clears value of OriginFloor
@@ -58,7 +71,7 @@ public class FloorRequest {
 	}
 
 	/**
-	 * Returns true, if there is any floor request, otherwise false.
+	 * Returns true, if there is any floor request, otherwise false. NOT SURE IF WE GOTTA DO SOMETHING ABOUT THE ERROR HERE
 	 * 
 	 * @return
 	 */
