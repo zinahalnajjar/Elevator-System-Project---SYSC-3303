@@ -21,6 +21,8 @@ public class Elevator implements Runnable {
 
 	private boolean outOfService;
 
+	private boolean delayed;
+
 	enum State {
 		STILL, MOVING
 	}
@@ -247,5 +249,13 @@ public class Elevator implements Runnable {
 	 */
 	public boolean isMotorOperating() {
 		return motor.isMotorOperating();
+	}
+
+	public boolean isDelayed() {
+		return this.delayed;
+	}
+
+	public void setDelayed(boolean delayed) {
+		this.delayed = delayed;
 	}
 }

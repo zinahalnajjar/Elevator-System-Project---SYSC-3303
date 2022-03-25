@@ -177,11 +177,7 @@ public class MainElevatorSys {
 		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest
 													// floor are doing
 
-		// REPEAT UNTIL the request is processed
-//		while (true) {
-		// Find close by elevator to handle request.
 		dispatchFloorRequest(originFloor, destFloor, error);
-//		}
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
@@ -193,10 +189,7 @@ public class MainElevatorSys {
 		} else if (error == 1) {
 			// current elevator is 'DELAYED'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
-			try {
-				Thread.sleep(10 * 1000); // stuck for 10 seconds
-			} catch (InterruptedException e) {
-			}
+			elevator.setDelayed(true);
 		} else if (error == 2) {
 			// current elevator is 'STUCK'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
@@ -215,19 +208,28 @@ public class MainElevatorSys {
 	 */
 	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
 
+		// make sure the 'delayed' elevators are BROUGHT BACK TO SERVICE BEFORE
+		// handling other requests.
+		fixDelayedElevators();
+
+		// choose a working elevator to handle the request
 		Elevator elevator;
 		while (true) {
 			elevator = getCloseByElevator(originFloor);
 			Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
 
+			// handle error condition
 			handleErrorScenario(elevator, error);
-			if (elevator.isOutOfService()) {
+
+			// check if elevator is 'available for use' after error scenario.
+			if (elevator.isDelayed() || elevator.isOutOfService()) {
 				// set error to 0 so that the next elevator would work as usual
 				error = 0;
 				// get NEXT AVAILABLE elevator
 				continue;
 			} else {
-				// process the request.
+				// elevator OK.
+				// process the request, with this 'working elevator'
 				break;
 			}
 		}
@@ -251,6 +253,16 @@ public class MainElevatorSys {
 			}
 		} // synchronized
 
+	}
+
+	private void fixDelayedElevators() {
+		for (Elevator elevator : elevatorList) {
+			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			if (elevator.isDelayed()) {
+				elevator.setDelayed(false);
+				Output.print("Elevator", "Main", Output.INFO, "Elevator: " + elevator.getElevatorID() + " IS FIXED.");
+			}
+		}
 	}
 
 	/**
@@ -337,8 +349,8 @@ public class MainElevatorSys {
 		int min = -1;
 		Elevator closeByElevator = null;
 		for (Elevator elevator : elevatorList) {
-			// check if elevator is OUT OF SERVICE
-			if (elevator.isOutOfService()) {
+			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			if (elevator.isOutOfService() || elevator.isDelayed()) {
 				// skip this elevator
 				continue;
 			}
