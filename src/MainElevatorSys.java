@@ -183,7 +183,7 @@ public class MainElevatorSys {
 		send(replyBytes, hostIP, hostPort);
 	}
 
-	private void handleErrorScenario(Elevator elevator, int error) {
+	private void applyErrorToElevator(Elevator elevator, int error) {
 		if (error == 0) {
 			// NO ISSUES.
 		} else if (error == 1) {
@@ -207,7 +207,7 @@ public class MainElevatorSys {
 	 * @return
 	 */
 	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
-
+		// BEFORE HANDLING request
 		// make sure the 'delayed' elevators are BROUGHT BACK TO SERVICE BEFORE
 		// handling other requests.
 		fixDelayedElevators();
@@ -215,11 +215,12 @@ public class MainElevatorSys {
 		// choose a working elevator to handle the request
 		Elevator elevator;
 		while (true) {
+			// get close by working elevator
 			elevator = getCloseByElevator(originFloor);
 			Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
 
 			// handle error condition
-			handleErrorScenario(elevator, error);
+			applyErrorToElevator(elevator, error);
 
 			// check if elevator is 'available for use' after error scenario.
 			if (elevator.isDelayed() || elevator.isOutOfService()) {
@@ -263,77 +264,6 @@ public class MainElevatorSys {
 				Output.print("Elevator", "Main", Output.INFO, "Elevator: " + elevator.getElevatorID() + " IS FIXED.");
 			}
 		}
-	}
-
-	/**
-	 * Dispatch floor request to an close by elevator.
-	 * 
-	 * @param originFloor
-	 * @param destFloor
-	 * @return
-	 */
-	private void dispatchFloorRequestNEW(int originFloor, int destFloor, int error) {
-		Elevator elevator = getCloseByElevator(originFloor);
-		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
-
-		// get 'SHARED' FloorRequest for the elevator.
-		FloorRequest floorRequest = elevator.getElevatorRequest();
-		// if the request contains 0 for error it means that no errors detected and all
-		// elevators work
-		if (floorRequest.getTheError() == 0) {
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.setError(error);
-					floorRequest.notifyAll();
-				}
-			}
-
-			// elevator is down for 300 MS (current elevator is down)
-		} else if (floorRequest.getTheError() == 1) {
-			// the current elevator thread sleeps for 300 ms
-			try {
-				Thread.sleep(300);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-
-			}
-			// you will need to get the second next close by elevator
-			elevator = getCloseByElevator(originFloor);
-			// it will service the request same way as above
-			synchronized (floorRequest) {
-				// CHECK IF ANY REQUEST in queue
-				if (floorRequest.hasRequest()) {
-					try {
-						// There is a request in queue to be completed
-						floorRequest.wait();
-					} catch (InterruptedException e) {
-					}
-				} else {
-					// Elevator is free.
-					floorRequest.setOriginFloor(originFloor);
-					floorRequest.setDestFloor(destFloor);
-					floorRequest.notifyAll();
-				}
-			} // synchronized
-				// pending show in the console which elevator is off per request
-
-		} else if (floorRequest.getTheError() == 2) {
-			// this means that the current elevator thread is stopped
-			// pick the next close by elevator
-			// service the request same as above
-
-		}
-
 	}
 
 	/**
