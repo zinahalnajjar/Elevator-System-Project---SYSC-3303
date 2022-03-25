@@ -5,6 +5,7 @@
  */
 
 import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -202,7 +203,7 @@ public class MainFloorSys {
 			// Convert file format into 'RPC format'
 
 			String request = "floor request elevator " + floorRequest.getOriginFloor() + " "
-					+ floorRequest.getDestinationFloor() + " END";
+					+ floorRequest.getDestinationFloor() + floorRequest.getError() + " END";
 			sendRequest(request);
 
 			System.out.println("----END Request: " + i);
@@ -243,7 +244,8 @@ public class MainFloorSys {
 					LocalTime time = LocalTime.parse(tokens[0]);
 					Integer destinationFloor = Integer.valueOf(tokens[3]);
 					Boolean goingUp = Boolean.valueOf(tokens[2]);
-					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp);
+					Integer error = Integer.valueOf(tokens[4]); // made error as token[4] cuz I added an error number at the last part of the input info text file
+					FloorMovementData fD = new FloorMovementData(time, originFloor, destinationFloor, goingUp, error); // made sure to include error 
 					floorInfo.add(fD);
 				} catch (Exception e) {
 					//System.out.println("Error: INVALID File format. Ignoring line: " + line);

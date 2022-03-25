@@ -173,9 +173,10 @@ public class MainElevatorSys {
 		String[] tokens = request.split(" ");
 		int originFloor = Integer.parseInt(tokens[3]);
 		int destFloor = Integer.parseInt(tokens[4]);
+		int error = Integer.parseInt(tokens[5]); // putting this as 5 because im just following what origin and dest floor are doing
 
 		// Find close by elevator to handle request.
-		dispatchFloorRequest(originFloor, destFloor);
+		dispatchFloorRequest(originFloor, destFloor, error);
 
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
@@ -188,7 +189,7 @@ public class MainElevatorSys {
 	 * @param destFloor
 	 * @return
 	 */
-	private void dispatchFloorRequest(int originFloor, int destFloor) {
+	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
 		Elevator elevator = getCloseByElevator(originFloor);
 		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
 
@@ -206,6 +207,7 @@ public class MainElevatorSys {
 				// Elevator is free.
 				floorRequest.setOriginFloor(originFloor);
 				floorRequest.setDestFloor(destFloor);
+				floorRequest.setTheError(error);
 				floorRequest.notifyAll();
 			}
 		} // synchronized
