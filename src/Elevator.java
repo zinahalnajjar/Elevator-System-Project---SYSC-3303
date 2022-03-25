@@ -176,6 +176,11 @@ public class Elevator implements Runnable {
 	public void run() {
 		// REPEAT LISTENING FOR REQUEST AGAIN AND AGAIN
 		while (true) {
+			if(outOfService) {
+				//End Elevator THREAD.
+				Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " THREAD STOPPED");
+				return;
+			}
 			synchronized (floorRequest) {
 				// check if any request is in queue
 				while (!floorRequest.hasRequest()) {
@@ -210,6 +215,7 @@ public class Elevator implements Runnable {
 					// error
 					this.setOutOfService(true);
 					Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevatorID + " is OUT OF SERVICE.");
+					continue;
 				}
 
 			} // synchronized
