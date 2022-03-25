@@ -182,7 +182,7 @@ public class MainElevatorSys {
 		byte[] replyBytes = "DONE".getBytes();
 		send(replyBytes, hostIP, hostPort);
 	}
-
+	
 	/**
 	 * Dispatch floor request to an close by elevator.
 	 * 
@@ -191,6 +191,36 @@ public class MainElevatorSys {
 	 * @return
 	 */
 	private void dispatchFloorRequest(int originFloor, int destFloor, int error) {
+		Elevator elevator = getCloseByElevator(originFloor);
+		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
+
+		// get 'SHARED' FloorRequest for the elevator.
+		FloorRequest floorRequest = elevator.getElevatorRequest();
+		synchronized (floorRequest) {
+			// CHECK IF ANY REQUEST in queue
+			if (floorRequest.hasRequest()) {
+				try {
+					// There is a request in queue to be completed
+					floorRequest.wait();
+				} catch (InterruptedException e) {
+				}
+			} else {
+				// Elevator is free.
+				floorRequest.setOriginFloor(originFloor);
+				floorRequest.setDestFloor(destFloor);
+				floorRequest.notifyAll();
+			}
+		} // synchronized
+	}
+
+	/**
+	 * Dispatch floor request to an close by elevator.
+	 * 
+	 * @param originFloor
+	 * @param destFloor
+	 * @return
+	 */
+	private void dispatchFloorRequestNEW(int originFloor, int destFloor, int error) {
 		Elevator elevator = getCloseByElevator(originFloor);
 		Output.print("Elevator", "Main", Output.INFO, "CLOSE BY Elevator: " + elevator.getElevatorID());
 
