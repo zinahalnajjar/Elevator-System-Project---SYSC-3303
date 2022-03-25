@@ -1,5 +1,4 @@
-/*
- * elevator controller system 
+* elevator controller system 
  * it controls the movement of the elevator threads and coordinate between them when depending on the request coming from scheduler 
  * 
  * @author Zinah, Mack 
