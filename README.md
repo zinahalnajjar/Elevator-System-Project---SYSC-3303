@@ -78,6 +78,16 @@ Fixing State Machine code from Iteration 2: Zinah
 Known issues that must be addressed before next iteration: 
 The elevator threads is moving from its current floor to the origin floor (floor where the user is currently at) but it is not moving from orgin floor (floor where the user is currently at) to the destination floor (requested by the user)
 
+Breakdown of responsibilities iteration 4:
+code implementation: Zinah, Mack 
+UML diagram: Shawaize 
+Sequnce diagram: Zinah -  didn't change 
+timing diagrams: Vimos, Faris, Shawaize
+Readme: Zinah 
+Test classes: Mack, Faris - stayed the same as Iteration 1 
+JavaDoc: Zinah 
+fixing known issues from Iteration 3: Zinah 
+ 
 
 GitHub repository link:
 
