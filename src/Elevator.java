@@ -148,6 +148,8 @@ public class Elevator implements Runnable {
 	 * @param numberOfFloors,  floors that elevator will move
 	 */
 	private void moveElevatorSimulate(int originFloor, int destinationFloor) {
+		boolean goingUp = originFloor < destinationFloor;
+		
 		int numberOfFloors = Math.abs(originFloor - destinationFloor);
 		currentState = State.MOVING; // set the state of the elevator car
 		printCurrentState(); // print the current state machine of the elevator car
@@ -160,8 +162,12 @@ public class Elevator implements Runnable {
 				moveTime += moveToNextFloorTimeMillis;
 				Output.print("Elevator", "TIMER", Output.INFO,
 						"Elevator " + elevatorID + " ON THE MOVE for: " + moveTime + " milliseconds.");
-				arrivalSensor.setReachedFloor(originFloor + i);
-
+				if(goingUp) {
+					arrivalSensor.setReachedFloor(originFloor + i);
+				}
+				else {
+					arrivalSensor.setReachedFloor(originFloor - i);
+				}
 			}
 
 		} catch (InterruptedException e) {
