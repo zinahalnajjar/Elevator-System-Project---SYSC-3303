@@ -82,7 +82,7 @@ Breakdown of responsibilities iteration 4:
 code implementation: Zinah, Mack 
 UML diagram: Shawaize 
 Sequnce diagram: Zinah -  didn't change 
-timing diagrams: Vimos, Faris, Shawaize
+timing diagrams: Vilmos, Faris, Shawaize
 Readme: Zinah 
 Test classes: Mack, Faris - stayed the same as Iteration 1 
 JavaDoc: Zinah 
