@@ -5,7 +5,6 @@
  */
 
 import java.io.File;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainFloorSys {
-
-	public static final byte[] validReadReply = new byte[] { 0, 3, 0, 1 };
-	public static final byte[] validWriteReply = new byte[] { 0, 4, 0, 0 };
 
 	// send and receive packets
 	private DatagramPacket sendPacket, receivePacket;
@@ -39,33 +35,6 @@ public class MainFloorSys {
 		// Scheduler details
 		schedulerIp = InetAddress.getByName("localhost");
 		schedulerPort = 23;
-
-	}
-
-	/**
-	 * send read, write, invalid requests
-	 */
-
-	public void packetRequests() throws IOException {
-		for (int i = 1; i <= 10; i++) {
-			System.out.println("----BEGIN Request: " + i);
-			if (i % 2 == 0) {
-				// invoke sendRequest
-				sendRequest("read");
-			} else {
-				sendRequest("write");
-			}
-			System.out.println("----END Request: " + i);
-			System.out.println("=============================");
-		}
-		// send INVALID REQUEST
-		// System.out.println("----BEGIN INVALID REQUEST: ");
-		Output.print("Floor", "Main", Output.INFO, "----BEGIN INVALID REQUEST: ");
-
-		byte[] invalidBytes = new byte[] { 9 };
-		send(invalidBytes);
-		// System.out.println("----END INVALID REQUEST: ");
-		Output.print("Floor", "Main", Output.INFO, "----END INVALID REQUEST: ");
 
 	}
 
@@ -193,10 +162,13 @@ public class MainFloorSys {
 	 * @throws IOException
 	 */
 	private void floorRequests() throws IOException {
+		// note the start time
+		long startTime = System.currentTimeMillis();
+
 		int i = 1;
 		ArrayList<FloorMovementData> lines = getInfo();
 		for (FloorMovementData floorRequest : lines) {
-			System.out.println("----BEGIN Request: " + i++);
+			Output.print("Floor", "Main", Output.INFO, "----BEGIN Request: " + i++);
 			// FORMAT:
 			// floor request elevator <ORIGIN FLOOR NUMBER> <DESTINATION FLOOR NUMBER> END
 			// Convert file format into 'RPC format'
@@ -205,11 +177,19 @@ public class MainFloorSys {
 					+ floorRequest.getDestinationFloor() + " " + floorRequest.getError() + " END";
 			sendRequest(request);
 
-			System.out.println("----END Request: " + i);
+			Output.print("Floor", "Main", Output.INFO, "----END Request: " + i);
 
 			System.out.println("=============================");
 			delay();
 		}
+		// note the end time
+		long endTime = System.currentTimeMillis();
+
+		long timeTakenMillis = endTime - startTime;
+
+		Output.print("Floor", "Main", Output.INFO,
+				"  Time taken to process the entire input file: " + timeTakenMillis + " milliseconds.");
+
 		// send INVALID REQUEST
 		// System.out.println("----BEGIN INVALID REQUEST: ");
 		Output.print("Floor", "Main", Output.INFO, "----BEGIN INVALID REQUEST: ");

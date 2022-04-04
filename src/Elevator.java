@@ -9,6 +9,12 @@
  */
 public class Elevator implements Runnable {
 
+	//load time in milliseconds
+	private static final int LOAD_TIME = 50;
+
+	//unload time in milliseconds
+	private static final int UNLOAD_TIME = 50;
+
 	private int elevatorID;
 
 	private int currentFloor;
@@ -207,12 +213,18 @@ public class Elevator implements Runnable {
 				// Move to origin floor.
 				moveTo(floorRequest.getOriginFloor());
 				floorRequest.clearOriginFloor();
-				Output.print("Elevator", "currentState", Output.INFO,
-						"Elevator " + elevatorID + " BOARDING passengers...");
+				//Changed to measure loading time.
+				
+//				Output.print("Elevator", "currentState", Output.INFO,
+//						"Elevator " + elevatorID + " BOARDING passengers...");
+				load();
 
 				// Move to dest floor.
 				moveTo(floorRequest.getDestFloor());
 				floorRequest.clearDestFloor();
+				//Changed to measure unloading time.
+				unload();
+				
 				floorRequest.notifyAll(); // NOTIFY Controller ELEVAGTOR SYS
 
 			} // synchronized
@@ -228,6 +240,30 @@ public class Elevator implements Runnable {
 			}
 		} // while
 	}
+
+
+	private void load() {
+		Output.print("Elevator", "currentState", Output.INFO,
+				"Elevator " + elevatorID + " BOARDING passengers..." + LOAD_TIME + " milliseconds.");
+
+		try {
+			Thread.sleep(LOAD_TIME);
+		} catch (InterruptedException e) {
+		}
+
+	}
+
+	private void unload() {
+		Output.print("Elevator", "currentState", Output.INFO,
+				"Elevator " + elevatorID + " UNLOADING passengers..." + UNLOAD_TIME + " milliseconds.");
+
+		try {
+			Thread.sleep(UNLOAD_TIME);
+		} catch (InterruptedException e) {
+		}
+
+	}
+
 
 	public boolean isOutOfService() {
 		return outOfService;
