@@ -52,6 +52,12 @@ public class Elevator implements Runnable {
 		printCurrentState();
 	}
 
+	
+	public String getCurrentState() {
+		return currentState.name(); // converted type ENUM to type String
+	}
+	
+	
 	public int getCurrentFloor() {
 		return currentFloor;
 	}

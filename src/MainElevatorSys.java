@@ -420,6 +420,7 @@ public class MainElevatorSys {
 
 	public static void main(String[] args) {
 		MainElevatorSys server;
+		//SchedulerView sv = new SchedulerView();
 		try {
 			server = new MainElevatorSys();
 			server.start();
