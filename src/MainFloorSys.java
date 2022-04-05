@@ -4,6 +4,7 @@
  * @author Zinah, Mack 
  */
 
+import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +20,12 @@ import java.util.Scanner;
 
 public class MainFloorSys {
 
+	//Number of elevators
+	private static final int ELEVATOR_COUNT = 4;
+
+	//GUI
+	private static ElevatorDashboardGUI gui;
+	
 	// send and receive packets
 	private DatagramPacket sendPacket, receivePacket;
 	// one socket that is either a read request or a write request
@@ -196,11 +203,13 @@ public class MainFloorSys {
 	}
 
 	public static void main(String[] args) {
-		MainFloorSys c;
 		try {
-			c = new MainFloorSys();
+			//display GUI
+			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
+			
+			//Start floor sub system
+			MainFloorSys c = new MainFloorSys();
 			c.floorRequests();
-//			c.packetRequests();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
