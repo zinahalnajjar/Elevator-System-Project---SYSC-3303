@@ -30,6 +30,8 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	// Text field displaying elevator error;
 	private final JTextField elevator1Error;
 
+	private int currentFloor;
+
 	/**
 	 * CONSTRUCTOR.
 	 */
@@ -254,7 +256,9 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
-		elevator1.get(floor - 1).setBackground(Color.YELLOW);
+		elevator1.get(currentFloor).setBackground(Color.WHITE);
+		currentFloor = floor - 1;
+		elevator1.get(currentFloor).setBackground(Color.YELLOW);
 	}
 
 }
