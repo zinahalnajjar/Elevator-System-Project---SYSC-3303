@@ -492,6 +492,12 @@ public class ElevatorDashboardGUIOLD extends JFrame implements ElevatorDashboard
 		
 	}
 
+	@Override
+	public void updateView(int elevatorID, int floor, int error, String state) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 
 }

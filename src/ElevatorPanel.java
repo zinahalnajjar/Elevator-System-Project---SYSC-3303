@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -17,7 +16,7 @@ import javax.swing.JTextField;
  *
  */
 
-public class ElevatorPanel extends JPanel {
+public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 
 	// Lists of panels for showing location of elevators
 	private final ArrayList<JPanel> elevator1;
@@ -247,10 +246,15 @@ public class ElevatorPanel extends JPanel {
 			elevator1.get(floorNum - 1).setBackground(Color.YELLOW);
 		}
 	}
+
 	public void updateState(int elevatorID, int position, String state) {
 		// TODO Auto-generated method stub
 
 	}
-	
+
+	@Override
+	public void updateView(int elevatorID, int floor, int error, String state) {
+		elevator1.get(floor - 1).setBackground(Color.YELLOW);
+	}
 
 }

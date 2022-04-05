@@ -5,7 +5,7 @@ public interface ElevatorDashboard {
 	void updateState(int elevatorID, String state);
 	void updateState(int elevatorID, int position, String state);
 	void updateError(int elevatorID, int error);
-	//void updateCurrentFloor(Model model, int currentFloor);
+	void updateView(int elevatorID, int floor, int error, String state);
 	
 
 

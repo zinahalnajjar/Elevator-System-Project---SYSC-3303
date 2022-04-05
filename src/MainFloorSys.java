@@ -4,7 +4,6 @@
  * @author Zinah, Mack 
  */
 
-import java.awt.GraphicsConfiguration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,17 +14,16 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class MainFloorSys {
 
-	//Number of elevators
+	// Number of elevators
 	private static final int ELEVATOR_COUNT = 4;
 
-	//GUI
+	// GUI
 	private static ElevatorDashboardGUI gui;
-	
+
 	// send and receive packets
 	private DatagramPacket sendPacket, receivePacket;
 	// one socket that is either a read request or a write request
@@ -115,19 +113,18 @@ public class MainFloorSys {
 		if (response == null) {
 			return false;
 		}
-		
+
 		response = response.trim();
-		
+
 		if (response.isEmpty()) {
 			return false;
 		}
-		
-		System.out.println("...PENDING GUI UPDATE: " + response);	
+
+		System.out.println("...PENDING GUI UPDATE: " + response);
 		if (response.equals("DONE")) {
 			return true;
 		}
-		
-		
+
 		if (response.startsWith("elevator ")) {
 			processElevatorPosition(response);
 		} else {
@@ -139,12 +136,23 @@ public class MainFloorSys {
 
 		}
 
-		
 		return true;
 	}
 
 	private void processElevatorPosition(String response) {
-		System.out.println("...PENDING GUI UPDATE: " + response);	
+		System.out.println("... GUI UPDATE: " + response);
+
+		// Format needed:
+		// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
+		String[] tokens = response.split(" ");
+		int elevatorID = Integer.parseInt(tokens[1]);
+		int floor = Integer.parseInt(tokens[2]);
+		int error = Integer.parseInt(tokens[3]);
+		String state = tokens[4];
+		
+		//Update GUI
+		gui.updateView(elevatorID, floor, error, state);
+
 	}
 
 	/**
@@ -204,10 +212,10 @@ public class MainFloorSys {
 
 	public static void main(String[] args) {
 		try {
-			//display GUI
-			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
-			
-			//Start floor sub system
+//			// display GUI
+//			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
+
+			// Start floor sub system
 			MainFloorSys c = new MainFloorSys();
 			c.floorRequests();
 		} catch (Exception e) {

@@ -13,12 +13,25 @@ public class MainElevatorSys {
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
 
+
+	// Number of elevators
+	private static final int ELEVATOR_COUNT = 4;
+
+	// GUI
+	static ElevatorDashboardGUI gui;
+
 	private int currentFloor;
 	private boolean motorOperating;
 	public State currentState;
 	private boolean stopRequested = false;
 
-	private List<Elevator> elevatorList = new ArrayList<Elevator>();
+	private static InetAddress hostIP;
+
+	private static int hostPort;
+
+	private static List<Elevator> elevatorList = new ArrayList<Elevator>();
+
+	private static MainElevatorSys server;
 
 	enum State {
 		STILL, MOVING
@@ -128,8 +141,8 @@ public class MainElevatorSys {
 
 	private void processReceivedBytes(DatagramPacket receivedPacket) throws Exception {
 		// Host Details
-		InetAddress hostIP = receivedPacket.getAddress();
-		int hostPort = receivedPacket.getPort();
+		hostIP = receivedPacket.getAddress();
+		hostPort = receivedPacket.getPort();
 
 		// Get data from the received packet.
 		byte[] receivedBytes = receivedPacket.getData();
@@ -419,9 +432,11 @@ public class MainElevatorSys {
 	 */
 
 	public static void main(String[] args) {
-		MainElevatorSys server;
-		//SchedulerView sv = new SchedulerView();
 		try {
+//			// display GUI
+			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
+
+			// Start elevator sub system
 			server = new MainElevatorSys();
 			server.start();
 		} catch (Exception e) {
@@ -429,6 +444,15 @@ public class MainElevatorSys {
 			// System.out.println("\n\n ERROR: " + e.getMessage());
 			Output.print("Elevator", "Main", Output.FATAL, e.getMessage());
 			System.exit(1);
+		}
+	}
+
+	public static void updateStatus(String status) {
+		byte[] replyBytes = status.getBytes();
+		try {
+			server.send(replyBytes, hostIP, hostPort);
+		} catch (IOException e) {
+			Output.print("Elevator", "Main", Output.CRITICAL, e.getMessage());
 		}
 	}
 }

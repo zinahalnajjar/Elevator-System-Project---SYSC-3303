@@ -174,12 +174,22 @@ public class Elevator implements Runnable {
 				moveTime += moveToNextFloorTimeMillis;
 				Output.print("Elevator", "TIMER", Output.INFO,
 						"Elevator " + elevatorID + " ON THE MOVE for: " + moveTime + " milliseconds.");
+				int floor;
 				if(goingUp) {
-					arrivalSensor.setReachedFloor(originFloor + i);
+					floor = originFloor + i;
 				}
 				else {
-					arrivalSensor.setReachedFloor(originFloor - i);
+					floor = originFloor - i;
 				}
+				arrivalSensor.setReachedFloor(floor);
+				// Format needed:
+				// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
+				String status = "elevator " + elevatorID
+						+ floor
+						+ " 0 MOVING END";
+				
+				MainElevatorSys.gui.updateView(elevatorID, floor, 0, "MOVING");
+
 			}
 
 		} catch (InterruptedException e) {

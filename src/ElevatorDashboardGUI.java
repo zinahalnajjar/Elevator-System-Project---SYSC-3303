@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 
 	// Individual Elevator tracking panels
-	ArrayList<ElevatorPanel> panelList = new ArrayList<ElevatorPanel>();
+	private ArrayList<ElevatorPanel> elevatorPanelList = new ArrayList<ElevatorPanel>();
 
 	private int elevatorCount;
 
@@ -46,7 +46,9 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 		liveTrackingPanel.add(liveTrackingPanelGraphic);
 
 		for (int i = 0; i < elevatorCount; i++) {
-			liveTrackingPanelGraphic.add(new ElevatorPanel());
+			ElevatorPanel elevatorPanel = new ElevatorPanel();
+			liveTrackingPanelGraphic.add(elevatorPanel);
+			elevatorPanelList.add(elevatorPanel);
 		}
 
 		return liveTrackingPanel;
@@ -81,6 +83,13 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 	public static void main(String[] args) {
 		new ElevatorDashboardGUI(4);
 
+	}
+
+	@Override
+	public void updateView(int elevatorID, int floor, int error, String state) {
+		//elevatorID is 1 based
+		ElevatorPanel elevatorPanel = elevatorPanelList.get(elevatorID - 1);
+		elevatorPanel.updateView(elevatorID, floor, error, state);
 	}
 
 }
