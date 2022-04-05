@@ -119,6 +119,7 @@ public class MainElevatorSys {
 		// System.out.println("--- elevatorThread2 STARTED.");
 		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread2 STARTED.");
 
+
 		FloorRequest floorRequest3 = new FloorRequest();
 		Elevator elevator3 = new Elevator(3, floorRequest3);
 		elevatorList.add(elevator3);
@@ -127,6 +128,16 @@ public class MainElevatorSys {
 		elevatorThread3.start();
 		// System.out.println("--- elevatorThread3 STARTED.");
 		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread3 STARTED.");
+
+		
+		FloorRequest floorRequest4 = new FloorRequest();
+		Elevator elevator4 = new Elevator(4, floorRequest4);
+		elevatorList.add(elevator4);
+
+		Thread elevatorThread4 = new Thread(elevator4, "Elevator 4");
+		elevatorThread4.start();
+		// System.out.println("--- elevatorThread4 STARTED.");
+		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread4 STARTED.");
 
 	}
 

@@ -253,7 +253,9 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 	public void updateView(int elevatorID, int floor, int error, String state) {
 		if (error == 0) {
 			elevator.get(currentFloor).setBackground(Color.WHITE);
-			currentFloor = floor - 1;
+			if (floor > 0) {
+				currentFloor = floor - 1;
+			}
 			elevator.get(currentFloor).setBackground(Color.YELLOW);
 
 			elevatorError.setForeground(Color.GREEN);
