@@ -257,7 +257,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 			elevator.get(currentFloor).setBackground(Color.YELLOW);
 
 			elevatorError.setForeground(Color.GREEN);
-			elevatorError.setText("No Error");
+			elevatorError.setText("NORMAL");
 
 		} else {
 			elevatorError.setForeground(Color.RED);

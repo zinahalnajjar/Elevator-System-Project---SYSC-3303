@@ -194,6 +194,7 @@ public class MainElevatorSys {
 		String errorInfo = null;
 		if (error == 0) {
 			// NO ISSUES.
+			return;
 		} else if (error == 1) {
 			// current elevator is 'DELAYED'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
@@ -218,7 +219,7 @@ public class MainElevatorSys {
 //				+ errorInfo
 //				+ " END";
 		
-		MainElevatorSys.gui.updateView(elevator.getElevatorID(), 0, 9, errorInfo);
+		MainElevatorSys.gui.updateView(elevator.getElevatorID(), 0, error, errorInfo);
 
 	}
 
@@ -281,10 +282,12 @@ public class MainElevatorSys {
 
 	private void fixDelayedElevators() {
 		for (Elevator elevator : elevatorList) {
-			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			// check if elevator is DELAYED and FIX IT.
+			// OUT OF SERVICE is not to be fixed.
 			if (elevator.isDelayed()) {
 				elevator.setDelayed(false);
 				Output.print("Elevator", "Main", Output.INFO, "Elevator: " + elevator.getElevatorID() + " IS FIXED.");
+				MainElevatorSys.gui.updateView(elevator.getElevatorID(), elevator.getCurrentFloor(), 0, "NORMAL");
 			}
 		}
 	}
