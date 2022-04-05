@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
+public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboardView {
 
 	// Individual Elevator tracking panels
 	private ArrayList<ElevatorPanel> elevatorPanelList = new ArrayList<ElevatorPanel>();
@@ -55,30 +55,6 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 
 	}
 
-	@Override
-	public void updateDestination(int elevatorID, int destination) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateState(int elevatorID, String state) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateState(int elevatorID, int position, String state) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateError(int elevatorID, int error) {
-		// TODO Auto-generated method stub
-
-	}
-
 	// MAIN
 	public static void main(String[] args) {
 		new ElevatorDashboardGUI(4);
@@ -87,7 +63,7 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
-		//elevatorID is 1 based
+		// elevatorID is 1 based
 		ElevatorPanel elevatorPanel = elevatorPanelList.get(elevatorID - 1);
 		elevatorPanel.updateView(elevatorID, floor, error, state);
 	}

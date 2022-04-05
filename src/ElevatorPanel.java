@@ -16,19 +16,19 @@ import javax.swing.JTextField;
  *
  */
 
-public class ElevatorPanel extends JPanel implements ElevatorDashboard {
+public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
 	// Lists of panels for showing location of elevators
-	private final ArrayList<JPanel> elevator1;
+	private final ArrayList<JPanel> elevator;
 
 	// Text field displaying elevator destinations
-	private final JTextField elevator1Dest;
+	private final JTextField elevatorDest;
 
 	// Text field displaying elevator states
-	private final JTextField elevator1State;
+	private final JTextField elevatorState;
 
 	// Text field displaying elevator error;
-	private final JTextField elevator1Error;
+	private final JTextField elevatorError;
 
 	private int currentFloor;
 
@@ -84,56 +84,56 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 		JLabel blankSpace12 = new JLabel(" ");
 
 		// Elevator destination field
-		elevator1Dest = new JTextField();
+		elevatorDest = new JTextField();
 
-		elevator1Dest.setText("None");
+		elevatorDest.setText("None");
 
-		elevator1Dest.setEditable(false);
+		elevatorDest.setEditable(false);
 
 		// Elevator state field
-		elevator1State = new JTextField();
+		elevatorState = new JTextField();
 
-		elevator1State.setText("Doors Open");
+		elevatorState.setText("Doors Open");
 
-		elevator1State.setEditable(false);
+		elevatorState.setEditable(false);
 
 		// Elevator error field
-		elevator1Error = new JTextField();
+		elevatorError = new JTextField();
+		elevatorError.setForeground(Color.GREEN);
+		elevatorError.setText("No Error");
 
-		elevator1Error.setText("No Error");
-
-		elevator1Error.setEditable(false);
+		elevatorError.setEditable(false);
 
 		liveTrackingPanelGraphic.add(elevator1Panel);
 
-		elevator1 = new ArrayList<>();
+		elevator = new ArrayList<>();
 
 		for (int i = 0; i < 22; i++) {
-			elevator1.add(new JPanel());
+			elevator.add(new JPanel());
 
-			elevator1.get(i).setBackground(Color.white);
+			elevator.get(i).setBackground(Color.white);
 		}
 
 		for (int i = 22; i > 0; i--) {
-			elevator1.get(i - 1).add(new JLabel(String.valueOf(i)));
+			elevator.get(i - 1).add(new JLabel(String.valueOf(i)));
 		}
 
 		for (int i = 21; i >= 0; i--) {
-			elevator1Panel.add(elevator1.get(i));
+			elevator1Panel.add(elevator.get(i));
 		}
 
-		elevator1.get(0).setBackground(Color.yellow);
+		elevator.get(0).setBackground(Color.yellow);
 
 		// Adding elements
 		elevator1Panel.add(new JLabel(" "));
 		elevator1Panel.add(destLabel1);
-		elevator1Panel.add(elevator1Dest);
+		elevator1Panel.add(elevatorDest);
 		elevator1Panel.add(blankSpace2);
 		elevator1Panel.add(stateLabel1);
-		elevator1Panel.add(elevator1State);
+		elevator1Panel.add(elevatorState);
 		elevator1Panel.add(blankSpace9);
 		elevator1Panel.add(errorLabel1);
-		elevator1Panel.add(elevator1Error);
+		elevator1Panel.add(elevatorError);
 		elevator1Panel.add(blankSpace9);
 
 		this.add(liveTrackingPanel);
@@ -145,9 +145,9 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	public void updateLiveTrackerLocation(int elevatorID, int floorNum) {
 		if (elevatorID == 1) {
 			for (int i = 0; i < 22; i++) {
-				elevator1.get(i).setBackground(Color.white);
+				elevator.get(i).setBackground(Color.white);
 			}
-			elevator1.get(floorNum - 1).setBackground(Color.yellow);
+			elevator.get(floorNum - 1).setBackground(Color.yellow);
 		}
 	}
 
@@ -191,7 +191,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	public void updateDestination(int elevatorID, int destination) {
 
 		if (elevatorID == 1) {
-			elevator1Dest.setText(String.valueOf(destination));
+			elevatorDest.setText(String.valueOf(destination));
 		}
 
 	}
@@ -205,7 +205,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	public void updateState(int elevatorID, String state) {
 
 		if (elevatorID == 1) {
-			elevator1State.setText(state);
+			elevatorState.setText(state);
 		}
 
 	}
@@ -218,7 +218,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	 */
 	public void updateError(int elevatorID, int error) {
 		if (elevatorID == 1) {
-			elevator1Error.setText(String.valueOf(error));
+			elevatorError.setText(String.valueOf(error));
 		}
 	}
 
@@ -232,7 +232,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	public void addErrorState(int elevatorID, int floorNum) {
 
 		if (elevatorID == 1) {
-			elevator1.get(floorNum - 1).setBackground(Color.PINK);
+			elevator.get(floorNum - 1).setBackground(Color.PINK);
 		}
 
 	}
@@ -245,20 +245,24 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboard {
 	 */
 	public void removeErrorState(int elevatorID, int floorNum) {
 		if (elevatorID == 1) {
-			elevator1.get(floorNum - 1).setBackground(Color.YELLOW);
+			elevator.get(floorNum - 1).setBackground(Color.YELLOW);
 		}
-	}
-
-	public void updateState(int elevatorID, int position, String state) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
-		elevator1.get(currentFloor).setBackground(Color.WHITE);
-		currentFloor = floor - 1;
-		elevator1.get(currentFloor).setBackground(Color.YELLOW);
+		if (error == 0) {
+			elevator.get(currentFloor).setBackground(Color.WHITE);
+			currentFloor = floor - 1;
+			elevator.get(currentFloor).setBackground(Color.YELLOW);
+
+			elevatorError.setForeground(Color.GREEN);
+			elevatorError.setText("No Error");
+
+		} else {
+			elevatorError.setForeground(Color.RED);
+			elevatorError.setText(state);
+		}
 	}
 
 }

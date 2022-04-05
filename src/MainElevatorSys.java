@@ -191,19 +191,35 @@ public class MainElevatorSys {
 	}
 
 	private void applyErrorToElevator(Elevator elevator, int error) {
+		String errorInfo = null;
 		if (error == 0) {
 			// NO ISSUES.
 		} else if (error == 1) {
 			// current elevator is 'DELAYED'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
 			elevator.setDelayed(true);
+			errorInfo = "DELAYED";
 		} else if (error == 2) {
 			// current elevator is 'STUCK'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
 			Output.print("Elevator", "currentState", Output.INFO,
 					"Elevator " + elevator.getElevatorID() + " is OUT OF SERVICE.");
 			elevator.setOutOfService(true);
+			errorInfo = "OUT OF SERVICE";
 		}
+		
+		// Format needed:
+		// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
+		
+		
+//		String status = "elevator " + elevator.getElevatorID()
+//				+ "0"
+//				+ " 9 " //NON ZERO is error
+//				+ errorInfo
+//				+ " END";
+		
+		MainElevatorSys.gui.updateView(elevator.getElevatorID(), 0, 9, errorInfo);
+
 	}
 
 	/**

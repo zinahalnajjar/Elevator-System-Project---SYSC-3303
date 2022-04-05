@@ -182,11 +182,11 @@ public class Elevator implements Runnable {
 					floor = originFloor - i;
 				}
 				arrivalSensor.setReachedFloor(floor);
-				// Format needed:
-				// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
-				String status = "elevator " + elevatorID
-						+ floor
-						+ " 0 MOVING END";
+//				// Format needed:
+//				// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
+//				String status = "elevator " + elevatorID
+//						+ floor
+//						+ " 0 MOVING END";
 				
 				MainElevatorSys.gui.updateView(elevatorID, floor, 0, "MOVING");
 

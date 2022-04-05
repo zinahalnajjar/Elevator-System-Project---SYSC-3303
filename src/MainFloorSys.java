@@ -88,7 +88,8 @@ public class MainFloorSys {
 		// received back
 		String response = new String(receivedBytes);
 
-		boolean validReply = processResponse(response); // flag for valid reply
+//		boolean validReply = processResponse(response); // flag for valid reply
+		boolean validReply = true;
 		// decide the type of reponse from the client to the Scheduler based on the
 
 		// check if we have a invalid request received
@@ -151,7 +152,7 @@ public class MainFloorSys {
 		String state = tokens[4];
 		
 		//Update GUI
-		gui.updateView(elevatorID, floor, error, state);
+//		gui.updateView(elevatorID, floor, error, state);
 
 	}
 
@@ -212,8 +213,6 @@ public class MainFloorSys {
 
 	public static void main(String[] args) {
 		try {
-//			// display GUI
-//			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
 
 			// Start floor sub system
 			MainFloorSys c = new MainFloorSys();
