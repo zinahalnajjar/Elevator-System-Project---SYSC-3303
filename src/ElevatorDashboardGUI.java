@@ -10,7 +10,7 @@ import java.util.Scanner;
  *
  */
 
-public class SchedulerView extends JFrame {
+public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboard {
 	
 	// Creating instances of MainSystems
 	private MainElevatorSys mainElevator;
@@ -43,9 +43,13 @@ public class SchedulerView extends JFrame {
     private final JTextField elevator2Error;
     private final JTextField elevator3Error;
     
+ // Text field displaying elevator CurrentFloor;
+    private final JTextField elevator1CurrentFloor;
+    private final JTextField elevator2CurrentFloor;
+    private final JTextField elevator3CurrentFloor;
 
 
-    public SchedulerView(){
+    public ElevatorDashboardGUI(){
         super("Elevator System Control Panel");
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -74,13 +78,14 @@ public class SchedulerView extends JFrame {
         consoleScrollPane.setSize(new Dimension(700, 500));
         consoleScrollPane.setMaximumSize(new Dimension(700, 500));
 
+        /*
         // Legend section
         JPanel legendPanel = new JPanel();
         legendPanel.setLayout(new BoxLayout(legendPanel, BoxLayout.Y_AXIS));
         legendPanel.add(new JLabel("YELLOW boxes show the location of an elevator"));
         legendPanel.add(new JLabel("RED boxes show an elevator error"));
 
-
+*/
         // Creating left side of scheduler view (console, requests, legend)
         JPanel consoleOutputPanel = new JPanel();
         consoleOutputPanel.add(new JLabel("CONSOLE OUTPUT:"));
@@ -90,8 +95,10 @@ public class SchedulerView extends JFrame {
         consoleOutputPanel.add(new JLabel("INPUT FILE:"));
         consoleOutputPanel.add(requestScrollPane);
         consoleOutputPanel.add(new JLabel(" "));
-        consoleOutputPanel.add(legendPanel);
+        //consoleOutputPanel.add(legendPanel);
 
+ 
+ 
         // Creating right side of scheduler view (live tracker)
         JPanel liveTrackingPanelHeader = new JPanel();
         JPanel liveTrackingPanel = new JPanel();
@@ -101,6 +108,8 @@ public class SchedulerView extends JFrame {
         liveTrackingPanelHeader.add(new JLabel("ELEVATOR LIVE TRACKER"));
         liveTrackingPanel.add(liveTrackingPanelHeader);
         liveTrackingPanel.add(liveTrackingPanelGraphic);
+        
+        
 
         // Individual Elevator tracking panels
         JPanel elevator1Panel = new JPanel();
@@ -120,16 +129,20 @@ public class SchedulerView extends JFrame {
         JLabel destLabel1 = new JLabel("\nDESTINATION:");
         JLabel stateLabel1 = new JLabel("\nSTATE:");
         JLabel errorLabel1 = new JLabel("\nERROR TYPE:");
-       
+        JLabel CurrentFloor1Lable = new JLabel("\nCURRENT FLOOR:");
 
         JLabel destLabel2 = new JLabel("\nDESTINATION:");
         JLabel stateLabel2 = new JLabel("\nSTATE:");
         JLabel errorLabel2 = new JLabel("\nERROR TYPE:");
+        JLabel CurrentFloor2Lable = new JLabel("\nCURRENT FLOOR:");
+
      
 
         JLabel destLabel3 = new JLabel("\nDESTINATION:");
         JLabel stateLabel3 = new JLabel("\nSTATE:");
         JLabel errorLabel3 = new JLabel("\nERROR TYPE:");
+        JLabel CurrentFloor3Lable = new JLabel("\nCURRENT FLOOR:");
+
        
 
         // Blank spaces
@@ -190,6 +203,21 @@ public class SchedulerView extends JFrame {
         elevator1Error.setEditable(false);
         elevator2Error.setEditable(false);
         elevator3Error.setEditable(false);
+        
+        // elevator current floor 
+        elevator1CurrentFloor = new JTextField();
+        elevator2CurrentFloor = new JTextField();
+        elevator3CurrentFloor = new JTextField();
+        
+        elevator1CurrentFloor.setText("");
+        elevator2CurrentFloor.setText("");
+        elevator3CurrentFloor.setText("");
+        
+        elevator1CurrentFloor.setEditable(false);
+        elevator2CurrentFloor.setEditable(false);
+        elevator3CurrentFloor.setEditable(false);
+     
+        
 
 
         liveTrackingPanelGraphic.add(elevator1Panel);
@@ -197,7 +225,7 @@ public class SchedulerView extends JFrame {
         liveTrackingPanelGraphic.add(elevator3Panel);
 
 
-        // Setting up live tracking panel
+       
         elevator1= new ArrayList<>();
         elevator2= new ArrayList<>();
         elevator3= new ArrayList<>();
@@ -233,6 +261,7 @@ public class SchedulerView extends JFrame {
         elevator2.get(0).setBackground(Color.yellow);
         elevator3.get(0).setBackground(Color.yellow);
         
+        
 
 
         // Adding elements
@@ -245,6 +274,9 @@ public class SchedulerView extends JFrame {
         elevator1Panel.add(blankSpace9);
         elevator1Panel.add(errorLabel1);
         elevator1Panel.add(elevator1Error);
+        elevator1Panel.add(blankSpace9);
+        elevator1Panel.add(CurrentFloor1Lable);
+        elevator1Panel.add(elevator1CurrentFloor);
     
 
 
@@ -257,6 +289,9 @@ public class SchedulerView extends JFrame {
         elevator2Panel.add(blankSpace10);
         elevator2Panel.add(errorLabel2);
         elevator2Panel.add(elevator2Error);
+        elevator2Panel.add(blankSpace10);
+        elevator2Panel.add(CurrentFloor2Lable);
+        elevator2Panel.add(elevator2CurrentFloor);
   
        
 
@@ -269,6 +304,11 @@ public class SchedulerView extends JFrame {
         elevator3Panel.add(blankSpace11);
         elevator3Panel.add(errorLabel3);
         elevator3Panel.add(elevator3Error);
+        elevator3Panel.add(blankSpace11);
+        elevator3Panel.add(CurrentFloor3Lable);
+        elevator3Panel.add(elevator3CurrentFloor);
+        
+        
     
       
 
@@ -439,9 +479,19 @@ public class SchedulerView extends JFrame {
             elevator1.get(floorNum-1).setBackground(Color.YELLOW);
         }
     }
+    
+   
 
     public static void main(String[] args) {
-        new SchedulerView();
+        new ElevatorDashboardGUI();
     }
+
+	@Override
+	public void updateState(int elevatorID, int position, String state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 }
