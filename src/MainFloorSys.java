@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainFloorSys {
@@ -42,7 +43,15 @@ public class MainFloorSys {
 	 * @throws IOException
 	 * 
 	 */
-	private void sendRequest(String request) throws IOException {
+	private void processRequest(String request) throws IOException {
+		sendRequest(request);
+
+		delay();
+
+		receiveResponse();
+	}
+
+	private void sendRequest(String request) throws UnknownHostException {
 		// System.out.println("Sending request: " + request);
 		Output.print("Floor", "Main", Output.INFO, "Sending request: " + request);
 
@@ -53,9 +62,9 @@ public class MainFloorSys {
 
 		// System.out.println("Sent request: " + request);
 		Output.print("Floor", "Main", Output.INFO, "Sent request: " + request);
+	}
 
-		delay();
-
+	private void receiveResponse() throws IOException {
 		// receive request from the Scheduler
 		byte[] inBytes = new byte[1024];
 		DatagramPacket fromSchedulerPacket = new DatagramPacket(inBytes, inBytes.length);
@@ -71,14 +80,13 @@ public class MainFloorSys {
 		// System.out.println("Reply Received from Scheduler.");
 		Output.print("Floor", "Main", Output.INFO, "Reply Received from Scheduler.");
 
-		boolean validReply = true; // flag for valid reply
-		// decide the type of reponse from the client to the Scheduler based on the
-		// request
 		// received back
-
 		String response = new String(receivedBytes);
 
-		// if we have a invalid request received
+		boolean validReply = processResponse(response); // flag for valid reply
+		// decide the type of reponse from the client to the Scheduler based on the
+
+		// check if we have a invalid request received
 		if (validReply) {
 			// System.out.println("VALID reply received: " + response);
 			Output.print("Floor", "Main", Output.INFO, "VALID reply received: " + response);
@@ -88,6 +96,48 @@ public class MainFloorSys {
 			Output.print("Floor", "Main", Output.INFO, "INVALID reply received: " + response);
 
 		}
+	}
+
+	/**
+	 * Processes each response and update GUI.
+	 * 
+	 * @param response
+	 * @return
+	 */
+	private boolean processResponse(String response) {
+		if (response == null) {
+			return false;
+		}
+		
+		response = response.trim();
+		
+		if (response.isEmpty()) {
+			return false;
+		}
+		
+		System.out.println("...PENDING GUI UPDATE: " + response);	
+		if (response.equals("DONE")) {
+			return true;
+		}
+		
+		
+		if (response.startsWith("elevator ")) {
+			processElevatorPosition(response);
+		} else {
+			// Throw Exception
+//			PENDING SEND RESPONSE
+//			throw new Exception("Invalid response.");
+			// System.out.println("Invalid response.");
+			Output.print("Floor", "Main", Output.INFO, "Invalid response.");
+
+		}
+
+		
+		return true;
+	}
+
+	private void processElevatorPosition(String response) {
+		System.out.println("...PENDING GUI UPDATE: " + response);	
 	}
 
 	/**
@@ -175,7 +225,8 @@ public class MainFloorSys {
 
 			String request = "floor request elevator " + floorRequest.getOriginFloor() + " "
 					+ floorRequest.getDestinationFloor() + " " + floorRequest.getError() + " END";
-			sendRequest(request);
+
+			processRequest(request);
 
 			Output.print("Floor", "Main", Output.INFO, "----END Request: " + i);
 
