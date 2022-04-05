@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
 	// Lists of panels for showing location of elevators
-	private final ArrayList<JPanel> elevator;
+	private final ArrayList<JPanel> floorPanelList;
 
 	// Text field displaying elevator destinations
 	private final JTextField elevatorDest;
@@ -106,23 +106,23 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
 		liveTrackingPanelGraphic.add(elevator1Panel);
 
-		elevator = new ArrayList<>();
+		floorPanelList = new ArrayList<>();
 
 		for (int i = 0; i < 22; i++) {
-			elevator.add(new JPanel());
+			floorPanelList.add(new JPanel());
 
-			elevator.get(i).setBackground(Color.white);
+			floorPanelList.get(i).setBackground(Color.white);
 		}
 
 		for (int i = 22; i > 0; i--) {
-			elevator.get(i - 1).add(new JLabel(String.valueOf(i)));
+			floorPanelList.get(i - 1).add(new JLabel(String.valueOf(i)));
 		}
 
 		for (int i = 21; i >= 0; i--) {
-			elevator1Panel.add(elevator.get(i));
+			elevator1Panel.add(floorPanelList.get(i));
 		}
 
-		elevator.get(0).setBackground(Color.yellow);
+		floorPanelList.get(0).setBackground(Color.yellow);
 
 		// Adding elements
 		elevator1Panel.add(new JLabel(" "));
@@ -145,9 +145,9 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 	public void updateLiveTrackerLocation(int elevatorID, int floorNum) {
 		if (elevatorID == 1) {
 			for (int i = 0; i < 22; i++) {
-				elevator.get(i).setBackground(Color.white);
+				floorPanelList.get(i).setBackground(Color.white);
 			}
-			elevator.get(floorNum - 1).setBackground(Color.yellow);
+			floorPanelList.get(floorNum - 1).setBackground(Color.yellow);
 		}
 	}
 
@@ -232,7 +232,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 	public void addErrorState(int elevatorID, int floorNum) {
 
 		if (elevatorID == 1) {
-			elevator.get(floorNum - 1).setBackground(Color.PINK);
+			floorPanelList.get(floorNum - 1).setBackground(Color.PINK);
 		}
 
 	}
@@ -245,18 +245,18 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 	 */
 	public void removeErrorState(int elevatorID, int floorNum) {
 		if (elevatorID == 1) {
-			elevator.get(floorNum - 1).setBackground(Color.YELLOW);
+			floorPanelList.get(floorNum - 1).setBackground(Color.YELLOW);
 		}
 	}
 
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
 		if (error == 0) {
-			elevator.get(currentFloor).setBackground(Color.WHITE);
+			floorPanelList.get(currentFloor).setBackground(Color.WHITE);
 			if (floor > 0) {
 				currentFloor = floor - 1;
 			}
-			elevator.get(currentFloor).setBackground(Color.YELLOW);
+			floorPanelList.get(currentFloor).setBackground(Color.YELLOW);
 
 			elevatorError.setForeground(Color.GREEN);
 			elevatorError.setText("NORMAL");

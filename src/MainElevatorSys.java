@@ -13,7 +13,6 @@ public class MainElevatorSys {
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
 
-
 	// Number of elevators
 	private static final int ELEVATOR_COUNT = 4;
 
@@ -101,43 +100,54 @@ public class MainElevatorSys {
 
 	private void startElevatorThreads() {
 
-		FloorRequest floorRequest1 = new FloorRequest();
-		Elevator elevator1 = new Elevator(1, floorRequest1);
-		elevatorList.add(elevator1);
+		for (int elevatorID = 1; elevatorID <= ELEVATOR_COUNT; elevatorID++) {
+			FloorRequest floorRequest = new FloorRequest();
+			Elevator elevator = new Elevator(elevatorID, floorRequest);
+			elevatorList.add(elevator);
 
-		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
-		elevatorThread1.start();
-		// System.out.println("--- elevatorThread1 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread1 STARTED.");
-
-		FloorRequest floorRequest2 = new FloorRequest();
-		Elevator elevator2 = new Elevator(2, floorRequest2);
-		elevatorList.add(elevator2);
-
-		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
-		elevatorThread2.start();
-		// System.out.println("--- elevatorThread2 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread2 STARTED.");
-
-
-		FloorRequest floorRequest3 = new FloorRequest();
-		Elevator elevator3 = new Elevator(3, floorRequest3);
-		elevatorList.add(elevator3);
-
-		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
-		elevatorThread3.start();
-		// System.out.println("--- elevatorThread3 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread3 STARTED.");
-
-		
-		FloorRequest floorRequest4 = new FloorRequest();
-		Elevator elevator4 = new Elevator(4, floorRequest4);
-		elevatorList.add(elevator4);
-
-		Thread elevatorThread4 = new Thread(elevator4, "Elevator 4");
-		elevatorThread4.start();
-		// System.out.println("--- elevatorThread4 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread4 STARTED.");
+			Thread elevatorThread = new Thread(elevator, "Elevator " + elevatorID);
+			elevatorThread.start();
+			Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread " + elevatorID + " STARTED.");
+		}
+		System.out.println("==============================");
+		System.out.println("==============================");
+//		FloorRequest floorRequest1 = new FloorRequest();
+//		Elevator elevator1 = new Elevator(1, floorRequest1);
+//		elevatorList.add(elevator1);
+//		
+//		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
+//		elevatorThread1.start();
+//		// System.out.println("--- elevatorThread1 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread1 STARTED.");
+//
+//		FloorRequest floorRequest2 = new FloorRequest();
+//		Elevator elevator2 = new Elevator(2, floorRequest2);
+//		elevatorList.add(elevator2);
+//
+//		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
+//		elevatorThread2.start();
+//		// System.out.println("--- elevatorThread2 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread2 STARTED.");
+//
+//
+//		FloorRequest floorRequest3 = new FloorRequest();
+//		Elevator elevator3 = new Elevator(3, floorRequest3);
+//		elevatorList.add(elevator3);
+//
+//		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
+//		elevatorThread3.start();
+//		// System.out.println("--- elevatorThread3 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread3 STARTED.");
+//
+//		
+//		FloorRequest floorRequest4 = new FloorRequest();
+//		Elevator elevator4 = new Elevator(4, floorRequest4);
+//		elevatorList.add(elevator4);
+//
+//		Thread elevatorThread4 = new Thread(elevator4, "Elevator 4");
+//		elevatorThread4.start();
+//		// System.out.println("--- elevatorThread4 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread4 STARTED.");
 
 	}
 
@@ -219,17 +229,16 @@ public class MainElevatorSys {
 			elevator.setOutOfService(true);
 			errorInfo = "OUT OF SERVICE";
 		}
-		
+
 		// Format needed:
 		// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
-		
-		
+
 //		String status = "elevator " + elevator.getElevatorID()
 //				+ "0"
 //				+ " 9 " //NON ZERO is error
 //				+ errorInfo
 //				+ " END";
-		
+
 		MainElevatorSys.gui.updateView(elevator.getElevatorID(), 0, error, errorInfo);
 
 	}
