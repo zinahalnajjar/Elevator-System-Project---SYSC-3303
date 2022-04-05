@@ -1,9 +1,6 @@
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -20,12 +17,6 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
 	// Lists of panels for showing location of elevators
 	private final ArrayList<JPanel> floorPanelList;
-
-	// Text field displaying elevator destinations
-	private final JTextField elevatorDest;
-
-	// Text field displaying elevator states
-	private final JTextField elevatorState;
 
 	// Text field displaying elevator error;
 	private final JTextField elevatorError;
@@ -55,9 +46,7 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 		elevator1Panel.add(new JLabel("Elevator 1"));
 
 		// Labels for elevator state/dest/ section
-		JLabel destLabel1 = new JLabel("\nDESTINATION:");
 		JLabel stateLabel1 = new JLabel("\nSTATE:");
-		JLabel errorLabel1 = new JLabel("\nERROR TYPE:");
 
 		JLabel destLabel2 = new JLabel("\nDESTINATION:");
 		JLabel stateLabel2 = new JLabel("\nSTATE:");
@@ -82,20 +71,6 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 		JLabel blankSpace10 = new JLabel(" ");
 		JLabel blankSpace11 = new JLabel(" ");
 		JLabel blankSpace12 = new JLabel(" ");
-
-		// Elevator destination field
-		elevatorDest = new JTextField();
-
-		elevatorDest.setText("None");
-
-		elevatorDest.setEditable(false);
-
-		// Elevator state field
-		elevatorState = new JTextField();
-
-		elevatorState.setText("Doors Open");
-
-		elevatorState.setEditable(false);
 
 		// Elevator error field
 		elevatorError = new JTextField();
@@ -126,13 +101,11 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
 		// Adding elements
 		elevator1Panel.add(new JLabel(" "));
-		elevator1Panel.add(destLabel1);
-		elevator1Panel.add(elevatorDest);
+		elevator1Panel.add(new JLabel(" "));
+		elevator1Panel.add(new JLabel(" "));
 		elevator1Panel.add(blankSpace2);
 		elevator1Panel.add(stateLabel1);
-		elevator1Panel.add(elevatorState);
 		elevator1Panel.add(blankSpace9);
-		elevator1Panel.add(errorLabel1);
 		elevator1Panel.add(elevatorError);
 		elevator1Panel.add(blankSpace9);
 
@@ -148,104 +121,6 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 				floorPanelList.get(i).setBackground(Color.white);
 			}
 			floorPanelList.get(floorNum - 1).setBackground(Color.yellow);
-		}
-	}
-
-	/**
-	 * Add console output line to view
-	 * 
-	 * @param output String
-	 */
-	public void addOutput(String output) {
-
-	}
-
-	/**
-	 * Read request txt file into arraylist of strings
-	 * 
-	 * @return ArrayList of request strings
-	 */
-	public ArrayList<String> readFile() {
-		ArrayList<String> dataLines = new ArrayList<>();
-		try {
-			File file = new File("./src/InputInformation.txt");
-			Scanner scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				dataLines.add(line);
-			}
-			scanner.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-		return dataLines;
-	}
-
-	/**
-	 * Update elevator destination in view
-	 * 
-	 * @param elevatorID  elevator to update
-	 * @param destination new destination
-	 */
-	public void updateDestination(int elevatorID, int destination) {
-
-		if (elevatorID == 1) {
-			elevatorDest.setText(String.valueOf(destination));
-		}
-
-	}
-
-	/**
-	 * Update elevator state in view
-	 * 
-	 * @param elevatorID elevator to update
-	 * @param state      new state
-	 */
-	public void updateState(int elevatorID, String state) {
-
-		if (elevatorID == 1) {
-			elevatorState.setText(state);
-		}
-
-	}
-
-	/**
-	 * Update elevator errors
-	 * 
-	 * @param elevatorID elevator to update
-	 * @param error      new error
-	 */
-	public void updateError(int elevatorID, int error) {
-		if (elevatorID == 1) {
-			elevatorError.setText(String.valueOf(error));
-		}
-	}
-
-	/**
-	 * Signal error state by changing colour of elevator tracker and updating state
-	 * field in view
-	 * 
-	 * @param elevatorID elevator to update
-	 * @param floorNum   floor at which error occurred
-	 */
-	public void addErrorState(int elevatorID, int floorNum) {
-
-		if (elevatorID == 1) {
-			floorPanelList.get(floorNum - 1).setBackground(Color.PINK);
-		}
-
-	}
-
-	/**
-	 * Clear error signal
-	 * 
-	 * @param elevatorID elevator to update
-	 * @param floorNum   floor at which error occurred
-	 */
-	public void removeErrorState(int elevatorID, int floorNum) {
-		if (elevatorID == 1) {
-			floorPanelList.get(floorNum - 1).setBackground(Color.YELLOW);
 		}
 	}
 
