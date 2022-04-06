@@ -90,13 +90,12 @@ fixing known issues from Iteration 3: Zinah
 
 Breakdown of responsibilities iteration 5:
 code implementation: Zinah, Mack 
-UML diagram: Shawaize 
-Sequnce diagram: Vilmos, Shawaize
-timing diagrams: Vilmos, Faris, Shawaize
+UML diagram: Shawaiz, Vilmos, Faris
+Sequnce diagram: Vilmos, Shawaiz, Faris
+timing diagrams: Vilmos, Faris, Shawaiz
 Readme: Zinah 
 Test classes: Mack 
 JavaDoc: Zinah 
-
 
 
 GitHub repository link:
