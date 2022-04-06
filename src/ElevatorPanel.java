@@ -1,3 +1,10 @@
+/**
+ * Graphical user interface showing elevator locations, actions, states,
+ * directions, destinations, in real-time.
+ *@author Zinah, Mack 
+ *
+ */
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -7,11 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/**
- * Graphical user interface showing elevator locations, actions, states,
- * directions, destinations, console output and requests in real-time.
- *
- */
+
 
 public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 
@@ -57,7 +60,6 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 		JLabel errorLabel3 = new JLabel("\nERROR TYPE:");
 
 		// Blank spaces
-		// ...PENDING REMOVE THESE variables and directly use: new JLabel(" ")
 
 		JLabel blankSpace1 = new JLabel(" ");
 		JLabel blankSpace2 = new JLabel(" ");
@@ -115,28 +117,50 @@ public class ElevatorPanel extends JPanel implements ElevatorDashboardView {
 		this.setVisible(true);
 	}
 
+	/*
+	 * this method updates the live tracker to show the current floor for each elevator 
+	 * uses the same logic as the arrival sensor where it shows each floor the elevator is passing by 
+	 * the floor that the elevator is currently at is shown by setting its backgrouud colour to yellow 
+	 */
 	public void updateLiveTrackerLocation(int elevatorID, int floorNum) {
 		if (elevatorID == 1) {
 			for (int i = 0; i < 22; i++) {
 				floorPanelList.get(i).setBackground(Color.white);
 			}
-			floorPanelList.get(floorNum - 1).setBackground(Color.yellow);
+			floorPanelList.get(floorNum - 1).setBackground(Color.yellow);// current floor 
 		}
 	}
 
+	/**
+	 * this is the interface implemented method that is responsible for updating the view of the gui 
+	 * @param elevatorID, floor, error, state
+	 */
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
+		/*
+		 * if the error passed in the request is 0 then the program will run the normal way 
+		 */
 		if (error == 0) {
+			/*
+			 * update the background colour of the current floor 
+			 */
 			floorPanelList.get(currentFloor).setBackground(Color.WHITE);
 			if (floor > 0) {
 				currentFloor = floor - 1;
 			}
 			floorPanelList.get(currentFloor).setBackground(Color.YELLOW);
 
+			/*
+			 * update the backgroud colour of the text in the error textfiled 
+			 * set the text to "NORMAL"
+			 */
 			elevatorError.setForeground(Color.GREEN);
 			elevatorError.setText("NORMAL");
 
 		} else {
+			/*
+			 * if the error passed in the text 
+			 */
 			elevatorError.setForeground(Color.RED);
 			elevatorError.setText(state);
 		}
