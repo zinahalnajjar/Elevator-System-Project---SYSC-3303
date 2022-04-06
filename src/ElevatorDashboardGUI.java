@@ -1,3 +1,8 @@
+/*
+ * GUI dashboard class 
+ * @Zinah, Mack
+ */
+
 import java.awt.FlowLayout;
 import java.awt.HeadlessException;
 import java.util.ArrayList;
@@ -32,7 +37,9 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboardVie
 		this.setVisible(true);
 
 	}
-
+/*
+ * setting up the live tracker panel 
+ */
 	private JPanel getLiveTrackingPanel() {
 		JPanel liveTrackingPanel = new JPanel();
 
@@ -45,6 +52,7 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboardVie
 		liveTrackingPanel.add(liveTrackingPanelHeader);
 		liveTrackingPanel.add(liveTrackingPanelGraphic);
 
+		// adding the elevator panel to the live Tracker 
 		for (int i = 0; i < elevatorCount; i++) {
 			ElevatorPanel elevatorPanel = new ElevatorPanel();
 			liveTrackingPanelGraphic.add(elevatorPanel);
@@ -55,11 +63,18 @@ public class ElevatorDashboardGUI extends JFrame implements ElevatorDashboardVie
 
 	}
 
-	// MAIN
+	/**
+	 * main class 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		new ElevatorDashboardGUI(4);
 
 	}
+	/**
+	 * update the view of the gui with the request information 
+	 * @param elevatorID, floor, error, state
+	 */
 
 	@Override
 	public void updateView(int elevatorID, int floor, int error, String state) {
