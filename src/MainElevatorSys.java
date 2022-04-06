@@ -13,12 +13,24 @@ public class MainElevatorSys {
 	private DatagramPacket receivedPacket;
 	private DatagramSocket serverSocket;
 
+	// Number of elevators
+	private static final int ELEVATOR_COUNT = 4;
+
+	// GUI
+	static ElevatorDashboardGUI gui;
+
 	private int currentFloor;
 	private boolean motorOperating;
 	public State currentState;
 	private boolean stopRequested = false;
 
-	private List<Elevator> elevatorList = new ArrayList<Elevator>();
+	private static InetAddress hostIP;
+
+	private static int hostPort;
+
+	private static List<Elevator> elevatorList = new ArrayList<Elevator>();
+
+	private static MainElevatorSys server;
 
 	enum State {
 		STILL, MOVING
@@ -88,32 +100,54 @@ public class MainElevatorSys {
 
 	private void startElevatorThreads() {
 
-		FloorRequest floorRequest1 = new FloorRequest();
-		Elevator elevator1 = new Elevator(1, floorRequest1);
-		elevatorList.add(elevator1);
+		for (int elevatorID = 1; elevatorID <= ELEVATOR_COUNT; elevatorID++) {
+			FloorRequest floorRequest = new FloorRequest();
+			Elevator elevator = new Elevator(elevatorID, floorRequest);
+			elevatorList.add(elevator);
 
-		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
-		elevatorThread1.start();
-		// System.out.println("--- elevatorThread1 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread1 STARTED.");
-
-		FloorRequest floorRequest2 = new FloorRequest();
-		Elevator elevator2 = new Elevator(2, floorRequest2);
-		elevatorList.add(elevator2);
-
-		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
-		elevatorThread2.start();
-		// System.out.println("--- elevatorThread2 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread2 STARTED.");
-
-		FloorRequest floorRequest3 = new FloorRequest();
-		Elevator elevator3 = new Elevator(3, floorRequest3);
-		elevatorList.add(elevator3);
-
-		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
-		elevatorThread3.start();
-		// System.out.println("--- elevatorThread3 STARTED.");
-		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread3 STARTED.");
+			Thread elevatorThread = new Thread(elevator, "Elevator " + elevatorID);
+			elevatorThread.start();
+			Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread " + elevatorID + " STARTED.");
+		}
+		System.out.println("==============================");
+		System.out.println("==============================");
+//		FloorRequest floorRequest1 = new FloorRequest();
+//		Elevator elevator1 = new Elevator(1, floorRequest1);
+//		elevatorList.add(elevator1);
+//		
+//		Thread elevatorThread1 = new Thread(elevator1, "Elevator 1");
+//		elevatorThread1.start();
+//		// System.out.println("--- elevatorThread1 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread1 STARTED.");
+//
+//		FloorRequest floorRequest2 = new FloorRequest();
+//		Elevator elevator2 = new Elevator(2, floorRequest2);
+//		elevatorList.add(elevator2);
+//
+//		Thread elevatorThread2 = new Thread(elevator2, "Elevator 2");
+//		elevatorThread2.start();
+//		// System.out.println("--- elevatorThread2 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread2 STARTED.");
+//
+//
+//		FloorRequest floorRequest3 = new FloorRequest();
+//		Elevator elevator3 = new Elevator(3, floorRequest3);
+//		elevatorList.add(elevator3);
+//
+//		Thread elevatorThread3 = new Thread(elevator3, "Elevator 3");
+//		elevatorThread3.start();
+//		// System.out.println("--- elevatorThread3 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread3 STARTED.");
+//
+//		
+//		FloorRequest floorRequest4 = new FloorRequest();
+//		Elevator elevator4 = new Elevator(4, floorRequest4);
+//		elevatorList.add(elevator4);
+//
+//		Thread elevatorThread4 = new Thread(elevator4, "Elevator 4");
+//		elevatorThread4.start();
+//		// System.out.println("--- elevatorThread4 STARTED.");
+//		Output.print("Elevator", "Main", Output.INFO, "--- elevatorThread4 STARTED.");
 
 	}
 
@@ -128,8 +162,8 @@ public class MainElevatorSys {
 
 	private void processReceivedBytes(DatagramPacket receivedPacket) throws Exception {
 		// Host Details
-		InetAddress hostIP = receivedPacket.getAddress();
-		int hostPort = receivedPacket.getPort();
+		hostIP = receivedPacket.getAddress();
+		hostPort = receivedPacket.getPort();
 
 		// Get data from the received packet.
 		byte[] receivedBytes = receivedPacket.getData();
@@ -178,19 +212,35 @@ public class MainElevatorSys {
 	}
 
 	private void applyErrorToElevator(Elevator elevator, int error) {
+		String errorInfo = null;
 		if (error == 0) {
 			// NO ISSUES.
+			return;
 		} else if (error == 1) {
 			// current elevator is 'DELAYED'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " DELAYED");
 			elevator.setDelayed(true);
+			errorInfo = "DELAYED";
 		} else if (error == 2) {
 			// current elevator is 'STUCK'
 			Output.print("Elevator", "currentState", Output.INFO, "Elevator " + elevator.getElevatorID() + " STUCK");
 			Output.print("Elevator", "currentState", Output.INFO,
 					"Elevator " + elevator.getElevatorID() + " is OUT OF SERVICE.");
 			elevator.setOutOfService(true);
+			errorInfo = "OUT OF SERVICE";
 		}
+
+		// Format needed:
+		// elevator <ELEVATOR ID> <FLOOR NUMBER> <ERROR> <STATE> END
+
+//		String status = "elevator " + elevator.getElevatorID()
+//				+ "0"
+//				+ " 9 " //NON ZERO is error
+//				+ errorInfo
+//				+ " END";
+
+		MainElevatorSys.gui.updateView(elevator.getElevatorID(), 0, error, errorInfo);
+
 	}
 
 	/**
@@ -252,10 +302,12 @@ public class MainElevatorSys {
 
 	private void fixDelayedElevators() {
 		for (Elevator elevator : elevatorList) {
-			// check if elevator is OUT OF SERVICE 'or' DELAYED
+			// check if elevator is DELAYED and FIX IT.
+			// OUT OF SERVICE is not to be fixed.
 			if (elevator.isDelayed()) {
 				elevator.setDelayed(false);
 				Output.print("Elevator", "Main", Output.INFO, "Elevator: " + elevator.getElevatorID() + " IS FIXED.");
+				MainElevatorSys.gui.updateView(elevator.getElevatorID(), elevator.getCurrentFloor(), 0, "NORMAL");
 			}
 		}
 	}
@@ -419,9 +471,11 @@ public class MainElevatorSys {
 	 */
 
 	public static void main(String[] args) {
-		MainElevatorSys server;
-		//SchedulerView sv = new SchedulerView();
 		try {
+//			// display GUI
+			gui = new ElevatorDashboardGUI(ELEVATOR_COUNT);
+
+			// Start elevator sub system
 			server = new MainElevatorSys();
 			server.start();
 		} catch (Exception e) {
@@ -429,6 +483,15 @@ public class MainElevatorSys {
 			// System.out.println("\n\n ERROR: " + e.getMessage());
 			Output.print("Elevator", "Main", Output.FATAL, e.getMessage());
 			System.exit(1);
+		}
+	}
+
+	public static void updateStatus(String status) {
+		byte[] replyBytes = status.getBytes();
+		try {
+			server.send(replyBytes, hostIP, hostPort);
+		} catch (IOException e) {
+			Output.print("Elevator", "Main", Output.CRITICAL, e.getMessage());
 		}
 	}
 }
